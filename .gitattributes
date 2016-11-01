@@ -3,6 +3,7 @@
 
 # Custom for Matlabatlab
 *.m 	diff=matlab
+
 # Custom for Visual Studio
 *.cs     diff=csharp
 
