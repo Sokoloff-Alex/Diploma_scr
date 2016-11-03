@@ -6,7 +6,10 @@ function [V_pred] = solve_LSC(lat0, long0, lat, long, Vn, Ve, fType, varargin)
 %               Ve Vn       - velocity components
 %               fType       - approx. function type ('exp1', 'Hirvonen' or 'exp2')
 %               varargin    - 'plot' to plot covariance functions
-%                           - '-v' verbose mode           
+%                           - '-v' verbose mode
+%                           - 'bias' add bias for better fitting
+%                           - 'tail' add last data point to tail
+%			    - 'tail 0' add zeros to tail            
 % output  :     V_pred      - interpolated / predicted velocity vector
 %
 % Example :
