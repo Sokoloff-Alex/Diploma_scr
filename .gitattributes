@@ -4,8 +4,40 @@
 # Custom for Matlabatlab
 *.m 	diff=matlab
 
-# Custom for Visual Studio
-*.cs     diff=csharp
+# Matlab binaries
+*.mlx -crlf -diff -merge
+*.mat -crlf -diff -merge
+*.fig -crlf -diff -merge
+*.p   -crlf -diff -merge
+*.slx -crlf -diff -merge
+*.mdl -crlf -diff -merge
+
+# Bernese files
+*.SNX diff=text
+*.CRD diff=text
+*.VEL diff=text
+*.OUT diff=text
+*.PLT diff=text
+*.STA diff=text
+*.ABB diff=text
+*.CLU diff=text
+*.PLD diff=text
+*.ATL diff=text
+*.BLQ diff=text
+*.SIG diff=test
+
+# Other common text files
+*.cpt  diff=text
+*.dat  diff=text
+
+# Other common file types
+*.xlsx -crlf -diff -merge
+*.docx -crlf -diff -merge
+*.pdf  -crlf -diff -merge
+*.jpg  -crlf -diff -merge
+*.png  -crlf -diff -merge
+*.ps   -crlf -diff -merge
+*.grd  -crlf -diff -merge
 
 # Standard to msysgit
 *.doc	 diff=astextplain
@@ -18,3 +50,4 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
+*.txt  diff=astextplain
