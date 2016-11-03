@@ -27,7 +27,7 @@ p = length(lat);
 [x_EE, y_EE] = mean_No_NaN(Corr_EE);
 [x_NE, y_NE] = mean_No_NaN(Corr_NE);
 
-# x(1) = 0;
+% x(1) = 0;
 x_NN(2:end) = x_NN(e:end)*scale - scale/2;
 x_EE(2:end) = x_EE(2:end)*scale - scale/2;
 x_NE(2:end) = x_NE(2:end)*scale - scale/2;
