@@ -8,18 +8,21 @@
 clear all
 close all
 clc
+cd 'D:\Diploma_TUM\Matlab_dir\scr'
 
 %% Euler vector (see Alpen_plate.m)
 %            lat[deg], long[deg], [deg/yr]
 Omega_Eur = [55.9533, -97.4134,   2.6364e-07 ]';
 Orogen_Alp = importOrogen('dat/PB2002_orogen_Alps.txt');
 lwmask = struct2array(load('dat/lwmask25.mat'));
-[Z, refvec] = etopo('../MAP/etopo1_bed_c_f4/etopo1_bed_c_f4.flt', 1, [40 54], [-7 19]); % ETOPO
+
+[Z, refvec] = etopo('D:\Diploma_TUM/MAP/etopo1_bed_c_f4/etopo1_bed_c_f4.flt', 1, [40 54], [-7 19]); % ETOPO
 Adriatics = struct2array(load('dat/Adriatics.mat'));
 %
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
 
+%%
 flags = ALP_NET_CRD(:,7);
 range_flag_W = 1:length(flags);
 range_flag_W = range_flag_W(strcmp(flags, 'W') == 1);
@@ -37,7 +40,6 @@ DOMES = ALP_NET_CRD(range_flag,3);
 [CRD,VEL,names] = merge_stations(CRD,VEL,names);
 
 % remove Eurasia plate motion
-
 [Ve,Vn, Vu, lat, long,  h]  = XYZ2ENU(CRD,VEL);
 [V_res_xyz] = remove_plate_motion(CRD, VEL, Omega_Eur);
 [Ve_res, Vn_res, Vu_res] = XYZ2ENU(CRD,V_res_xyz); % NEU components, [m/yr m/yr m/yr]
@@ -113,7 +115,7 @@ if (length(names) ~= length(iSelected)) || ~isempty(iMissing);
     length(iChecked)
     names(r(ismember(names,All) == 0));
 else 
-    disp('All stations selected')
+    disp('No stations lost')
 end
 
 %% Estimate and remove block motion from ITRF
@@ -132,12 +134,12 @@ clear LatGrid LongGrid V_pred V_pred*
 clc
 tic
 range = 1:length(lat);
-Max_Dist = 300; % km
+Max_Dist = 150; % km
 lim = 10;
 p = 0;
-step = 1;
-for iLong = 6:step:10
-    for iLat =  44:step:49
+step = 0.25;
+for iLong = -4:step:18
+    for iLat =  42:step:53
 %         if ~lwmask((90-iLat)*4+1, wrapTo360(iLong)*4+1)
             arc = distance(iLat, iLong, lat, long) * 111 ; % km
             sel = range(arc < Max_Dist);    
@@ -162,14 +164,11 @@ for iLong = 6:step:10
                 p = p + 1; % point Number
 %               V_pred(p,:)   = solve_LSC_3(iLat, iLong, lat(sel), long(sel), Vn_res(sel), Ve_res(sel),  50,'no plot');   % LSC 
 %               V_pred(p,:)   = solve_LSC_alt(iLat, iLong, lat(sel), long(sel), Vn_res(sel),      Ve_res(sel) ,      'no plot');   % LSC 
-                V_pred_2(p,:) = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'exp1',     '-v', 'no corr', 'bias', 'tail')'/1000;   % LSC 
+                V_pred_2(p,:) = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'exp1', '-v', 'bias', 'tail 0', 'no corr')'/1000;   % LSC 
 %                 V_pred_3(p,:) = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'Hirvonen', '-v', 'no corr', 'refine')'/1000;   % LSC 
                 LatGrid(p,1)  = iLat;
                 LongGrid(p,1) = iLong;
             end
-%             else
-%                 disp(['point # ', num2str(p, '%-3d'), ' :: iLat = ', num2str(iLat,'%5.2f'),' iLong = ', num2str(iLong,'%5.2f'), ' skipped, no obs covered'])
-%             end
 %         else
 %             disp(['point # ', num2str(p, '%-3d'), ' :: iLat = ', num2str(iLat,'%5.2f'),' iLong = ', num2str(iLong,'%5.2f'), ' skipped, water'])
 %         end
@@ -180,7 +179,7 @@ t2 = toc
 
 %% Plot Results 2D map
 % clc
-s = 500;  % [mm/yr]
+s = 250;  % [mm/yr]
 try
     close (fig7)
 end
@@ -189,8 +188,8 @@ fig7 = figure(7);
 hold on
 xlim([-6 19])
 ylim([41 53])
-% xlim([-1 13])
-% ylim([42 50])
+% xlim([2 16])
+% ylim([43 49])
 geoshow(Z, refvec, 'DisplayType', 'texturemap');
 demcmap(Z);
 cptcmap('Europe')
@@ -198,31 +197,22 @@ cptcmap('Europe')
 plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
 plot(Adriatics(:,1),Adriatics(:,2) , '--k')
 quiver(long(Selected),lat(Selected),Ve_res(Selected)*s,Vn_res(Selected)*s, 0, 'r', 'lineWidth',1)
-% quiver(LongGrid,      LatGrid,      V_pred(:,1)*s,   V_pred(:,1)*s,    0, 'b', 'lineWidth',1)
 quiver(LongGrid,      LatGrid,      V_pred_2(:,2)*s,   V_pred_2(:,1)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-% quiver(LongGrid,      LatGrid,      V_pred_3(:,2)*s,   V_pred_3(:,1)*s,    0, 'Color',clr(2,:), 'lineWidth',1)
-
-ellipce_2D([km2deg(Max_Dist,6378*cosd(iLat)), Max_Dist/111], 0, [iLong, iLat], 1)
-% quiver(LongGrid,      LatGrid,      Ve_pred_2_stack*s,   Vn_pred_2_stack*s,    0, 'Color',clr(2,:), 'lineWidth',1)
-% plot(LongGrid,      LatGrid, 'ok') 
-% plot(long(sel), lat(sel), 'ok')
+% ellipce_2D([km2deg(Max_Dist,6378*cosd(iLat)), Max_Dist/111], 0, [iLong, iLat], 1)
 title('velocity field / deformation model') 
 xlabel('Velocity EW, [mm/yr]')
 ylabel('Velocity SN, [mm/yr]')
 legend('Earth Coast','Alps Orogen boundary','Ardiatics','Residual velocity','LSC velocity','location','NorthWest')
-% for i = 1:length(LatGrid)
-%     ellipce_2D([km2deg(Max_Dist,6378*cosd(LatGrid(i))), Max_Dist/111], 0, [LongGrid(i), LatGrid(i)], 1)
-% end
 % impoly(gca, [Adriatics])
 grid on
 hold off
 
 %% save results
-Alps_deformation = [LongGrid, LatGrid, Ve_pred_2_stack, Vn_pred_2_stack];
-name = 'Alps_deformation_0.25x0.25_no_correlaion';
-save(['dat/',name, '.mat'],'Alps_deformation');
+Alps_deformation = [LongGrid, LatGrid, V_pred_2(:,2), V_pred_2(:,1)];
+name = 'Alps_deformation_0.25x0.25_no_correlaion_3';
+save([name, '.mat'],'Alps_deformation');
 
-fileID = fopen(['../MAP/',name,'.txt'], 'w');
+fileID = fopen([name,'.txt'], 'w');
 headString = '  Long [deg],   Lat [deg],  Vel E [m/yr],  Vel N [m/yr] \n';
 formatStr = '%12.7f  %12.7f  %12.5f  %12.5f \n';
 fprintf(fileID, 'Deformation / Velocity field horizontal \n');
@@ -241,19 +231,3 @@ fclose(fileID);
 %    fprintf(fileID, '%12.7f  %12.7f \n',Adriatics(i,:) ); 
 % end
 % fclose(fileID);
-
-
-%%
-arc2 = zeros(length(lat));
-dist = [];
-for i = 1:length(lat)
-    arc2(i,:) = distance(lat(i), long(i), lat, long)*111';
-    dist = [dist, arc2(i,i+1:end)];
-end
-
-%%
-close all
-figure(1)
-hold on
-grid on
-hist(dist, floor(max(dist))/10)

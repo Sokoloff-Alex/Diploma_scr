@@ -28,8 +28,8 @@ D_roi = ceil(D_max/100)*100;
 nClasses = 4; % start with 5 classes
 scale = D_roi/(nClasses-2); 
 
-if scale > 150 % shrink scale if nessessary
-    scale = 150; 
+if scale > 50 % shrink scale if nessessary
+    scale = 50; 
     nClasses = ceil(D_roi/scale)+2;
 end
 

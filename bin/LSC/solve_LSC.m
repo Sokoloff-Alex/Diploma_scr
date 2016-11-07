@@ -27,9 +27,9 @@ p = length(lat);
 [x_EE, y_EE] = mean_No_NaN(Corr_EE);
 [x_NE, y_NE] = mean_No_NaN(Corr_NE);
 
-x_NN = x_NN*scale;
-x_EE = x_EE*scale;
-x_NE = x_NE*scale;
+x_NN(2:end) = x_NN(2:end)*scale - scale/2;
+x_EE(2:end) = x_EE(2:end)*scale - scale/2;
+x_NE(2:end) = x_NE(2:end)*scale - scale/2;
 
 if y_NE(1) < 0
     b_NE =  -abs(max(y_NE));
@@ -62,9 +62,21 @@ end
 
 %% fit curves
 if ismember('bias', flags)
-    coeff_NN = fitCovar(fType, x_NN, y_NN + abs(min(y_NN)), [y_NN(1),-0.001]);
-    coeff_EE = fitCovar(fType, x_EE, y_EE + abs(min(y_EE)), [y_EE(1),-0.001]);
-    coeff_NE = fitCovar(fType, x_NE, y_NE + b_NE,           [y_NE(1),-0.001]);   
+    if min(y_NN) < 0
+        coeff_NN = fitCovar(fType, x_NN, y_NN + abs(min(y_NN)), [y_NN(1),-0.001]);
+    else
+        coeff_NN = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
+    end
+    
+    if min(y_EE) < 0
+        coeff_EE = fitCovar(fType, x_EE, y_EE + abs(min(y_EE)), [y_EE(1),-0.001]);
+    else
+        coeff_EE = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
+    end
+    
+    coeff_NE = fitCovar(fType, x_NE, y_NE + b_NE,           [y_NE(1),-0.001]);
+%     coeff_NE = fitCovar(fType, x_NE, y_NE,           [y_NE(1),-0.001]);
+    
 else
     coeff_NN = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
     coeff_EE = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
@@ -74,11 +86,15 @@ coeff_NN(1) = y_NN(1);
 coeff_EE(1) = y_EE(1);
 coeff_NE(1) = y_NE(1);
 
+% if abs(coeff_NE(2)) < 0.005
+%     coeff_NE(2) = -0.005;
+% end
+
 %% verbose mode
 if ismember('-v', flags)
     disp(['point ::', ... 
-          ' lat = ',num2str(lat0, '%5.2f'), ...
-          '; long = ',  num2str(long0,'%5.2f'), ...
+          '; lat = ',  num2str(lat0, '%5.2f'), ...
+          '; long = ', num2str(long0,'%5.2f'), ...
           ' # obs.: ', num2str(p), ...
           ' :: Cnn: b = ', num2str(coeff_NN(2), '%#7.4f'), ...
           ' :: Cee: b = ', num2str(coeff_EE(2), '%#7.4f'), ...
@@ -91,9 +107,11 @@ if ismember('plot', flags)
     figure
     hold on
     grid on
-    title(['point : lat ', num2str(lat0), ', long  ' num2str(long0), ...
-        ' # obs.: ', num2str(length(lat)), ' ; step = ', num2str(scale), ...
-        ' km', ';  # Classes ', num2str(nClasses)])
+    title( ['point :: lat ', num2str(lat0), ...
+        ' ; long  ',   num2str(long0),      ...
+        ' ; # obs.: ', num2str(length(lat)),...
+        ' ; step = ',  num2str(scale),      ...
+        ' km', ';  # Classes ', num2str(nClasses)] );
     pl1 = plot(x_NN, y_NN, 'o--b');
     pl2 = plot(x_EE, y_EE, 'o--r');
     pl3 = plot(x_NE, y_NE, 'o--g');  
@@ -105,28 +123,32 @@ if ismember('plot', flags)
     pl8 = plot(d, coeff_NN(1).*exp(-0.05*d), '--k');
 
     legend([pl4 pl5 pl6 pl7 pl8],['C_N_N C0 = ', num2str(coeff_NN(1),'%.2g'),  ...
-                                        ' b = ', num2str(coeff_NN(2),'%.2g')], ...
+                                        ' b = ', num2str(coeff_NN(2),'%.3g')], ...
                                  ['C_E_E C0 = ', num2str(coeff_EE(1),'%.2g'),  ...
-                                        ' b = ', num2str(coeff_EE(2),'%.2g')], ...
+                                        ' b = ', num2str(coeff_EE(2),'%.3g')], ...
                                  ['C_N_E  a = ', num2str(coeff_NE(1),'%.2g'),  ...
-                                        ' b = ', num2str(coeff_NE(2),'%.2g')], ...
+                                        ' b = ', num2str(coeff_NE(2),'%.3g')], ...
                                  ['stable: C(d) = ' num2str(coeff_NN(1),'%.2g'),  ...
                                         '*exp(',num2str(-0.005,'%.2g'),'*d)'],  ...
                                  ['deform: C(d) = ', num2str(coeff_NN(1),'%.2g'),  ...
                                         '*exp(', num2str(-0.05,'%.2g'),'*d)']);
      xlabel('Classes, (distance [km])')
      ylabel('Covariance')
-     hold off
 end
 
 %% histogram of distances
 if ismember('hist', flags)
-    figure(2)
-    hold on; grid on
-    hist(dist,nClasses)
-    title(['Histogram of baselines, # of sites: ', num2str(p)])
+    arc = zeros(p);
+    dist = [];
+    for i = 1:p
+        arc(:,i) = distance(lat(i), long(i), lat, long) * 111 ; % km
+        dist = [dist; arc(i:p,i)];
+    end
+    nelements = hist(ceil(dist/scale)*scale,length(x_NN));
+    b2 = bar(x_NN, nelements/max(nelements)*max([y_NN(1), y_EE(1), y_NE(1)]),0.4);
+    set(get(b2,'Children'),'FaceAlpha',0.2)
+    text(x_NN, nelements/max(nelements)*max([y_NN(1), y_EE(1), y_NE(1)]),num2str(nelements'))
     xlabel('Classes , [km]')
-    ylabel(' # of pairs')
     hold off
 end
 

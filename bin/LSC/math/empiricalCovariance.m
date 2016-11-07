@@ -20,7 +20,7 @@ elseif strcmp(functionName, 'Hirvonen') % y = C0 / (1 + (a/x)^2)
         
     C = coeffs(1) ./ ( 1 + ( d/coeffs(2)).^2 ); 
         
-elseif max(strcmp(functionName, {'exp2','normal'})) % y = C0 * exp(a*x^2)
+elseif max(strcmp(functionName, {'exp2','normal', 'Gaussian','gaussian'})) % y = C0 * exp(a*x^2)
     
     C = coeffs(1) .* exp( coeffs(2).*d.^2 );
         

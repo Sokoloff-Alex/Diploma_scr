@@ -13,13 +13,13 @@ Ve_test   = [2 1 3 3 1]';
 range = 1:length(lat_test);
 V_obs = [Vn_test; Ve_test];
 tic
-lim = 3;
-Max_Dist = 700;
+Max_Dist = 200;
+lim = 10;
 range = 1:length(lat_test);
 p = 0;
 clear V_pred_2 V_pred_3 V_pred_4 V_pred_5 LongGrid_3 LatGrid_3
-for iLong =  -5:10
-    for iLat = -2:7
+for iLong =  2
+    for iLat = 2
         arc = distance(iLat, iLong, lat_test, long_test) * 111 ; % km
         sel = range(arc < Max_Dist);  
         if length(sel) < lim % add more stations

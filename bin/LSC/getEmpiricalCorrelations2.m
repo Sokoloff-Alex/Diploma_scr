@@ -1,7 +1,7 @@
 function [Corr_NN, Corr_EE, Corr_NE, nClasses, scale] = getEmpiricalCorrelations2(lat, long, Vn, Ve)
 % COMPUTE CORRELATIONS
 % for minimum 7 classes, 0 (d=0), 0..1, 1..2, 2..3, ...
-% According to book: Observations and Leasts Squares, Mikhail, 1976
+% According to book: Observations and Leasts Squares, E. Mikhail, 1976
 % 
 % input:    lat, long   - velocity components in [deg]
 %           Vn, Ve      - velocity, preferably in ragne near to 1 to avoid singularity in LSC 
@@ -23,7 +23,7 @@ function [Corr_NN, Corr_EE, Corr_NE, nClasses, scale] = getEmpiricalCorrelations
 Vn_res = Vn;
 Ve_res = Ve;
 
-%% Search for max distanse, since R_roi is not actual after adding more stations
+% Search for max distanse, since R_roi is not actual after adding more stations
 p = length(lat);
 baselines = zeros(p);
 for i = 1:p
@@ -31,16 +31,16 @@ for i = 1:p
 end
 
 D_max = max(max(baselines));
-D_roi = ceil(D_max/100)*100;
+D_roi = ceil(D_max/50)*50;
 
-%% Adjust scale and number of classes
+% Adjust scale and number of classes
 nClasses = 6; % start with 5 classes
 scale = D_roi/(nClasses-2); 
 
-% if scale > 111 % shrink scale if nessessary
-%     scale = 111; 
-%     nClasses = ceil(D_roi/scale)+2;
-% end
+if scale > 50 % shrink scale if nessessary
+    scale = 50; 
+    nClasses = ceil(D_roi/scale)+2;
+end
 
 baselines = triu(baselines);
 pairs = (ceil(baselines/scale)); 
@@ -62,9 +62,9 @@ end
 
 % disp('done')
 
-%%
+%% mistaken
 
-% for i = 1:p mistaken
+% for i = 1:p 
 %     arc = distance(lat(i), long(i), lat(i:p), long(i:p))* 111 ; % km
 %     for c = 0:nClasses-1
 %         J = i:p;

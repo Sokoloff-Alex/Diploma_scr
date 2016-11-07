@@ -12,7 +12,7 @@ function [coeffs] = fitCovar(functionName, x, y, coeffs_apr)
 % Alexandr Sokolov, KEG
 % 01.11.2016
 
-if ismember(functionName, {'exp1', 'Hirvonen','normal', 'exp2'})
+if ismember(functionName, {'exp1', 'Hirvonen','normal','exp2','Gaussian','gaussian'})
     
     if strcmp(functionName, 'exp1')     % y = C0 * exp(a*x)
            coeffs = fitExp(coeffs_apr, x, y); 
@@ -22,8 +22,8 @@ if ismember(functionName, {'exp1', 'Hirvonen','normal', 'exp2'})
            coeffs = fitHirvonen(coeffs_apr, x, y); 
     end
     
-    if max(strcmp(functionName, {'exp2','normal'})) % y = C0 * exp(a*x^2) 
-           coeffs = fitExp2(coeffs_apr, x, y); 
+    if max(strcmp(functionName, {'exp2','normal', 'Gaussian','gaussian'})) % y = C0 * exp(a*x^2) 
+           coeffs = fitGaussian(coeffs_apr, x, y); 
     end    
     
 else

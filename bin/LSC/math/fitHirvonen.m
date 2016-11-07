@@ -6,6 +6,7 @@ function [bestx] = fitHirvonen(apriori, tdata,ydata)
 % intup  : x, y
 % output : [K0, a] 
 
+    apriori(2) = 50;
     fun = @(x)sseHirvonen(x,tdata,ydata);
     bestx = fminsearch(fun,apriori);
     bestx(2) = abs(bestx(2));
