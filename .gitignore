@@ -3,3 +3,5 @@ dat/
 plots/
 Results/
 STA/
+# ignore backup copy from lunux *~
+*~
