@@ -8,7 +8,6 @@
 clear all
 close all
 clc
-cd 'D:\Diploma_TUM\Matlab_dir\scr'
 
 %% Euler vector (see Alpen_plate.m)
 %            lat[deg], long[deg], [deg/yr]
@@ -16,7 +15,7 @@ Omega_Eur = [55.9533, -97.4134,   2.6364e-07 ]';
 Orogen_Alp = importOrogen('dat/PB2002_orogen_Alps.txt');
 lwmask = struct2array(load('dat/lwmask25.mat'));
 
-[Z, refvec] = etopo('D:\Diploma_TUM/MAP/etopo1_bed_c_f4/etopo1_bed_c_f4.flt', 1, [40 54], [-7 19]); % ETOPO
+[Z, refvec] = etopo('../../../../MAP/etopo1_bed_c_f4/etopo1_bed_c_f4.flt', 1, [40 54], [-7 19]); % ETOPO
 Adriatics = struct2array(load('dat/Adriatics.mat'));
 %
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
