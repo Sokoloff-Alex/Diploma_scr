@@ -68,13 +68,14 @@ for i = 1:1 %length(Lat1)
         %  L1c = 1/2 * (exx + eyy + e1);
         %  L2c = 1/2 * (exx + eyy - e1);
         
-%%
+% %%
 %         exx = 8.39;
 %         exy = 4.16;
 %         eyy = -1.26;
 %         L1 = 9.94;
 %         L2 = -2.8;
-%%
+% %%
+
         % Omega, Eigenwert 
         Omega1  = atand( -(exx - L1) / exy )
         %  Omega2 = atand( -(exy) / (eyy - L1) ); % omega1 + omega2 = 90 deg ! 
