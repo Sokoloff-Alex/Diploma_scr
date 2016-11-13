@@ -10,19 +10,19 @@ close all
 Vel = V_pred_2;
 
 %%
-Lat1    = LatGrid;
+Lat1  = LatGrid;
 Long1 = LongGrid;
 
-Lat2    = zeros(size(Lat1));
+Lat2  = zeros(size(Lat1));
 Long2 = zeros(size(Long1));
 
 for i = 1:length(Lat1)
-    Lat2(i)   = Lat1(i)    + km2deg(V_pred_2(i,1)/1000);
+    Lat2(i)   = Lat1(i) + km2deg(V_pred_2(i,1)/1000);
     Long2(i) = Long1(i) + km2deg(V_pred_2(i,2)/1000, 6378*cosd(Lat1(i)) );    
 end
 
 dx = Long2 - Long1; % [deg]
-dy = Lat2    - Lat1 ; % [deg]
+dy = Lat2  - Lat1 ; % [deg]
 
 %% Deformation tensor F
 clc
@@ -31,9 +31,9 @@ clear Strain lat1 long1
 p = 0;
 
 for i = 1:1 %length(Lat1)
-    fxx = (Lat2(i)  - Lat1(i))     /Lat1(i);
+    fxx = (Lat2(i)  - Lat1(i))  /Lat1(i);
     fyy = (Long2(i) - Long1(i)) / Long1(1);
-    fyx = dx(i) / (Lat1(i)   + dy(i));
+    fyx = dx(i) / (Lat1(i)  + dy(i));
     fxy = dy(i) / (Long1(i) + dx(i));
     F = [fxx fxy ; fyx, fyy];
     if det(F) <= 0
