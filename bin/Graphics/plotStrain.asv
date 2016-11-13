@@ -1,4 +1,4 @@
-function [pl1, pl2, pl3, pl4] = plotStrain(Strain, Long, Lat, scale)
+function [] = plotStrain(Strain, Long, Lat, scale)
 % funiction to plot Strain field on 2D plot
 %
 % input : Strain [Omega1, Lambda1, Lambga2] - data matrix for all points,
@@ -41,8 +41,8 @@ pl2 = quiver(Long, Lat, -dx_L1*scale, -dy_L1*scale, 0, 'b');
 
 pl3 = quiver(Long + dx_L2*scale, Lat + dy_L2*scale, -dx_L2*scale, -dy_L2*scale, 0, 'r');
 pl4 = quiver(Long - dx_L2*scale, Lat - dy_L2*scale, +dx_L2*scale, +dy_L2*scale, 0, 'r');
-% title('Strain field')
-% legend([pl1, pl3], 'major axis', 'minor axis')
+title('Strain field')
+legend([pl1, pl3], 'major axis', 'minor axis')
 
-% hold off
+hold off
 end

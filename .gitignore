@@ -5,3 +5,8 @@ Results/
 STA/
 # ignore backup copy from lunux *~
 *~
+
+# ignore Autosave *.asv
+*.asv
+
+
