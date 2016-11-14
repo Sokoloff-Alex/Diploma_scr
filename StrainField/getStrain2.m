@@ -11,7 +11,7 @@ x2 = point2(1);
 y2 = point2(2);
 
 %
-dx = ged2km(x2-x1, (y1+y2)/2);
+dx = deg2km(x2-x1, (y1+y2)/2);
 dy = deg2km(y2-y1);
 dvx = vel2(1) - vel1(1);
 dvy = vel2(2) - vel1(2);
