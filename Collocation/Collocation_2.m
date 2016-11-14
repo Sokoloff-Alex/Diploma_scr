@@ -15,7 +15,7 @@ Omega_Eur = [55.9533, -97.4134,   2.6364e-07 ]';
 Orogen_Alp = importOrogen('dat/PB2002_orogen_Alps.txt');
 lwmask = struct2array(load('dat/lwmask25.mat'));
 
-[Z, refvec] = etopo('../../../../MAP/etopo1_bed_c_f4/etopo1_bed_c_f4.flt', 1, [40 54], [-7 19]); % ETOPO
+[Etopo_Europe, refvec_Etopo] = etopo('../../../../MAP/etopo1_bed_c_f4/etopo1_bed_c_f4.flt', 1, [40 54], [-7 19]); % ETOPO
 Adriatics = struct2array(load('dat/Adriatics.mat'));
 %
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
@@ -189,8 +189,8 @@ xlim([-6 19])
 ylim([41 53])
 % xlim([2 16])
 % ylim([43 49])
-geoshow(Z, refvec, 'DisplayType', 'texturemap');
-demcmap(Z);
+geoshow(Etopo_Europe, refvec_Etopo, 'DisplayType', 'texturemap');
+demcmap(Etopo_Europe);
 cptcmap('Europe')
 % Earth_coast(2)
 plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')

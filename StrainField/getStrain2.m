@@ -1,5 +1,6 @@
-function Strain = getStrain2(point1, vel1, point2, vel2)
+function [Strain] = getStrain2(point1, vel1, point2, vel2)
 % compute strain field
+% Normal strain and Shear Strain b/w 2 points
 %
 % Alexandr Sokolov, KEG
 % 14.11.2016
@@ -25,12 +26,12 @@ fyy = F(2,2);
 fxy = F(1,2);
 fyx = F(2,1);
     
-    
 %%  Rotation matrix R, Antisymmetric part
-% R = 1/2 * (F - F')
+%   R = 1/2 * (F - F')
 w = (fyx - fxy)/2;
 
-%%  Strain Tensor E,  E = 1/2*(F + F')  = [exx exy; eyx, eyy]; Symmetric part
+%%  Strain Tensor E, Symmetric part
+%   E = 1/2 * (F + F')
 E =  [fxx   , fxy+w; 
       fyx-w,  fyy ];
 exx = E(1,1);
@@ -38,20 +39,21 @@ eyy = E(2,2);
 exy = E(1,2); % = eyx
 
 %% Principal Normal Strain
-e1 = (exx + eyy)/2 + sqrt( 1/4*(exx-eyy)^2 + exy^2 );
-e2 = (exx + eyy)/2 - sqrt( 1/4*(exx-eyy)^2 + exy^2 );
+% solve for: det([exx-n, exy; eyx, eyy-n]) == 0! ;
+n1 = (exx + eyy)/2 + sqrt( 1/4*(exx-eyy)^2 + exy^2 );
+n2 = (exx + eyy)/2 - sqrt( 1/4*(exx-eyy)^2 + exy^2 );
 
-alpha_e1 = 1/2 * atand(2*exy/(exx-eyy)); % alpha_e2 = alpha_e1 + 90;
+alpha_n1 = 1/2 * atand(2*exy/(exx-eyy)); % alpha_n2 = alpha_n1 + 90;
 
-NormalStrain(i,:) = [e1, e2, alpha_e1];
+NormalStrain = [n1, n2, alpha_n1];
 
 %% Principal Shear Strain
-s1 = + sqrt( 1/4*(exx-eyy)^2 + exy^2 );
+s1 = + sqrt( 1/4*(exx-eyy)^2 + exy^2 ); % Only interesting in positive!
 s2 = - sqrt( 1/4*(exx-eyy)^2 + exy^2 );
 
 alpha_s1 = 1/2 * atand( -(exx-eyy)/(2*exy)); % alpha_s2 = alpha_s1 + 90;
 
-ShearStrain(i,:) = [s1, s2, alpha_s1];
+ShearStrain = [s1, s2, alpha_s1];
 
 %%
 Strain = [NormalStrain, ShearStrain];

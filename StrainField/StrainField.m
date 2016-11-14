@@ -4,24 +4,23 @@ close all
 clear all
 clc
 
-%% load defomation
-Deformation = struct2array(load('dat/Alps_deformation_0.25x0.25_no_correlaion_3.mat'));
-% [Z, refvec] = etopo('MAP/etopo1_bed_c_f4/etopo1_bed_c_f4.flt', 1, [40 54], [-7 19]); % ETOPO
+%% load deformation
+DeformationField = struct2array(load('dat/Alps_deformation_0.25x0.25_no_correlaion_3.mat'));
+load('../dat/ETOPO_Alps.mat');
 
-Vel = Deformation(:,[3,4]);
-LongGrid = Deformation(:,1);
-LatGrid  = Deformation(:,2);
+Vel = DeformationField(:,[3,4]);
+LongGrid = DeformationField(:,1);
+LatGrid  = DeformationField(:,2);
 
 %%
 close all
 s = 100;
-Strain = getStrain(Deformation);
+Strain = getStrain(DeformationField);
 figure(1)
 hold on; grid on; axis equal
 quiver(LongGrid, LatGrid, Vel(:,1)*s, Vel(:,2)*s, 0, 'k');
 % plotStrain(Strain.NormalStrain, Strain.Grid(:,1), Strain.Grid(:,2), 100*1000*1000);
 plotStrain(Strain.ShearStrain, Strain.Grid(:,1), Strain.Grid(:,2), 50*1000*1000);
-
 
 
 %%
@@ -117,9 +116,9 @@ s = 100;  % [mm/yr]
 figure(1)
 hold on; grid on
 axis equal
-% geoshow(Z, refvec, 'DisplayType', 'texturemap');
-% demcmap(Z);
-% cptcmap('Europe')
+geoshow(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo, 'DisplayType', 'texturemap');
+demcmap(ETOPO_Alps.Etopo_Europe);
+cptcmap('Europe')
 % Earth_coast(2)
 xlim([-2 18])
 ylim([42 50])
