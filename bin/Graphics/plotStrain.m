@@ -1,7 +1,7 @@
 function [pl1, pl2, pl3, pl4] = plotStrain(Strain, Long, Lat, scale)
 % funiction to plot Strain field on 2D plot
 %
-% input : Strain [Omega1, Lambda1, Lambga2] - data matrix for all points,
+% input : Strain [Lambda1, Lambga2, Omega1] - data matrix for all points,
 % Omega in [deg]
 %                   
 %         Long, Lat       - coord-s, of points
@@ -15,9 +15,9 @@ function [pl1, pl2, pl3, pl4] = plotStrain(Strain, Long, Lat, scale)
 % Alexandr Sokolov, DGFI
 % 07.11.2016
 
-Omega   = Strain(:,1);
-Lambda1 = Strain(:,2);
-Lambda2 = Strain(:,3);
+Lambda1 = Strain(:,1);
+Lambda2 = Strain(:,2);
+Omega   = Strain(:,3);
 
 %% convert data to quiver plot
 % main axis:

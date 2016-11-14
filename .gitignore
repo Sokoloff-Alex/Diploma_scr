@@ -3,10 +3,11 @@ dat/
 plots/
 Results/
 STA/
+
 # ignore backup copy from lunux *~
 *~
 
-# ignore Autosave *.asv
+# ignore MATLAB Autosave file *.asv
 *.asv
 
 
