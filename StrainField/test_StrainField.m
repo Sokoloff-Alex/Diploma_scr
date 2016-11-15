@@ -5,8 +5,8 @@ clear all
 clc
 %%
 clc
-x1 = [0 1 2 0 1 2 0 1 2]' + 1;
-y1 = [0 0 0 1 1 1 2 2 2]' + 1;
+x1 = [0 1 2 0 1 2 0 1 2]'+4;
+y1 = [0 0 0 1 1 1 2 2 2]'+1;
 
 x2 = x1 + [0 0.01 0.01 0.01 0.02 0.03 0.05 0.05 0.07]';
 y2 = y1 + [0 0.01 0.01 0.01 0.02 0.03 0.05 0.05 0.08]'*3;
@@ -21,7 +21,7 @@ hold on; grid on; axis equal
 plot(x1,y1,'ok')
 plot(x2,y2,'or')
 quiver(x1,y1, vel(:,1),vel(:,2),'k')
-plot(grid2vector(Strain_test(:,:,7)), grid2vector(Strain_test(:,:,8)), 'x')
+plot(grid2vector(Strain_test(:,:,7)), grid2vector(Strain_test(:,:,8)), '*')
 % plotStrain(Strain_test.NormalStrain,Strain_test.Grid(:,1),Strain_test.Grid(:,2),500*1000);
 plot(x1(1:3),y1(1:3),'--k')
 plot(x1(4:6),y1(4:6),'--k')
