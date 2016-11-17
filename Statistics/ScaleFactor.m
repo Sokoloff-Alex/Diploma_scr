@@ -5,7 +5,7 @@ clear all
 clc
 
 %%
-SINEX = readSNX('Velocity_field/FMC_IGB_W7.SNX');
+SINEX = readSNX('STA/FMC_IGB_W7.SNX');
 Lat = SINEX.SITE.ID.LAT;
 Lon = SINEX.SITE.ID.LON;
 CRD = SINEX.SOLUTION.ESTIMATE.Data.CRD;
@@ -20,7 +20,7 @@ SiteDome_list = cellstr(SiteDome);
 
 clc
 SiteDome_list_test = SiteDome_list(1:20);
-[rmsENU(:,2), rmsENU(:,1), rmsENU(:,3), Sites] = get_PLT_residuals('Velocity_field/FMC_IGB_W7.PLT', SiteDome_list);
+[rmsENU(:,2), rmsENU(:,1), rmsENU(:,3), Sites] = get_PLT_residuals('STA/FMC_IGB_W7.PLT', SiteDome_list);
 
 %%
 find(strcmp(SiteDome_list,'GRAS GRASigb03'))

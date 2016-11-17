@@ -90,16 +90,7 @@ coeff_NE(1) = y_NE(1);
 %     coeff_NE(2) = -0.005;
 % end
 
-%% verbose mode
-if ismember('-v', flags)
-    disp(['point ::', ... 
-          '; lat = ',  num2str(lat0, '%5.2f'), ...
-          '; long = ', num2str(long0,'%5.2f'), ...
-          ' # obs.: ', num2str(p), ...
-          ' :: Cnn: b = ', num2str(coeff_NN(2), '%#7.4f'), ...
-          ' :: Cee: b = ', num2str(coeff_EE(2), '%#7.4f'), ...
-          ' :: Cne: b = ', num2str(coeff_NE(2), '%#7.4f') ]);
-end
+
 
 %% plot Covariance functions, y=a*exp(b*d)
 d = (0:(max(x_NN)/100):max(x_NN));
@@ -162,12 +153,12 @@ C_new_NE = zeros(p,1);
 
 for i = 1:p
    for j = 1:p
-       d = distance(lat(i), long(i), lat(j), long(j)) * 111 ; % km
+       d = greatcircleArc(lat(i), long(i), lat(j), long(j)) * 111 ; % km
        C_obs_NN(i,j) = empiricalCovariance(fType, coeff_NN, d);
        C_obs_EE(i,j) = empiricalCovariance(fType, coeff_EE, d);
        C_obs_NE(i,j) = empiricalCovariance(fType, coeff_NE, d);
    end
-   d = distance(lat0, long0, lat(i), long(i)) * 111 ; % km  
+   d = greatcircleArc(lat0, long0, lat(i), long(i)) * 111 ; % km  
    C_new_NN(i,1) = empiricalCovariance(fType, coeff_NN, d);
    C_new_EE(i,1) = empiricalCovariance(fType, coeff_EE, d);
    C_new_NE(i,1) = empiricalCovariance(fType, coeff_NE, d);
@@ -199,5 +190,18 @@ V_obs = [Vn; Ve];
 
 % Solve LSC
 V_pred = C_new' * C_obs^-1 * V_obs;
+
+%% verbose mode
+if ismember('-v', flags)
+    disp(['point ::', ... 
+          '; lat = ',  num2str(lat0, '%5.2f'), ...
+          '; long = ', num2str(long0,'%5.2f'), ...
+          ' # obs.: ', num2str(p), ...
+          ' :: Cnn: b = ', num2str(coeff_NN(2), '%#7.4f'), ...
+          ' :: Cee: b = ', num2str(coeff_EE(2), '%#7.4f'), ...
+          ' :: Cne: b = ', num2str(coeff_NE(2), '%#7.4f'), ...
+          '; Vn = ', num2str(V_pred(1), '%#+7.4f'), ...
+          '; Ve = ', num2str(V_pred(2), '%#+7.4f') ]);
+end
 
 end

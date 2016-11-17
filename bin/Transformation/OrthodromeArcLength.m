@@ -18,6 +18,8 @@ lon2  = deg2rad(long2);
 
 ArcLength = acosd(sin(lat1).*sin(lat2) + cos(lat1).*cos(lat2).*cos(lon2-lon1));
 
+ArcLength = real(ArcLength); % sometimes have Im component for i = j, lat1 = lat2, long1 = long2;
+
 azim = atan2d( cos(lat2) .* sin(lon2 - lon1),...
                cos(lat1) .* sin(lat2) - sin(lat1) .* cos(lat2) .* cos(lon2-lon1) );
 

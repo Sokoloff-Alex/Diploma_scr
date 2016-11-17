@@ -27,7 +27,7 @@ Ve_res = Ve;
 p = length(lat);
 baselines = zeros(p);
 for i = 1:p
-    baselines(:,i) = distance(lat(i), long(i), lat, long) * 111 ; % km
+    baselines(:,i) = greatcircleArc(lat(i), long(i), lat, long) * 111 ; % km
 end
 
 D_max = max(max(baselines));

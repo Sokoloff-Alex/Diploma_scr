@@ -14,10 +14,12 @@ function [Ve,Vn, Vu, lat,lon, h] = XYZ2ENU(CRD,VEL)
     Vu  = zeros(len,1);
     lat = zeros(len,1);
     lon = zeros(len,1);
+    h   = zeros(len,1);
       
     for i=1:len
 
-            [lat(i),lon(i),h(i)] = ecef2geodetic(X(i),Y(i),Z(i),referenceEllipsoid('wgs84'));
+%             [lat(i),lon(i),h(i)] = ecef2geodetic(X(i),Y(i),Z(i),referenceEllipsoid('wgs84'));
+            [lat(i),lon(i),h(i)] = ecef2llh(X(i),Y(i),Z(i));
 
             R = [-sin(lon(i))               cos(lon(i))                0
                  -cos(lon(i))*sin(lat(i))  -sin(lon(i))*sin(lat(i))   cos(lat(i))
