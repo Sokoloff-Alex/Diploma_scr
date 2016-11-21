@@ -24,7 +24,7 @@ load('Validation/FranceVELtable.mat')
 FRvel = FranceVELtable;
 clear FranceVELtable;
 
-%% Interpolate at France sites ALP_NET velocities to compare
+%% Interpolate ALP_NET velocities at France sites, to compare
 clc
 tic
 p = length(FRvel.Lat);
