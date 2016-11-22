@@ -17,11 +17,11 @@ function [Corr_NN, Corr_EE, Corr_NE, nClasses, scale] = getEmpiricalCorrelations
 % 27.10.2016
 
 
-% Vn_res = Vn - mean(Vn);
-% Ve_res = Ve - mean(Ve);
+Vn_res = Vn - mean(Vn);
+Ve_res = Ve - mean(Ve);
 
-Vn_res = Vn;
-Ve_res = Ve;
+% Vn_res = Vn;
+% Ve_res = Ve;
 
 % Search for max distanse, since R_roi is not actual after adding more stations
 p = length(lat);

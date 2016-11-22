@@ -186,10 +186,12 @@ C_new = [C_new_NN, C_new_NE; ...
          C_new_NE, C_new_EE];
      
 % Observations  
-V_obs = [Vn; Ve];
+V_obs = [Vn - mean(Vn); Ve - mean(Ve)];
 
 % Solve LSC
 V_pred = C_new' * C_obs^-1 * V_obs;
+
+V_pred = V_pred + [mean(Vn); mean(Ve)];
 
 %% verbose mode
 if ismember('-v', flags)

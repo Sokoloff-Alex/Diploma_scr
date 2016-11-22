@@ -1,6 +1,13 @@
-function [] = ellipce_2D(sigmas, azimuth, origin, scale)
+function [] = ellipce_2D(sigmas, azimuth, origin, scale, varargin)
 % ellipses 2D 
 
+if isempty(varargin)
+    clr = [0.5 0.5 0.5];
+else
+    clr = varargin{1};
+end
+    
+    
 if sigmas(1) == 0
    sigmas(1) = 0.00001; 
 end
@@ -37,7 +44,7 @@ R = [cosd(azimuth) -sind(azimuth)
      xy(i,:) = R*[X(i); Y(i)] + origin';
  end
 
-plot(xy(:,1), xy(:,2),'-', 'Color',[0.5 0.5 0.5]);
+plot(xy(:,1), xy(:,2),'-', 'Color',clr);
 hold on
 
 end

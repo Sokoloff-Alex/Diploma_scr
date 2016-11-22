@@ -11,14 +11,27 @@ function [SINEX] = readSNX(filename)
 % clc
 % 
 tic
-% filename='Velocity_field/FMC_IGB_W7.SNX'
 
+% check if file exist
 
+if exist(filename, 'file') ~= 2
+    disp(['ERROR, File not found: ',filename])
+else
+    fullpath = which(filename);
 
-%%
+%% Blocks in SINEX file 
 
-SOLUTION = struct('STATISTICS', [], 'EPOCHS',   [], 'ESTIMATE',[], 'APRIORI',[], 'COVA_ESTIMATE',  [], 'COVA_APRIORI',[]);
-SITE     = struct('ID',[], 'RECEIVER', [], 'ANTENNA', [], 'GPS_PHASE_CENTER', [], 'ECCENTRICITY',  []);
+SOLUTION = struct('STATISTICS', [], ...
+                  'EPOCHS', [], ...
+                  'ESTIMATE', [], ...
+                  'APRIORI', [], ...
+                  'COVA_ESTIMATE', [], ...
+                  'COVA_APRIORI', []);
+SITE     = struct('ID', [], ...
+                  'RECEIVER', [], ...
+                  'ANTENNA', [], ...
+                  'GPS_PHASE_CENTER', [], ...
+                  'ECCENTRICITY', []);
 
 %%
 
@@ -40,18 +53,30 @@ DataType = {'FILE/REFERENCE';
             'SOLUTION/MATRIX_ESTIMATE L COVA';
             'SOLUTION/MATRIX_APRIORI L COVA'};
         
-%%
-for iData = [3:11]
-    [status, StartEndLines]= system(['grep --line-number "',DataType{iData},'" ',filename,' | cut -f1 -d:']);
+%% Parsing
+for iData = [3:13]
+    [status, StartEndLines]= system(['grep --line-number "',DataType{iData},'" ', fullpath,' | cut -f1 -d:']);
+    if (status ~= 0) % 0 = successful
+        disp(['Error: status :', numn2str(status)]);
+    end
+    
     StartEndLine = str2num(StartEndLines(1,:));
     StartLine = StartEndLine(1);
     EndLine = StartEndLine(2);
     Len = EndLine - StartLine + 1;
-    system(['tail -n +', num2str(StartLine), ' ', filename,'| head -',num2str(Len),' > Results/tmp.txt' ]);
+    tmpFile = 'tmp.txt';
+    
+    %disp(                     ['tail -n +', num2str(StartLine), ' "', fullpath,'" | head -',num2str(Len),' > ', tmpFile ])
+    [status, cmdout] = system(['tail -n +', num2str(StartLine), ' "', fullpath,'" | head -',num2str(Len),' > ', tmpFile ]);
+    %disp(['status: ', num2str(status), ' ; cmdout: ',cmdout]);
+    
+    if exist(tmpFile, 'file') ~= 2
+       disp('Error: tmp file is not written!') 
+    else
     
     % ------ parse statistics ------------
      if iData == 3 
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
         line = fgetl(fileID);
@@ -68,14 +93,19 @@ for iData = [3:11]
         VarianceFactor = str2double(line(33:54));
         disp(fgetl(fileID));
         fclose(fileID);
-        STATISTICS = struct('ObsNum',ObsNum,'UnknNum',UnknNum,'DoFNum',DoFNum,'PhaseSigma',PhaseSigma,'Sampling',Sampling,'VarianceFactor',VarianceFactor);    
+        STATISTICS = struct('ObsNum', ObsNum, ...
+                            'UnknNum',UnknNum, ...
+                            'DoFNum', DoFNum, ...
+                            'PhaseSigma', PhaseSigma, ...
+                            'Sampling', Sampling, ...
+                            'VarianceFactor', VarianceFactor);    
         SOLUTION.STATISTICS = STATISTICS;
      end
     % ------ parsing of statintics end ---
     
     % ------ parse site id --------------- ok
      if iData == 4 
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
         SiteName    = repmat(char(0),Len-3,4);
@@ -105,7 +135,8 @@ for iData = [3:11]
         end
         disp(fgetl(fileID));
         fclose(fileID);
-        ID = struct('CODE',SiteName,'PT',PT,'DOMES',DOMES,'T',T,'DESCRIPTION',DESCRIPTION,'LAT',Lat,'LON',Lon,'H',H);
+        ID = struct('CODE',SiteName,'PT',PT,'DOMES',DOMES,'T',T, ...
+            'DESCRIPTION',DESCRIPTION,'LAT',Lat,'LON',Lon,'H',H);
         SITE.ID = ID;
      end
     % ------ parsing of site id end ------
@@ -121,7 +152,7 @@ for iData = [3:11]
         Receiver    = repmat(char(0),Len-3,20);
         SN          = repmat(char(0),Len-3,5);
         Firmware    = repmat(char(0),Len-3,11);
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
         for iRow = 1:Len-3
@@ -138,7 +169,9 @@ for iData = [3:11]
         end
         disp(fgetl(fileID));
         fclose(fileID);
-        RECEIVER = struct('CODE',SiteName,'PT',PT,'SolN',SolN,'T',T,'DATA_START',DATA_START,'DATA_END',DATA_END,'Receiver',Receiver,'SN',SN,'Firmware',Firmware);
+        RECEIVER = struct('CODE',SiteName,'PT',PT,'SolN',SolN,'T',T, ...
+            'DATA_START',DATA_START,'DATA_END',DATA_END, ...
+            'Receiver',Receiver,'SN',SN,'Firmware',Firmware);
         SITE.RECEIVER = RECEIVER;
         end
     % ----- parsing reseiver end ---------
@@ -153,7 +186,7 @@ for iData = [3:11]
         DATA_END    = repmat(char(0),Len-3,12);
         Antenna     = repmat(char(0),Len-3,20);
         SN          = repmat(char(0),Len-3,5);
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
         for iRow = 1:Len-3
@@ -169,14 +202,16 @@ for iData = [3:11]
         end
         disp(fgetl(fileID));
         fclose(fileID);
-        ANTENNA = struct('CODE',SiteName,'PT',PT,'SolN',SolN,'T',T,'DATA_START',DATA_START,'DATA_END',DATA_END,'Antenna',Antenna,'SN',SN);
+        ANTENNA = struct('CODE',SiteName,'PT',PT,'SolN',SolN,'T',T, ...
+            'DATA_START',DATA_START,'DATA_END',DATA_END, ...
+            'Antenna',Antenna,'SN',SN);
         SITE.ANTENNA= ANTENNA;
      end
     % ----- parsing Antenna end ---------
 
     % ------ parsing GPS Phase Center ------------
      if iData == 7
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID));
         disp(fgetl(fileID));
@@ -201,14 +236,15 @@ for iData = [3:11]
         end
         disp(fgetl(fileID));
         fclose(fileID);
-        GPS_PHASE_CENTER = struct('Antenna',Antenna,'SN',SN,'L1_PCO',L1_PCO,'L2_PCO',L2_PCO,'Comment',Comment);
+        GPS_PHASE_CENTER = struct('Antenna',Antenna,'SN',SN, ...
+            'L1_PCO',L1_PCO,'L2_PCO',L2_PCO,'Comment',Comment);
         SITE.GPS_PHASE_CENTER = GPS_PHASE_CENTER;
      end
     % ----- parsing Phase Center end ---------
     
     % ------ parsing ECCENTRICITY ------------
     if iData == 8
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID));
         disp(fgetl(fileID));
@@ -236,14 +272,20 @@ for iData = [3:11]
         end
         disp(fgetl(fileID));
         fclose(fileID);
-        ECCENTRICITY = struct('CODE',SiteName,'PT',PT,'SolN',SolN,'T',T,'DATA_START',DATA_START,'DATA_END',DATA_END,'Ecc_UNE',Ecc_UNE);
+        ECCENTRICITY = struct(  'CODE',SiteName,...
+                                'PT',PT,...
+                                'SolN',SolN,...
+                                'T',T, ...
+                                'DATA_START',DATA_START,...
+                                'DATA_END',DATA_END,...
+                                'Ecc_UNE',Ecc_UNE);
         SITE.ECCENTRICITY = ECCENTRICITY;
     end
     % ----- parsing ECCENTRICITY end ---------
     
     % ------ parse solution epochs ------- ok
      if iData == 9 
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
         SiteName    = repmat(char(0),Len-3,4);
@@ -263,14 +305,19 @@ for iData = [3:11]
         end
         disp(fgetl(fileID));
         fclose(fileID);
-        EPOCHS = struct('CODE',SiteName,'PT',PT,'SolN',SolN,'DATA_START',DATA_START,'DATA_END',DATA_END,'MEAN_EPOCH',MEAN_EPOCH);
+        EPOCHS = struct('CODE',SiteName, ...
+                        'PT',PT, ...
+                        'SolN',SolN, ...
+                        'DATA_START',DATA_START, ...
+                        'DATA_END',DATA_END, ...
+                        'MEAN_EPOCH',MEAN_EPOCH);
         SOLUTION.EPOCHS = EPOCHS;
      end
     % ------ parse solution epochs end----
 
     % ------ parse crd and vel ----------- 
     if iData == 10 || iData == 11 %%  parse CRD and VEL matrix 
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
         NumberOfEntries = (Len-3)/6;       
@@ -298,8 +345,10 @@ for iData = [3:11]
             VEL_table(iBlock,:) = Value(4:6); 
             VEL_STD_table(iBlock,:) = Std_dev(4:6);
             
-            Data = struct('CRD', CRD_table, 'VEL', VEL_table, 'CRD_STD', CRD_STD_table, 'VEL_STD', VEL_STD_table);
-            Records = struct('NumberOfStations', {NumberOfEntries}, 'StationData', {StationData}, 'Data', Data);
+            Data = struct('CRD', CRD_table, 'VEL', VEL_table, ...
+                'CRD_STD', CRD_STD_table, 'VEL_STD', VEL_STD_table);
+            Records = struct('NumberOfStations', {NumberOfEntries}, ...
+                'StationData', {StationData}, 'Data', Data);
         end
         disp(fgetl(fileID));
         fclose(fileID);
@@ -315,7 +364,7 @@ for iData = [3:11]
      
     % -----  parse covarianse matrix ------
     if iData == 12 || iData == 13     
-        fileID = fopen('Results/tmp.txt');
+        fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID));
         CovMat = nan(1764);
@@ -342,8 +391,14 @@ for iData = [3:11]
     % ------- parse covarianse matrix end --------
 end
 
+end
+end
+
 
 SINEX = struct('SITE', SITE,'SOLUTION',SOLUTION );
+
+% rm tmp.txt file
+system(['rm ',tmpFile]);
 
 disp('Done')
 

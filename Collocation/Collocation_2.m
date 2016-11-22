@@ -64,8 +64,8 @@ Alps_C     = {'JUVI','JOUX','ZIMM','ZIM2','DEVE','CARZ', ...
               'COMO','PORA','BART','KRBG'};
 Alps_W     = {'BURE','GUIL','JANU','PUYA','ALPE','CHAM','MODA', ...
               'CHTL','STEY','AGNE','ROSD','FCLZ','TRES'};
-Alps_NE    = {'TRFB','TRF2','SPRN','ROHR','RIED','LINZ', ...
-              'WELS','GMND','SBG2','SBGZ','WART','HRIE','FAHR','OBE2', ...
+Alps_NE    = {'TRFB','TRF2','SPRN','RIED','LINZ', ...
+              'WELS','GMND','SBG2','SBGZ','WART','HRIE','FAHR', ...
               'OBE4','BREI','HGRA','PFAN','PFA2','KTZB','KTZ2'};
 Alps_E     = {'BOSC','ROVE','MOCA','FDOS','BZRG','MITT','VERN','KRGB', ...
               'HFL2','HFLK','PAT2','PATK','AFAL','ELMO','VARM'};
@@ -77,7 +77,7 @@ Apennines  = {'UNPG','IGMI','PRAT'};
 Apennines_W= {'POGG','PARO','GENO','AJAC'};
 Adriatic   = {'CAME','MEDI','BOLG','MOPS','ZADA','PORE','GARI'};
 Adriatic_W = {'TORI','IENG','OATO'};
-Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND'};
+Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', 'ROHR'};
 
 Stable = [Germany, Franse_N, Franse_S];
 
@@ -113,6 +113,7 @@ if (length(names) ~= length(iSelected)) || ~isempty(iMissing);
     length(names)
     length(iChecked)
     names(r(ismember(names,All) == 0));
+    disp('Error')
 else 
     disp('No stations lost')
 end

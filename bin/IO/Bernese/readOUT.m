@@ -1,18 +1,32 @@
 function [Stations, Radoms, Records] = readOUT(filename)
-%%  
+% Parse *.OUT file from Bernese   
+% exctract only crd/vel information table
+%
+% Alexandr Sokolo, KEG
+% 2016
+
+tmpFile = 'tmp.txt'; 
+
+if exist(filename, 'file') ~= 2
+    disp(['ERROR, File not found: ',filename])
+else
+    fullpath = which(filename);
+
+
 % Extract part of file 
 
-if exist(filename, 'file')
+
+if exist(fullpath, 'file')
     % File exists.  Do stuff....
     %filename = 'Results/FCSIGSB.OUT';
-    disp(['Parsing ', filename, ' ...']);
+    disp(['Parsing ', fullpath, ' ...']);
     [status, StartLine]= system(['grep --line-number "Station name          Typ   A priori value  Estimated value    Correction     RMS error      3-D ellipsoid        2-D ellipse"  ',filename,' | cut -f1 -d:']);
-    [status, EndLine]  = system(['grep --line-number "Helmert Transformation Parameters With Respect to Combined Solution:" ',filename,' | cut -f1 -d:']);
+    [status, EndLine]  = system(['grep --line-number "Helmert Transformation Parameters With Respect to Combined Solution:" ',fullpath,' | cut -f1 -d:']);
     Len = str2num(EndLine) - str2num(StartLine)-2;
-    [status] = system(['tail -n +', num2str(str2num(StartLine)), ' ', filename,'| head -',num2str(Len),' > Results/Table.txt' ]);
+    [status] = system(['tail -n +', num2str(str2num(StartLine)), ' ', fullpath,'| head -',num2str(Len),' > ' , tmpFile ]);
 else
   % File does not exist.
-  warningMessage = sprintf('Warning: file does not exist:\n%s', filename);
+  warningMessage = sprintf('Warning: file does not exist:\n%s', fullpath);
 %   uiwait(msgbox(warningMessage));
 end
 
@@ -24,7 +38,8 @@ end
 formatSpec = '%*1s%4s%1s%9s%8s%1s%19s%17s%14s%14s%12s%7s%12s%s%[^\n\r]';
 
 %% Open the text file.
-fileID = fopen('Results/Table.txt','r');
+
+fileID = fopen(tmpFile,'r');
 disp(fgetl(fileID));
 disp(fgetl(fileID));
 %% Read columns of data according to format string.
@@ -98,7 +113,7 @@ rawNumericColumns(R) = {NaN}; % Replace non-numeric cells
 %% Clear temporary variables
 clearvars filename formatSpec fileID dataArray ans col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp me rawNumericColumns rawCellColumns R;
 
-[status, cmdout] = system('rm Results/Table.txt');
+[status, cmdout] = system(['rm ', tmpFile]);
 
 %% Rearrange table
 
@@ -160,6 +175,8 @@ clearvars filename formatSpec fileID dataArray ans col numericData rawData row r
     Records = struct('CRD', CRD, 'VEL', VEL, 'Stations', cell2mat(Stations), 'Radoms', Radoms);
     
     disp('Done')
+    
+end
      
 end
     
