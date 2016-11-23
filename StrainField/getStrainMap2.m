@@ -1,4 +1,4 @@
-function [Strain] = getStrainMap(Deformation)
+function [Strain] = getStrainMap2(Deformation)
 % compute strain field
 % result is shecker-board grid
 %
@@ -29,8 +29,7 @@ for iLong = 1:size(VelGrid,1)-1
        VelC = squeeze(VelGrid(iLong+1, iLat,:));
        
        % get Strain b/w grid ponts
-       StrainAB = getStrain3(PointA,VelA, PointB,VelB);
-       StrainAC = getStrain3(PointA,VelA, PointC,VelC);
+       Strain = getStrain3(PointA,VelB-VelA,VelC-VelA);
        
        % put into grid
        Strain(iLong*2-1, iLat*2, 1:6) = StrainAB;
@@ -41,33 +40,33 @@ for iLong = 1:size(VelGrid,1)-1
    end
 end   
 
-%% todo:: add rigth and bottom egdes !
-%% add rigth egde
-iLong = size(VelGrid,1);
-for iLat = 1:size(VelGrid,1)-1
-    PointA = [LongGrid(iLong),     LatGrid(iLat)];
-    PointB = [LongGrid(iLong),     LatGrid(iLat + 1)];
-    VelA = squeeze(VelGrid(iLong,   iLat,:)); 
-    VelB = squeeze(VelGrid(iLong,   iLat+1,:));
-    
-    % get Strain b/w grid ponts
-    StrainAB = getStrain3(PointA,VelA, PointB,VelB);
-    Strain(iLong*2-1, iLat*2,   1:6) = StrainAB;
-    Strain(iLong*2-1, iLat*2, 7:8) = [LongGrid(iLat, iLong), LatGrid( iLat, iLong) + StepLat/2];
-end
-
-% add bottom edge
-iLat = size(VelGrid,2);
-for iLong = 1:size(VelGrid,2)-1;
-    PointA = [LongGrid(iLong),     LatGrid(iLat)];
-    PointC = [LongGrid(iLong + 1), LatGrid(iLat)];
-    VelA = squeeze(VelGrid(iLong,   iLat,:)); 
-    VelC = squeeze(VelGrid(iLong+1, iLat,:));
-    
-    % get Strain b/w grid ponts
-    StrainAC = getStrain3(PointA,VelA, PointC,VelC);
-    Strain(iLong*2,   iLat*2-1, 1:6) = StrainAC;
-    Strain(iLong*2, iLat*2-1, 7:8) = [LongGrid(iLat, iLong) + StepLong/2, LatGrid( iLat, iLong)];
-end
+% %% todo:: add rigth and bottom egdes !
+% %% add rigth egde
+% iLong = size(VelGrid,1);
+% for iLat = 1:size(VelGrid,1)-1
+%     PointA = [LongGrid(iLong),     LatGrid(iLat)];
+%     PointB = [LongGrid(iLong),     LatGrid(iLat + 1)];
+%     VelA = squeeze(VelGrid(iLong,   iLat,:)); 
+%     VelB = squeeze(VelGrid(iLong,   iLat+1,:));
+%     
+%     % get Strain b/w grid ponts
+%     StrainAB = getStrain3(PointA,VelA, PointB,VelB);
+%     Strain(iLong*2-1, iLat*2,   1:6) = StrainAB;
+%     Strain(iLong*2-1, iLat*2, 7:8) = [LongGrid(iLat, iLong), LatGrid( iLat, iLong) + StepLat/2];
+% end
+% 
+% % add bottom edge
+% iLat = size(VelGrid,2);
+% for iLong = 1:size(VelGrid,2)-1;
+%     PointA = [LongGrid(iLong),     LatGrid(iLat)];
+%     PointC = [LongGrid(iLong + 1), LatGrid(iLat)];
+%     VelA = squeeze(VelGrid(iLong,   iLat,:)); 
+%     VelC = squeeze(VelGrid(iLong+1, iLat,:));
+%     
+%     % get Strain b/w grid ponts
+%     StrainAC = getStrain3(PointA,VelA, PointC,VelC);
+%     Strain(iLong*2,   iLat*2-1, 1:6) = StrainAC;
+%     Strain(iLong*2, iLat*2-1, 7:8) = [LongGrid(iLat, iLong) + StepLong/2, LatGrid( iLat, iLong)];
+% end
 
 end

@@ -6,7 +6,7 @@ clc
 
 %% load deformation
 DeformationField = struct2array(load('dat/Alps_deformation_0.25x0.25_no_correlaion_3.mat'));
-load('../dat/ETOPO_Alps.mat');
+load('dat/ETOPO_Alps.mat');
 
 Vel = DeformationField(:,[3,4]);
 LongGrid = DeformationField(:,1);
@@ -42,20 +42,26 @@ dy = Lat2  - Lat1;  % [deg]
 clc
 clear Strain lat1 long1
 
-Strain = NaN(N,3);
+clear Strain 
+% Strain = NaN(N,3);
 lat1   = NaN(N,1);
 long1  = NaN(N,1);
 p = 0;
 for i = 1:N
-%     fyy = (Long2(i) - Long1(i)) / Long1(1);
-%     fxx = (Lat2(i)  - Lat1(i))  / Lat1(i);
-%     fyx = dx(i) / (Lat1(i)  + dy(i));
+%     fxx = (Long2(i) - Long1(i)) / Long1(1);  % ab2  - ab1 / ab1
+%     fyy = (Lat2(i)  - Lat1(i))  / Lat1(i);          % ac2 - ac1 / ac1
+%     fyx = dx(i) / (Lat1(i)  + dy(i)); % dVy/dy = fyx = tan(alpha) = 
 %     fxy = dy(i) / (Long1(i) + dx(i));
-    fxx = dx(i) / Long1(i);
-    fyy = dy(i) / Lat1(i);
-    fxy = dx(i) / (Lat1(i)  + dy(i));
-    fyx = dy(i) / (Long1(i) + dx(i));
-    F = [fxx fxy ; fyx, fyy];
+%     fxx = dx(i) / Long1(i); % ok
+%     fyy = dy(i) / Lat1(i);    % ok
+%     fxy = dx(i) / (Lat1(i)    + dy(i));   %  dVx/dy
+%     fyx = dy(i) / (Long1(i) + dx(i));   %  dVy/dx
+    fxx = (norm(deg2km(0.25, 6378 * cosd(Lat1(i)) )*1000, norm(dx(i) , dy(i)) )  - deg2km(0.25, 6378 * cosd(Lat1(i)) )*1000) / deg2km(0.25, 6378 * cosd(Lat1(i)) )*1000; % ok
+    fyy = (norm(deg2km(0.25)*1000, norm(dx(i) ,  dy(i)) ) - deg2km(0.25)*1000)/ deg2km(0.25)*1000;  % ok
+    fxy = dx(i) / (deg2km(0.25)*1000 + dy(i)) ;   %  dVx/dy
+    fyx = dy(i) / (deg2km(0.25, 6378 * cosd(Lat1(i)))*1000 + dx(i));   %  dVy/dx
+
+F = [fxx fxy ; fyx, fyy];
     if det(F) <= 0
 %          disp(['Error: det(F) < 0 !!! , det(F) = ', num2str(det(F))]);
     else
@@ -94,13 +100,14 @@ for i = 1:N
 %%%
         %% Omega, Eigenwert 
         Omega1  = atand( -(exx - L1) / exy );
-        %  Omega2 = atand( -(exy) / (eyy - L1) ); % omega1 + omega2 = 90 deg ! 
+        Omega2 = atand( -(exy) / (eyy - L1) ); % omega1 + omega2 = 90 deg ! 
         Omega1c = 1/2 * atand(2*exy/(exx - eyy)); % ERROR, Omega1c ~= Omega1 
         
         p = p + 1;
         if min(isreal([L1, L2, Omega1c]))
-            Strain(p,:) = [L1, L2, Omega1c];
+            Strain(p,:) = [L1, L2, Omega2];
         else
+            error =  [L1, L2, Omega1, Omega2,Omega1c ]
             Strain(p,:) = [NaN, NaN, NaN];
         end
         lat1(p,1)  = Lat1(i);
@@ -110,7 +117,8 @@ end
 % Strain;
 disp('done')
 
-%%  
+%%  plot strain
+clc
 close all
 s = 100;  % [mm/yr]
 figure(1)
@@ -122,9 +130,9 @@ cptcmap('Europe')
 % Earth_coast(2)
 xlim([-2 18])
 ylim([42 50])
-pl0 = quiver(LongGrid, LatGrid, Vel(:,1)*s, Vel(:,2)*s, 0, 'k');
-[pl1, pl2, pl3, pl4] = plotStrain(Strain, long1, lat1, 100*1000*1000);
-legend([pl0, pl1, pl3], 'Defomation field', 'Strain, mjr', 'Strain mnr');
+% pl0 = quiver(LongGrid, LatGrid, Vel(:,1)*s, Vel(:,2)*s, 0, 'k');
+[pl1, pl2, pl3, pl4] = plotStrain(Strain, long1, lat1, 10^12);
+% legend([pl0, pl1, pl3], 'Defomation field', 'Strain, mjr', 'Strain mnr');
 title('velocity field / deformation model / strain field') 
 xlabel('Longitude, [deg]')
 ylabel('Latitude, [deg]')

@@ -7,7 +7,7 @@ function Strain = getStrain(Deformation)
 %%
 Vel = Deformation(:,[3,4]);
 LongGrid = Deformation(:,1);
-LatGrid  = Deformation(:,2);
+LatGrid   = Deformation(:,2);
 
 %%
 N = length(LatGrid);
