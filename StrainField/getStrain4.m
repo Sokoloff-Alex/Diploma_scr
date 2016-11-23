@@ -1,4 +1,4 @@
-function [Strain] = getStrain3(PointA, PointB, PointC, VelA, VelB, VelC)
+function [Strain] = getStrain4(pointA, pointB, pointC, velA, velB, velC)
 % compute strain field
 % Normal strain and Shear Strain b/w 2 points
 %
@@ -8,21 +8,14 @@ function [Strain] = getStrain3(PointA, PointB, PointC, VelA, VelB, VelC)
 % block :   Bx 
 %           AC    
 
-       [PointB(1), 0; ...
-        PointA(1), PointC(1) ]
-    
-    
-       [PointB(2), 0; ...
-        PointA(2), PointC(2) ]
+velAB = velB - velA
+velAC = velC - velA
 
-velAB = VelB - VelA;
-velAC = VelC - VelA;
+normAB1 = pointB(2) - pointA(2);                     % [m]
+normAB2 = norm([0, pointB(2) - pointA(2)] + velAB ); % [m]
 
-normAB1 = deg2km(PointB(2) - PointA(2))*1000;                       % [m]
-normAB2 = norm([0; deg2km(PointB(2) - PointA(2))*1000] + velAB );   % [m]
-
-normAC1 = deg2km(PointC(1) - PointA(1), 6378*cosd(PointA(2)))*1000; % [m]
-normAC2 = norm([deg2km(PointC(1) - PointA(1))*1000; 0] + velAC );   % [m]
+normAC1 = pointC(1) - pointA(1);                     % [m]
+normAC2 = norm([pointC(1) - pointA(1), 0] + velAC);  % [m]
 
 
 % Velocity gradient
@@ -37,12 +30,12 @@ F = [fxx fxy ; fyx, fyy]
     
 %%  Rotation matrix R, Antisymmetric part
 %   R = 1/2 * (F - F')
-w = (fyx - fxy)/2
+w =  (fyx - fxy)/2
 
 %%  Strain Tensor E, Symmetric part
 %   E = 1/2 * (F + F')
 E =  [fxx   , fxy+w; 
-      fyx-w,  fyy ];
+      fyx-w,  fyy ]
 exx = E(1,1);
 eyy = E(2,2);
 exy = E(1,2); % = eyx
@@ -53,6 +46,7 @@ n1 = (exx + eyy)/2 + sqrt( 1/4*(exx-eyy)^2 + exy^2 );
 n2 = (exx + eyy)/2 - sqrt( 1/4*(exx-eyy)^2 + exy^2 );
 
 alpha_n1 = 1/2 * atand(2*exy/(exx-eyy)); % alpha_n2 = alpha_n1 + 90;
+alpha_n1 = alpha_n1 + 90;
 
 NormalStrain = [n1, n2, alpha_n1];
 
@@ -65,8 +59,7 @@ alpha_s1 = 1/2 * atand( -(exx-eyy)/(2*exy)); % alpha_s2 = alpha_s1 + 90;
 ShearStrain = [s1, s2, alpha_s1];
 
 %%
-[mean(PointA(1), PointC(1)), mean(PointA(2), PointB(2))]
-Strain = [NormalStrain, ShearStrain, mean(PointA(1), PointC(1)), mean(PointA(2), PointB(2))];
+Strain = [NormalStrain, ShearStrain];
   
 
 end
