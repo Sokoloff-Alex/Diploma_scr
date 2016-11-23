@@ -5,7 +5,10 @@ clear all
 clc
 
 %% load deformation
-DeformationField = struct2array(load('dat/Alps_deformation_0.25x0.25_no_correlaion_3.mat'));
+% DeformationField = struct2array(load('dat/Alps_deformation_0.25x0.25_no_correlaion_3.mat'));
+% DeformationField = struct2array(load('dat/Alps_deformation_0.5x0.5_grid.mat'));
+DeformationField = struct2array(load('dat/Alps_deformation_1x1_grid.mat'));
+
 load('dat/ETOPO_Alps.mat');
 
 Vel = DeformationField(:,[3,4]);
@@ -13,17 +16,28 @@ LongGrid = DeformationField(:,1);
 LatGrid  = DeformationField(:,2);
 
 %%
+Strain = getStrainMap2(DeformationField);
+
+%%
 close all
-s = 100;
-Strain = getStrain(DeformationField);
+s = 500;
 figure(1)
-hold on; grid on; axis equal
+hold on; grid on;
+axis equal
+geoshow(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo, 'DisplayType', 'texturemap');
+demcmap(ETOPO_Alps.Etopo_Europe);
+cptcmap('Europe')
 quiver(LongGrid, LatGrid, Vel(:,1)*s, Vel(:,2)*s, 0, 'k');
-% plotStrain(Strain.NormalStrain, Strain.Grid(:,1), Strain.Grid(:,2), 100*1000*1000);
-plotStrain(Strain.ShearStrain, Strain.Grid(:,1), Strain.Grid(:,2), 50*1000*1000);
+plotStrain(Strain, 10^7*5);
+% plotStrainShear(Strain, 10^7*2); ok
+xlim([-2 18])
+ylim([42 50])
 
 
 %%
+
+
+
 Lat1  = LatGrid; % y
 Long1 = LongGrid;% x
 N = length(Lat1);

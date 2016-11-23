@@ -13,12 +13,12 @@ LatGrid  = NaN(LongLength, LatLength);
 MapGrid  = NaN(LongLength, LatLength,MapNCol);
 
 p = 0;
-for i = 1:LongLength
-    for j= 1:LatLength
+for iLong = 1:LongLength
+    for iLat= 1:LatLength
        p = p + 1;
-       MapGrid(i,j,:)  = MapStack(p,:);
-       LongGrid(i,j) = LongStack(p);
-       LatGrid(i,j)  = LatStack(p);
+       MapGrid( iLat,iLong,:) = MapStack(p,:);
+       LongGrid(iLat,iLong)   = LongStack(p);
+       LatGrid( iLat,iLong)   = LatStack(p);
     end
 end
     

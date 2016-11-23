@@ -209,7 +209,7 @@ hold off
 
 %% save results
 Alps_deformation = [LongGrid, LatGrid, V_pred_2(:,2), V_pred_2(:,1)];
-name = 'Alps_deformation_0.25x0.25_no_correlaion_3';
+name = 'Alps_deformation_1x1_grid';
 save([name, '.mat'],'Alps_deformation');
 
 fileID = fopen([name,'.txt'], 'w');

@@ -1,4 +1,4 @@
-function [Strain] = getStrain4(pointA, pointB, pointC, velA, velB, velC)
+function [Strain] = getStrain4(PointA, PointB, PointC, VelA, VelB, VelC)
 % compute strain field
 % Normal strain and Shear Strain b/w 2 points
 %
@@ -8,14 +8,14 @@ function [Strain] = getStrain4(pointA, pointB, pointC, velA, velB, velC)
 % block :   Bx 
 %           AC    
 
-velAB = velB - velA
-velAC = velC - velA
+velAB = VelB - VelA;
+velAC = VelC - VelA;
 
-normAB1 = pointB(2) - pointA(2);                     % [m]
-normAB2 = norm([0, pointB(2) - pointA(2)] + velAB ); % [m]
+normAB1 = PointB(2) - PointA(2);                     % [m]
+normAB2 = norm([0, PointB(2) - PointA(2)] + velAB ); % [m]
 
-normAC1 = pointC(1) - pointA(1);                     % [m]
-normAC2 = norm([pointC(1) - pointA(1), 0] + velAC);  % [m]
+normAC1 = PointC(1) - PointA(1);                     % [m]
+normAC2 = norm([PointC(1) - PointA(1), 0] + velAC);  % [m]
 
 
 % Velocity gradient
@@ -26,16 +26,16 @@ fyy = ( normAB2 - normAB1 ) / normAB1;
 fxy = velAB(1) / ( normAB1 + velAB(2));
 fyx = velAC(2) / ( normAC1 + velAC(1));
 
-F = [fxx fxy ; fyx, fyy]
+F = [fxx fxy ; fyx, fyy];
     
 %%  Rotation matrix R, Antisymmetric part
 %   R = 1/2 * (F - F')
-w =  (fyx - fxy)/2
+w =  (fyx - fxy)/2;
 
 %%  Strain Tensor E, Symmetric part
 %   E = 1/2 * (F + F')
 E =  [fxx   , fxy+w; 
-      fyx-w,  fyy ]
+      fyx-w,  fyy ];
 exx = E(1,1);
 eyy = E(2,2);
 exy = E(1,2); % = eyx
@@ -59,7 +59,9 @@ alpha_s1 = 1/2 * atand( -(exx-eyy)/(2*exy)); % alpha_s2 = alpha_s1 + 90;
 ShearStrain = [s1, s2, alpha_s1];
 
 %%
-Strain = [NormalStrain, ShearStrain];
+x = (PointA(1) + PointC(1)) / 2;
+y = (PointA(2) + PointB(2)) / 2;
+Strain = [x, y, NormalStrain, ShearStrain];
   
 
 end
