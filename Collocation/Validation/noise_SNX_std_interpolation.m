@@ -8,7 +8,7 @@ clc
 SINEX       = readSNX('STA/FMC_IGB_W7.SNX');
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
-[Stations, Radoms, Records] = readOUT('STA/FMC_IGB_W7.OUT');
+% [Stations, Radoms, Records] = readOUT('STA/FMC_IGB_W7.OUT');
 
 
 

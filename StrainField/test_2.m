@@ -32,7 +32,7 @@ axis equal
 plot(x1, y1, 'ok')
 s = 1000;
 quiver(x1', y1', vel(:,1)*s, vel(:,2)*s,0, 'm')
-plotStrain(Strain_test2,10^6)
+plotStrainNormal(Strain_test2,10^6)
 text(x1-50, y1+35, {'A', 'B','C'})
 
 

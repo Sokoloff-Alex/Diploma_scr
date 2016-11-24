@@ -7,7 +7,13 @@ fileID_v = fopen('../Velocity_field_vertical.txt',   'w');
 fileID_u = fopen('../Velocity_field_vertical_Uplift.txt',   'w');
 fileID_s = fopen('../Velocity_field_vertical_subduction.txt',   'w');
 
-headString = '  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma E [m/yr], Sigma N [m/yr], Angle [deg],   Site \n';
+fprintf(fileID_h, '# Velocity field, horizontal component \n');
+fprintf(fileID_v, '# Velocity field, vertical component \n');
+fprintf(fileID_u, '# Velocity field, vertical component, uplift only \n');
+fprintf(fileID_s, '# Velocity field, vertical component, subsidence only \n');
+
+
+headString = '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma E [m/yr], Sigma N [m/yr], Angle [deg],   Site \n';
 formatStr = '%12.7f  %12.7f  %12.5f  %12.5f   %12.5f  %12.5f  %16.5f %9s \n';
 
 fprintf(fileID_h, headString);

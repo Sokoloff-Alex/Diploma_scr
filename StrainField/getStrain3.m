@@ -8,12 +8,6 @@ function [Strain] = getStrain3(PointA, PointB, PointC, VelA, VelB, VelC)
 % block :   Bx 
 %           AC    
 
-       [PointB(1), 0; ...
-        PointA(1), PointC(1) ];
-    
-    
-       [PointB(2), 0; ...
-        PointA(2), PointC(2) ];
 
 velAB = VelB - VelA;
 velAC = VelC - VelA;
@@ -25,15 +19,14 @@ normAC1 =       deg2km( PointC(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000;   
 normAC2 = norm([deg2km( PointC(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; 0] + velAC ); % [m]
 
 
-% Velocity gradient
-
+%% Velocity gradient
 fxx = ( normAC2 - normAC1 ) / normAC1;
 fyy = ( normAB2 - normAB1 ) / normAB1;
 
 fxy = velAB(1) / ( normAB1 + velAB(2));
 fyx = velAC(2) / ( normAC1 + velAC(1));
 
-F = [fxx fxy ; fyx, fyy];
+% F = [fxx fxy ; fyx, fyy];
     
 %%  Rotation matrix R, Antisymmetric part
 %   R = 1/2 * (F - F')
@@ -52,15 +45,21 @@ exy = E(1,2); % = eyx
 n1 = (exx + eyy)/2 + sqrt( 1/4*(exx-eyy)^2 + exy^2 );
 n2 = (exx + eyy)/2 - sqrt( 1/4*(exx-eyy)^2 + exy^2 );
 
-alpha_n1 = 1/2 * atand(2*exy/(exx-eyy)); % alpha_n2 = alpha_n1 + 90;
-% alpha_n1 = alpha_n1 + 90; % todo: ckeck!!!
-NormalStrain = [n1, n2, alpha_n1];
+% alpha_n1 = 1/2 * atan2d(2*exy, (exx-eyy)); % alpha_n2 = alpha_n1 + 90;
+
+Omega1   = atan2d( -(exx - n1) , exy ); % angle for n1
+
+% if alpha_n1 ~= Omega1
+%     [alpha_n1, Omega1]
+% end
+
+NormalStrain = [n1, n2, Omega1];
 
 %% Principal Shear Strain
-s1 = + sqrt( 1/4*(exx-eyy)^2 + exy^2 ); % Only interesting in positive!
+s1 = + sqrt( 1/4*(exx-eyy)^2 + exy^2 );   % Only interesting in positive (Maximum)!
 % s2 = - sqrt( 1/4*(exx-eyy)^2 + exy^2 ); % s1 = -s2
 
-alpha_s1 = 1/2 * atand( -(exx-eyy)/(2*exy)); % alpha_s2 = alpha_s1 + 90;
+alpha_s1 = 1/2 * atand( -(exx-eyy)/(2*exy));
 
 ShearStrain = [s1, alpha_s1];
 

@@ -54,7 +54,7 @@ DataType = {'FILE/REFERENCE';
             'SOLUTION/MATRIX_APRIORI L COVA'};
         
 %% Parsing
-for iData = [3:13]
+for iData = [3:11]
     [status, StartEndLines]= system(['grep --line-number "',DataType{iData},'" ', fullpath,' | cut -f1 -d:']);
     if (status ~= 0) % 0 = successful
         disp(['Error: status :', numn2str(status)]);

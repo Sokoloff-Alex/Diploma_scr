@@ -16,10 +16,6 @@ for iLong = 1:LongLength
        p = p + 1;
        GridMatrix(iLat, iLong, :) = Stack(p,:);
     end
-    p
-    size(GridMatrix)
 end
-
-GridMatrix;
 
 end
