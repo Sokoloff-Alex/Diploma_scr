@@ -18,12 +18,15 @@ function writeStrain2GMT(Strain, filename)
 %           in degrees CW from North.
 
 %% save results
-StrainField = [Strain(:,1:4), -Strain(:,5) ];
+
+scale = 10^9; % [strain/yr] -> [nanostrain/yr]
+
+StrainField = [Strain(:,1:2), Strain(:,3:4)*scale, -Strain(:,5) ];
 
 fileID = fopen(filename, 'w');
-fprintf(fileID, '# Normal Strain Field, \n');
-fprintf(fileID, '# Long [deg],   Lat [deg],   Eps1,          Eps2,         AziEps2 [deg] \n');
-formatStr = '%12.7f  %12.7f  %+12e  %+12e   %8.2f \n';
+fprintf(fileID, '# Normal Strain Field, in [nstrain/yr] \n');
+fprintf(fileID, '# Long [deg],   Lat [deg],        Eps1 [nstrain/yr],    Eps2 [nstrain/yr],  AziEps2 [deg] \n');
+formatStr = '%12.7f  %12.7f  %+20e  %+20e   %10.2f \n';
 
 for i = 1:size(Strain,1)
    fprintf(fileID, formatStr, StrainField(i,:)); 
@@ -54,8 +57,8 @@ end
 %% write Dilatation
 fileID = fopen([filename(:,1:end-4),'_Dilatation.txt'], 'w');
 fprintf(fileID, '# Normal Strain Field, Dilatation only \n');
-fprintf(fileID, '# Long [deg],   Lat [deg],   Eps1,          Eps2,         AziEps2 [deg] \n');
-formatStr = '%12.7f  %12.7f  %+12e  %+12e   %8.2f \n';
+fprintf(fileID, '# Long [deg],   Lat [deg],        Eps1 [nstrain/yr],    Eps2 [nstrain/yr],  AziEps2 [deg] \n');
+formatStr = '%12.7f  %12.7f  %+20e  %+20e   %10.2f \n';
 
 for i = 1:size(Strain,1)
    fprintf(fileID, formatStr, StrainFieldDilataion(i,:)); 
@@ -65,8 +68,8 @@ fclose(fileID);
 %% Write Compression
 fileID = fopen([filename(:,1:end-4),'_Compression.txt'], 'w');
 fprintf(fileID, '# Normal Strain Field, Compression only \n');
-fprintf(fileID, '# Long [deg],   Lat [deg],   Eps1,          Eps2,         AziEps2 [deg] \n');
-formatStr = '%12.7f  %12.7f  %+12e  %+12e   %8.2f \n';
+fprintf(fileID, '# Long [deg],   Lat [deg],        Eps1 [nstrain/yr],    Eps2 [nstrain/yr],  AziEps2 [deg] \n');
+formatStr = '%12.7f  %12.7f  %+20e  %+20e   %10.2f \n';
 
 for i = 1:size(Strain,1)
    fprintf(fileID, formatStr, StrainFieldCompression(i,:)); 

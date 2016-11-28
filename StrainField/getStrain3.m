@@ -39,7 +39,7 @@ E =  [fxx   , fxy+w;
 exx = E(1,1);
 eyy = E(2,2);
 exy = E(1,2); % = eyx
-
+% eyx = E(2,1);
 %% Principal Normal Strain
 % solve for: det([exx-n, exy; eyx, eyy-n]) == 0! ;
 n1 = (exx + eyy)/2 + sqrt( 1/4*(exx-eyy)^2 + exy^2 );
@@ -47,7 +47,7 @@ n2 = (exx + eyy)/2 - sqrt( 1/4*(exx-eyy)^2 + exy^2 );
 
 % alpha_n1 = 1/2 * atan2d(2*exy, (exx-eyy)); % alpha_n2 = alpha_n1 + 90;
 
-Omega1   = atan2d( -(exx - n1) , exy ); % angle for n1
+Omega1   = atan2d(-(exx - n1) , exy ); % angle for n1
 
 % if alpha_n1 ~= Omega1
 %     [alpha_n1, Omega1]
@@ -59,14 +59,16 @@ NormalStrain = [n1, n2, Omega1];
 s1 = + sqrt( 1/4*(exx-eyy)^2 + exy^2 );   % Only interesting in positive (Maximum)!
 % s2 = - sqrt( 1/4*(exx-eyy)^2 + exy^2 ); % s1 = -s2
 
-alpha_s1 = 1/2 * atand( -(exx-eyy)/(2*exy));
+alpha_s1 = 1/2 * atand( -(exx-eyy) / (2*exy));
+
+% alpha_s1 =  atan2d(  exy , (exx - s1));
 
 ShearStrain = [s1, alpha_s1];
 
 %% get into stack
 x = (PointA(1) + PointC(1)) / 2;
 y = (PointA(2) + PointB(2)) / 2;
-Strain = [x, y, NormalStrain, ShearStrain];
+Strain = [x, y, NormalStrain, ShearStrain, w];
   
 
 end

@@ -30,40 +30,46 @@ Deformation = [x, y, vx, vy];
 
 %% test 3 
 clc
-n = 8;
+n = 11;
 x = repmat([1:n], n,1);
 y = repmat([1:n]',1,n);
 
-vx = [0  0 -1  1 -1  1  1  1
-      0  0  1  1 -1  1 -1  1
-      0  0  1  1 -1  1  1 -1
-      0  0  1  1 -1  1  1  0
-      0  0 -1  1 -1  1  1  0
-      0  0  1  1  0 -1  1 -1
-      0  0  1  1  0 -1  1 -1
-      0  0  0  0  0  0  0  0] /(1000);
+vx = [0  0  0  0  0 -1  1 -1  1  1  1
+      0  0  0  0  0  1  1 -1  1 -1  1
+      0  0  0  0  0  1  1 -1  1  1 -1
+      0  0  0  0  0  1  1 -1  1  1  0
+      0  0  0  0  0 -1  1 -1  1  1  0
+      0  0  0  0  0  1  1  0 -1  1 -1
+      0  0  0  0  0  1  1  0 -1  1 -1
+      0  0  0  0  0  0  0  0  0  0  0
+      0  1  1  1  1  0  0  0 -1 -1 -1
+      0 -1 -1 -1 -1  1  1  0  1  1  1
+      0  1  1  1  1 -1 -1  0 -1 -1 -1] /(1000);
   
-vy = [0  0 -1  1  1  1 -1 -1
-      1  1  1  1  1  1  1  1
-      0  0 -1 -1 -1 -1  1  0
-     -1 -1  1  1  1  1  0  0
-     -1 -1  1  1  1  1  0  0
-      1  1  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0] / (1000);
+vy = [1 -1  1  0  0 -1  1  1  1 -1 -1
+      1 -1  1  1  1  1  1  1  1  1  1
+      1 -1  1  0  0 -1 -1 -1 -1  1  0
+      0  0  0 -1 -1  1  1  1  1  0  0
+      0  0  0 -1 -1  1  1  1  1  0  0
+      0  0  0  1  1  0  0  0  0  0  0
+     -1  1 -1  0  0  0  0  0  0  0  0
+     -1  1 -1  0  0  0  0  0  0  0  0
+     -1  1 -1  0  0  0  0  0  0  0  0
+     -1  1 -1  0  0 -1  1  0  0  0  0
+     -1  1 -1  0  0 -1  1  0  0  0  0] / (1000);
 
 Deformation = [grid2stack(x), grid2stack(y), grid2stack(vx), grid2stack(vy)];
   
 
 %%
+clc
+StrainStack= getStrainMap2(Deformation);
+%
+% writeDeformationFieldGMT([Deformation, zeros(121,3)],   '~/Alpen_Check/MAP/Strain/DeformationTEST.txt')
+% writeStrainShear2GMT(StrainStack,'~/Alpen_Check/MAP/Strain/StrainShearTEST.txt')
+% writeRotationWedges2GMT(StrainStack, '~/Alpen_Check/MAP/Strain/WedgesTEST.txt')
 
-StrainStack= getStrainMap2(Deformation)
-
-%%
-
-writeStrain2GMT(StrainStack, '~/Alpen_Check/MAP/Strain/StrainTEST.txt')
-
-%%
+%
 sc = 300;
 close all
 figure(1)
@@ -72,7 +78,9 @@ axis equal
 plot(x,y,'ok')
 % plot(x+vx,y+vy,'or')
 quiver(grid2stack(x),grid2stack(y), grid2stack(vx)*sc,grid2stack(vy)*sc,0,'k')
-plotStrainNormal(StrainStack,10^7);
-% xlim([15 20])
-% ylim([3 7])
-
+[pl1, pl2 ]= plotStrainNormal(StrainStack,10^7*2);
+% [pl3] = plotStrainShear( StrainStack,10^7*3);
+% quiver(StrainStack(:,1),StrainStack(:,2), sin(StrainStack(:,8)*10^7),cos(StrainStack(:,8)*10^7))
+xlim([0 12])
+ylim([0 12])
+% legend([pl1, pl2, pl3], 'Extention','Comrpession','Shear')

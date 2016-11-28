@@ -15,7 +15,7 @@ VelGrid =  squeeze(Grid(:,:,3:end));
 nLong = size(Grid,2);
 nLat  = size(Grid,1); 
 
-StrainStack = NaN((nLat-1)*(nLong-1),7);
+StrainStack = NaN((nLat-1)*(nLong-1),8);
 
 % points order  :  Bx
 %                  AC
@@ -33,7 +33,7 @@ for iLong = 1:nLong-1
        VelC = squeeze(VelGrid(iLat,    iLong + 1,:));
     
        % get Strain b/w grid ponts
-       StrainBlock = getStrain3(PointA, PointB, PointC, VelA, VelB, VelC);
+       StrainBlock = getStrain5(PointA, PointB, PointC, VelA, VelB, VelC);
        
        % Save result in Stack
        row = row + 1;

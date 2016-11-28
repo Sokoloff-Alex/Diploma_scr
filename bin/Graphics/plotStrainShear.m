@@ -1,4 +1,4 @@
-function plotStrainShear(Strain, scale)
+function [pl1, pl2] = plotStrainShear(Strain, scale)
 % funiction to plot Strain Shear field on 2D plot
 %
 % input : Strain [Long, lat, Lambda1, Lambda1 Omega1, s1, Alpha_s1] - data matrix for all points,
@@ -25,7 +25,7 @@ dy_S1 = ShearMax.*sind(AlphaShear);
 
 
 %% plot strain map
-pl5 = quiver(Long, Lat,  dx_S1*scale,  dy_S1*scale, 0, 'm', 'ShowArrowHead','off');
-pl5 = quiver(Long, Lat, -dx_S1*scale, -dy_S1*scale, 0, 'm', 'ShowArrowHead','off');
+pl1 = quiver(Long, Lat,  dx_S1*scale,  dy_S1*scale, 0, 'b', 'ShowArrowHead','on' , 'Color',[0,100/255,0], 'LineWidth',2);
+pl2 = quiver(Long, Lat, -dx_S1*scale, -dy_S1*scale, 0, 'b', 'ShowArrowHead','off', 'Color',[0,100/255,0], 'LineWidth',2);
 
 end

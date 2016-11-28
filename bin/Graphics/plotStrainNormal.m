@@ -1,4 +1,4 @@
-function plotStrainNormal(Strain, sc)
+function [pl1, pl2] = plotStrainNormal(Strain, sc)
 % funiction to plot Strain field on 2D plot
 %
 % input : Strain [Lambda1, Lambga2, Omega1] - data matrix for all points,
@@ -19,8 +19,8 @@ function plotStrainNormal(Strain, sc)
 
 %% Plot Strain map, faster
 
-quiver(Stack_dilat(:,1),Stack_dilat(:,2),Stack_dilat(:,3),Stack_dilat(:,4), 0, 'b') % dilatiation
-quiver(Stack_compr(:,1),Stack_compr(:,2),Stack_compr(:,3),Stack_compr(:,4), 0, 'r') % compression
+pl1 = quiver(Stack_dilat(:,1),Stack_dilat(:,2),Stack_dilat(:,3),Stack_dilat(:,4), 0, 'b'); % dilatiation
+pl2 = quiver(Stack_compr(:,1),Stack_compr(:,2),Stack_compr(:,3),Stack_compr(:,4), 0, 'r'); % compression
 
 
 %% plot strain map
