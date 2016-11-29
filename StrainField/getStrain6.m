@@ -1,4 +1,4 @@
-function [Strain] = getStrain5(PointA, PointB, PointC, VelA, VelB, VelC)
+function [Strain] = getStrain6(PointA, PointB, PointC, VelA, VelB, VelC)
 % compute strain field
 % Normal strain and Shear Strain b/w 2 points
 %
@@ -8,16 +8,19 @@ function [Strain] = getStrain5(PointA, PointB, PointC, VelA, VelB, VelC)
 % block :   Bx 
 %           AC    
 
+% if grid:
+% x : lat
+% y : lon
 
-vxAB = VelB(1) - VelA(1);
-vyAB = VelB(2) - VelA(2);
-vxAC = VelC(1) - VelA(1);
-vyAC = VelC(2) - VelA(2);
+vxAB = VelB(2) - VelA(2);
+vyAB = VelB(1) - VelA(1);
+vxAC = VelC(2) - VelA(2);
+vyAC = VelC(1) - VelA(1);
 
-xAB = deg2km( PointB(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; % [[m]
-yAB = deg2km( PointB(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; %  [m]
-xAC = deg2km( PointC(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; % [m]
-yAC = deg2km( PointC(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; % [m]
+xAB = deg2km( PointB(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; % [[m]
+yAB = deg2km( PointB(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; %  [m]
+xAC = deg2km( PointC(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; % [m]
+yAC = deg2km( PointC(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; % [m]
 
 
 %% Velocity gradient
@@ -66,7 +69,7 @@ S = [exx, exy, eyy, w];
 n1 = (exx+eyy)/2 + sqrt( ( (exx-eyy)/2 )^2 + exy^2 );
 n2 = (exx+eyy)/2 - sqrt( ( (exx-eyy)/2 )^2 + exy^2 );
 
-Theta_n1 = 1/2 * atan2d(2*exy , (exx-eyy));
+Theta_n1 = 1/2 * atan2d( (2*exy) , (exx-eyy));
 
 NormalStrain = [n1, n2, Theta_n1];
 
@@ -74,7 +77,7 @@ NormalStrain = [n1, n2, Theta_n1];
 
 e12_max =  sqrt( ( (exx-eyy)/2 )^2 + exy^2 );
 
-Theta_s = 1/2 * atan2d((eyy-exx) , (2*exy));
+Theta_s = 1/2 * atan2d( (eyy-exx) , (2*exy) );
 
 ShearStrain = [e12_max, Theta_s];
 

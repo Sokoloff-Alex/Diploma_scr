@@ -64,12 +64,14 @@ Deformation = [grid2stack(x), grid2stack(y), grid2stack(vx), grid2stack(vy)];
 %%
 clc
 StrainStack= getStrainMap2(Deformation);
-%
-% writeDeformationFieldGMT([Deformation, zeros(121,3)],   '~/Alpen_Check/MAP/Strain/DeformationTEST.txt')
+%%
+clc
+writeDeformationFieldGMT([Deformation, zeros(121,3)],   '~/Alpen_Check/MAP/Strain/DeformationTEST.txt')
 % writeStrainShear2GMT(StrainStack,'~/Alpen_Check/MAP/Strain/StrainShearTEST.txt')
+writeStrain2GMT(StrainStack, '~/Alpen_Check/MAP/Strain/StrainTEST.txt')
 % writeRotationWedges2GMT(StrainStack, '~/Alpen_Check/MAP/Strain/WedgesTEST.txt')
 
-%
+%%
 sc = 300;
 close all
 figure(1)
