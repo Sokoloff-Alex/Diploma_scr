@@ -1,4 +1,4 @@
-function [coeffs] = fitCovar(functionName, x, y, coeffs_apr)
+function [coeffs, rms] = fitCovar(functionName, x, y, coeffs_apr)
 % approximate empirical covariance function
 % by one of following: 'exp1', 'Hirvonen' or 'hormal'
 % Input :   functionName - one of 'exp1', 'Hirvonen' or 'hormal'
@@ -15,7 +15,7 @@ function [coeffs] = fitCovar(functionName, x, y, coeffs_apr)
 if ismember(functionName, {'exp1', 'Hirvonen','normal','exp2','Gaussian','gaussian'})
     
     if strcmp(functionName, 'exp1')     % y = C0 * exp(a*x)
-           coeffs = fitExp(coeffs_apr, x, y); 
+           [coeffs, rms] = fitExp(coeffs_apr, x, y); 
     end
     
     if strcmp(functionName, 'Hirvonen') % y = C0 / (1 + (a/x)^2) 

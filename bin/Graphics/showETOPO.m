@@ -21,7 +21,8 @@ LatRange = [ Lat0, Lat0 - nLon/step];
 
 etopo_fig = imagesc(LonRange, LatRange, flipud(ETOPO)); 
 set(gca,'YDir','normal'); 
-cptcmap('Europe'); 
+cptcmap('Europe');
+% cptcmap('ETOPOgray')
  
 
 end

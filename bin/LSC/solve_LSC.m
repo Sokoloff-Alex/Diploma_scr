@@ -1,4 +1,4 @@
-function [V_pred] = solve_LSC(lat0, long0, lat, long, Vn, Ve, fType, varargin)
+function [V_pred, rmsFitting] = solve_LSC(lat0, long0, lat, long, Vn, Ve, fType, varargin)
 % solve Least Square Collocation
 %
 % input   :     lat0, long0 - coordinates of grid point , [deg]
@@ -63,28 +63,30 @@ end
 %% fit curves
 if ismember('bias', flags)
     if min(y_NN) < 0
-        coeff_NN = fitCovar(fType, x_NN, y_NN + abs(min(y_NN)), [y_NN(1),-0.001]);
+        [coeff_NN, rmsNN] = fitCovar(fType, x_NN, y_NN + abs(min(y_NN)), [y_NN(1),-0.001]);
     else
-        coeff_NN = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
+        [coeff_NN, rmsNN] = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
     end
     
     if min(y_EE) < 0
-        coeff_EE = fitCovar(fType, x_EE, y_EE + abs(min(y_EE)), [y_EE(1),-0.001]);
+        [coeff_EE, rmsEE] = fitCovar(fType, x_EE, y_EE + abs(min(y_EE)), [y_EE(1),-0.001]);
     else
-        coeff_EE = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
+        [coeff_EE, rmsEE] = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
     end
     
-    coeff_NE = fitCovar(fType, x_NE, y_NE + b_NE,           [y_NE(1),-0.001]);
-%     coeff_NE = fitCovar(fType, x_NE, y_NE,           [y_NE(1),-0.001]);
+    [coeff_NE, rmsNE] = fitCovar(fType, x_NE, y_NE + b_NE,           [y_NE(1),-0.001]);
+%     [coeff_NE, rmsNE] = fitCovar(fType, x_NE, y_NE,           [y_NE(1),-0.001]);
     
 else
-    coeff_NN = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
-    coeff_EE = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
-    coeff_NE = fitCovar(fType, x_NE, y_NE, [y_NE(1), -0.001]);
+    [coeff_NN, rmsNN] = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
+    [coeff_EE, rmsEE] = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
+    [coeff_NE, rmsNE] = fitCovar(fType, x_NE, y_NE, [y_NE(1), -0.001]);
 end
 coeff_NN(1) = y_NN(1);
 coeff_EE(1) = y_EE(1);
 coeff_NE(1) = y_NE(1);
+
+rmsFitting = [rmsNN, rmsEE, rmsNE];
 
 % if abs(coeff_NE(2)) < 0.005
 %     coeff_NE(2) = -0.005;
@@ -115,10 +117,13 @@ if ismember('plot', flags)
 
     legend([pl4 pl5 pl6 pl7 pl8],['C_N_N C0 = ', num2str(coeff_NN(1),'%.2g'),  ...
                                         ' b = ', num2str(coeff_NN(2),'%.3g')], ...
+                                  ' ; rms_N_N = ', num2str(rmsNN),...
                                  ['C_E_E C0 = ', num2str(coeff_EE(1),'%.2g'),  ...
                                         ' b = ', num2str(coeff_EE(2),'%.3g')], ...
+                                  ' ; rms_N_N = ', num2str(rmsEE),...
                                  ['C_N_E  a = ', num2str(coeff_NE(1),'%.2g'),  ...
                                         ' b = ', num2str(coeff_NE(2),'%.3g')], ...
+                                  ' ; rms_N_N = ', num2str(rmsNE),...
                                  ['stable: C(d) = ' num2str(coeff_NN(1),'%.2g'),  ...
                                         '*exp(',num2str(-0.005,'%.2g'),'*d)'],  ...
                                  ['deform: C(d) = ', num2str(coeff_NN(1),'%.2g'),  ...
@@ -203,7 +208,10 @@ if ismember('-v', flags)
           ' :: Cee: b = ', num2str(coeff_EE(2), '%#7.4f'), ...
           ' :: Cne: b = ', num2str(coeff_NE(2), '%#7.4f'), ...
           '; Vn = ', num2str(V_pred(1), '%#+7.4f'), ...
-          '; Ve = ', num2str(V_pred(2), '%#+7.4f') ]);
+          '; Ve = ', num2str(V_pred(2), '%#+7.4f'), ...
+          ' ; rmsNN = ', num2str(rmsNN), ...
+          ' ; rmsEE = ', num2str(rmsEE), ...
+          ' ; rmsNE = ', num2str(rmsNE) ]);
 end
 
 end

@@ -10,4 +10,4 @@ VelC = [0.00  0.00];
 
 clc
 format shortG
-Strain = getStrain6(PointA, PointB, PointC, VelA, VelB, VelC)
+Strain = getStrain5(PointA, PointB, PointC, VelA, VelB, VelC)

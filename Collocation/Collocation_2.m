@@ -48,7 +48,7 @@ DOMES = ALP_NET_CRD(range_flag,3);
 
 Germany    = {'POTS','DRES','GOET','ERLA','FFMJ','WTZR','WT21','KARL', ...
               'DILL','HUEG','HOFJ'}; % Stable only
-Franse_N   = {'VIGY','ERCK','BIWI','BI2I','STJ9','ENTZ','EOST', ...
+Franse_N   = {'VIGY','ERCK','STJ9','ENTZ','EOST', ...
               'WLBH','MOUS','AUBU','MAKS','RIXH','FRAC','LUCE','MOLV', ...
               'BUAN','ESNO','VAUC','BSCN','MLVL','MANS','HEAU','BRST', ...
               'PLOE','GROI','VFCH'}; % Stable only
@@ -78,7 +78,8 @@ Apennines  = {'UNPG','IGMI','PRAT'};
 Apennines_W= {'POGG','PARO','GENO','AJAC'};
 Adriatic   = {'CAME','MEDI','BOLG','MOPS','ZADA','PORE','GARI'};
 Adriatic_W = {'TORI','IENG','OATO'};
-Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', 'ROHR'};
+Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', ...
+                'ROHR','BIWI','BI2I'};
 
 Stable = [Germany, Franse_N, Franse_S];
 
@@ -94,6 +95,7 @@ iApennines   = selectRange(names, Apennines);
 iApennines_W = selectRange(names, Apennines_W);
 iAdriatic    = selectRange(names, Adriatic);
 iAdriatic_W  = selectRange(names, Adriatic_W);
+iOutliers    = selectRange(names, Outliers);
 
 Sets = {iStable, iAlps_SW, iAlps_C, iAlps_W, iAlps_NE, iAlps_E, iAustria_S, ...
     iItaly_N, iApennines, iApennines_W, iAdriatic, iAdriatic_W};
@@ -102,7 +104,7 @@ Sets_names = {'Stable', 'Alps SW', 'Alps C', 'Alps W', 'Alps NE',  ...
 Selected = sort([Sets{:}]);
 len = length(Sets);
 
-%% CheckSum
+% CheckSum
 % clc
 disp(['# of stations selected : ',num2str(length(Selected))])
 disp(['# of outliers          : ',num2str(length(Outliers))])
@@ -136,7 +138,7 @@ clc
 tic
 range = 1:length(lat);
 Max_Dist = 150; % km
-lim = 10;
+lim = 15;
 p = 0;
 step = 0.25;
 for iLong = -4:step:18
@@ -165,8 +167,10 @@ for iLong = -4:step:18
                 p = p + 1; % point Number
 %               V_pred(p,:)   = solve_LSC_3(iLat, iLong, lat(sel), long(sel), Vn_res(sel), Ve_res(sel),  50,'no plot');   % LSC 
 %               V_pred(p,:)   = solve_LSC_alt(iLat, iLong, lat(sel), long(sel), Vn_res(sel),      Ve_res(sel) ,      'no plot');   % LSC 
-                V_pred_2(p,:) = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'exp1', '-v', 'bias', 'tail 0', 'no corr')'/1000;   % LSC 
+                [V_pred_point, rmsFitPoint] = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'exp1', '-v', 'bias', 'tail 0', 'no corr');   % LSC 
 %                 V_pred_3(p,:) = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'Hirvonen', '-v', 'no corr', 'refine')'/1000;   % LSC 
+                V_pred_2(p,:) = V_pred_point'/1000;
+                rmsFit(p,:)   = rmsFitPoint/1000; % [mm/yr]
                 LatGrid(p,1)  = iLat;
                 LongGrid(p,1) = iLong;
             end
@@ -191,15 +195,19 @@ xlim([-6 19])
 ylim([41 53])
 % xlim([2 16])
 % ylim([43 49])
-geoshow(Etopo_Europe, refvec_Etopo, 'DisplayType', 'texturemap');
-demcmap(Etopo_Europe);
-cptcmap('Europe')
+% geoshow(Etopo_Europe, refvec_Etopo, 'DisplayType', 'texturemap');
+% demcmap(Etopo_Europe);
+% cptcmap('Europe')
+etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
 % Earth_coast(2)
 plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
 plot(Adriatics(:,1),Adriatics(:,2) , '--k')
 quiver(long(Selected),lat(Selected),Ve_res(Selected)*s,Vn_res(Selected)*s, 0, 'r', 'lineWidth',1)
+quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',1)
+
 quiver(LongGrid,      LatGrid,      V_pred_2(:,2)*s,   V_pred_2(:,1)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % ellipce_2D([km2deg(Max_Dist,6378*cosd(iLat)), Max_Dist/111], 0, [iLong, iLat], 1)
+text(long,lat, names)
 title('velocity field / deformation model') 
 xlabel('Velocity EW, [mm/yr]')
 ylabel('Velocity SN, [mm/yr]')
@@ -208,9 +216,11 @@ legend('Earth Coast','Alps Orogen boundary','Ardiatics','Residual velocity','LSC
 grid on
 hold off
 
+Alps_deformation = [LongGrid, LatGrid, V_pred_2(:,2), V_pred_2(:,1)];
+
 %% save results
 Alps_deformation = [LongGrid, LatGrid, V_pred_2(:,2), V_pred_2(:,1)];
-name = 'Alps_deformation_1x1_grid';
+name = 'Alps_deformation_0.25x0.25_no_correlation_3';
 save([name, '.mat'],'Alps_deformation');
 
 fileID = fopen([name,'.txt'], 'w');

@@ -12,15 +12,15 @@ function [Strain] = getStrain6(PointA, PointB, PointC, VelA, VelB, VelC)
 % x : lat
 % y : lon
 
-vxAB = VelB(2) - VelA(2);
-vyAB = VelB(1) - VelA(1);
-vxAC = VelC(2) - VelA(2);
-vyAC = VelC(1) - VelA(1);
+vxAB = VelB(2) - VelA(2); % dVnAB
+vyAB = VelB(1) - VelA(1); % dVeAB
+vxAC = VelC(2) - VelA(2); % dVnAC
+vyAC = VelC(1) - VelA(1); % dVeAC
 
-xAB = deg2km( PointB(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; % [[m]
-yAB = deg2km( PointB(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; %  [m]
-xAC = deg2km( PointC(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; % [m]
-yAC = deg2km( PointC(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; % [m]
+xAB = deg2km( PointB(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; % [m] dnAB
+yAB = deg2km( PointB(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; % [m] deAB
+xAC = deg2km( PointC(2) - PointA(2), 6378*cosd(PointA(2)) ) * 1000; % [m] deAC
+yAC = deg2km( PointC(1) - PointA(1), 6378*cosd(PointA(2)) ) * 1000; % [m] dnAC
 
 
 %% Velocity gradient

@@ -25,7 +25,7 @@ dy_S1 = ShearMax.*sind(AlphaShear);
 
 
 %% plot strain map
-pl1 = quiver(Long, Lat,  dx_S1*scale,  dy_S1*scale, 0, 'b', 'ShowArrowHead','on' , 'Color',[0,100/255,0], 'LineWidth',2);
-pl2 = quiver(Long, Lat, -dx_S1*scale, -dy_S1*scale, 0, 'b', 'ShowArrowHead','off', 'Color',[0,100/255,0], 'LineWidth',2);
+pl1 = quiver(Long, Lat,  dx_S1*scale,  dy_S1*scale, 0, 'b', 'ShowArrowHead','off', 'Color',[0,100/255,0]);
+pl2 = quiver(Long, Lat, -dx_S1*scale, -dy_S1*scale, 0, 'b', 'ShowArrowHead','off', 'Color',[0,100/255,0]);
 
 end

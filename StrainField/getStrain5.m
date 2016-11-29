@@ -74,7 +74,11 @@ NormalStrain = [n1, n2, Theta_n1];
 
 e12_max =  sqrt( ( (exx-eyy)/2 )^2 + exy^2 );
 
-Theta_s = 1/2 * atan2d((eyy-exx) , (2*exy));
+Theta_s = 1/2 * atan2d( (eyy-exx) ,(2*exy) );
+
+if w < 0;
+    Theta_s = Theta_s + 90;
+end
 
 ShearStrain = [e12_max, Theta_s];
 
