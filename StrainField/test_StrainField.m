@@ -66,9 +66,9 @@ clc
 StrainStack= getStrainMap2(Deformation);
 %%
 clc
-writeDeformationFieldGMT([Deformation, zeros(121,3)],   '~/Alpen_Check/MAP/Strain/DeformationTEST.txt')
+% writeDeformationFieldGMT([Deformation, zeros(121,3)],   '~/Alpen_Check/MAP/Strain/DeformationTEST.txt')
 % writeStrainShear2GMT(StrainStack,'~/Alpen_Check/MAP/Strain/StrainShearTEST.txt')
-writeStrain2GMT(StrainStack, '~/Alpen_Check/MAP/Strain/StrainTEST.txt')
+% writeStrain2GMT(StrainStack, '~/Alpen_Check/MAP/Strain/StrainTEST.txt')
 % writeRotationWedges2GMT(StrainStack, '~/Alpen_Check/MAP/Strain/WedgesTEST.txt')
 
 %%
@@ -81,7 +81,7 @@ plot(x,y,'ok')
 % plot(x+vx,y+vy,'or')
 quiver(grid2stack(x),grid2stack(y), grid2stack(vx)*sc,grid2stack(vy)*sc,0,'k')
 [pl1, pl2 ]= plotStrainNormal(StrainStack,10^7*2);
-% [pl3] = plotStrainShear( StrainStack,10^7*3);
+[pl3] = plotStrainShear( StrainStack,10^7*3);
 % quiver(StrainStack(:,1),StrainStack(:,2), sin(StrainStack(:,8)*10^7),cos(StrainStack(:,8)*10^7))
 xlim([0 12])
 ylim([0 12])
