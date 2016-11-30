@@ -25,6 +25,7 @@ SiteDome_list_test = SiteDome_list(1:20);
 %%
 find(strcmp(SiteDome_list,'GRAS GRASigb03'))
 range_w = [101 102 103 149 160 291 292 296];
+Stations(range_w)
 
 %%
 [CRD_std_enu(:,1), CRD_std_enu(:,2), CRD_std_enu(:,3)] = XYZ2ENU(CRD, CRD_std);
@@ -71,7 +72,8 @@ disp(['PLT        : ',num2str(mean(rmsENU,     1)*1000,'%10.3f' )])
 disp('Ave. scale       E         N         U')
 disp(['PLT/SNX all: ', num2str(mean(scale,           1),'%10.2f')])
 disp(['PLT/SNX sel: ', num2str(mean(scale(range_w,:),1),'%10.2f')])
-
+disp('RMS of scale')
+disp(['PLT/SNX all: ', num2str(rms(scale,           1),'%10.2f')])
 %%
 Station = SiteDome_list{8};
 [N, E, U, MJD, Epoch] = get_PLT_timeseries('Velocity_field/FMC_IGB_W7.PLT',Station );

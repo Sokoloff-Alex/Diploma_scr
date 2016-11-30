@@ -5,11 +5,10 @@ clear all
 clc
 
 %%
+[Stations, Radoms, Records] = readOUT('STA/FMC_IGB_W7.OUT');
 SINEX       = readSNX('STA/FMC_IGB_W7.SNX');
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
-% [Stations, Radoms, Records] = readOUT('STA/FMC_IGB_W7.OUT');
-
 
 
 %%
@@ -106,11 +105,11 @@ hold on
 % demcmap(Etopo_Europe);
 % cptcmap('Europe')
 % Earth_coast(2)
-plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
-plot(Adriatics(:,1),Adriatics(:,2) , '--k')
+plot(wrapTo180(Orogen_Alp(:,1)),Orogen_Alp(:,2),'--m')
+plot(wrapTo180(Adriatics(:,1)),Adriatics(:,2) , '--k')
 % measurements
-quiver(long(Selected),lat(Selected),Ve_res(Selected)*sc1,      Vn_res(Selected)*sc1,        0, 'r', 'lineWidth',1)
-    sc2 = 50;
+quiver(wrapTo180(long(Selected)),lat(Selected),Ve_res(Selected)*sc1,      Vn_res(Selected)*sc1,        0, 'r', 'lineWidth',1)
+    sc2 = 1;
     scSigVe = sc1 * sc2 * 100;
     scSigVn = sc1 * sc2 * 350;
 for i = 1:length(Selected) 
@@ -121,7 +120,7 @@ end
 
 % interpolation results
 % quiver(LongGrid,      LatGrid,      V_pred_1(:,2)*s,   V_pred_1(:,1)*s,    0, 'Color',clr(2,:), 'lineWidth',1)
-quiver(LongGrid,      LatGrid,      V_pred_2(:,2)*sc1,   V_pred_2(:,1)*sc1,    0, 'Color',clr(1,:), 'lineWidth',1)
+quiver(LongGrid,      LatGrid,      V_def(:,2)*sc1,   V_def(:,1)*sc1,    0, 'Color',clr(1,:), 'lineWidth',1)
 % quiver(LongGrid,      LatGrid,        CorrErr(:,2)*s,    CorrErr(:,1)*s,     0, 'Color',clr(4,:), 'lineWidth',1)
 for i = 1:length(LongGrid) 
    ellipce_2D([km2deg(Sigma_V_pred_2(i,2)*scSigmaVe,6378*cosd(LatGrid(i))), Sigma_V_pred_2(i,1)*scSigmaVn/111], ...

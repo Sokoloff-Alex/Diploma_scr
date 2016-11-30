@@ -169,7 +169,7 @@ for iLong = -4:step:18
 %               V_pred(p,:)   = solve_LSC_alt(iLat, iLong, lat(sel), long(sel), Vn_res(sel),      Ve_res(sel) ,      'no plot');   % LSC 
                 [V_pred_point, rmsFitPoint] = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'exp1', '-v', 'bias', 'tail 0', 'no corr');   % LSC 
 %                 V_pred_3(p,:) = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'Hirvonen', '-v', 'no corr', 'refine')'/1000;   % LSC 
-                V_pred_2(p,:) = V_pred_point'/1000;
+                V_def(p,:) = V_pred_point'/1000;
                 rmsFit(p,:)   = rmsFitPoint/1000; % [mm/yr]
                 LatGrid(p,1)  = iLat;
                 LongGrid(p,1) = iLong;
@@ -183,7 +183,7 @@ t2 = toc
 
 
 %% Plot Results 2D map
-% clc
+clc
 s = 250;  % [mm/yr]
 try
     close (fig7)
@@ -205,21 +205,51 @@ plot(Adriatics(:,1),Adriatics(:,2) , '--k')
 quiver(long(Selected),lat(Selected),Ve_res(Selected)*s,Vn_res(Selected)*s, 0, 'r', 'lineWidth',1)
 quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',1)
 
-quiver(LongGrid,      LatGrid,      V_pred_2(:,2)*s,   V_pred_2(:,1)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+% quiver(LongGrid,      LatGrid,      V_pred_2(:,2)*s,   V_pred_2(:,1)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % ellipce_2D([km2deg(Max_Dist,6378*cosd(iLat)), Max_Dist/111], 0, [iLong, iLat], 1)
-text(long,lat, names)
+% text(long,lat, names)
 title('velocity field / deformation model') 
 xlabel('Velocity EW, [mm/yr]')
 ylabel('Velocity SN, [mm/yr]')
 legend('Earth Coast','Alps Orogen boundary','Ardiatics','Residual velocity','LSC velocity','location','NorthWest')
-% impoly(gca, [Adriatics])
+    sc1 = 1000;
+    scSigVe = sc1;
+    scSigVn = sc1;
+for i = 1:length(Selected) 
+    az = Azim(Selected(i));
+    sigma_ee = SigmaVe(Selected(i)) * scSigVe;
+    sigma_nn = SigmaVn(Selected(i)) * scSigVn;
+    sigma_en = -1/2 * tand(2*az) * abs((sigma_ee^2 - sigma_nn^2));
+    corrVen(i,1) = sigma_en / (sigma_ee * sigma_nn);
+    cov_mat = [sigma_ee^2, sigma_en   ; 
+               sigma_en,   sigma_nn^2];
+    mean_value = [long(Selected(i)) + Ve_res(Selected(i))*sc1, lat(Selected(i))  + Vn_res(Selected(i))*sc1];
+%    ellipce_2D([sigma_xx sigma_yy], 0,mean_value , 1, clr(3,:)) 
+%    error_ellipse(cov_mat, mean_value, 0.95, 'r') % 2 sigma, 95 % confidence
+end
 grid on
 hold off
 
-Alps_deformation = [LongGrid, LatGrid, V_pred_2(:,2), V_pred_2(:,1)];
+Alps_deformation = [LongGrid, LatGrid, V_def(:,2), V_def(:,1)];
+
+%%
+clc
+for i = 1:length(SigmaVe) 
+    az = Azim(i);
+    sigma_ee = SigmaVe(i);
+    sigma_nn = SigmaVn(i);
+    sigma_en = 1/2 * tand(2*(90-az)) * abs((sigma_ee^2 - sigma_nn^2));
+    corrVen(i,1) = sigma_en / (sigma_ee * sigma_nn);
+end
+
+[SigmaVe, SigmaVn, Azim, corrVen]
+%%
+sc = 100/2
+writeVelocityFieldwithEllipseGMT([long(Selected) , lat(Selected), Ve_res(Selected), Vn_res(Selected), SigmaVe(Selected)*100/2, SigmaVn(Selected)*100/2, Azim(Selected)], names(Selected), '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse.txt')
+writeVelocityFieldwithCovGMT(    [long(Selected) , lat(Selected), Ve_res(Selected), Vn_res(Selected), SigmaVe(Selected)*100/2, SigmaVn(Selected)*100/2, corrVen(Selected)], names(Selected), '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov.txt')
 
 %% save results
-Alps_deformation = [LongGrid, LatGrid, V_pred_2(:,2), V_pred_2(:,1)];
+Alps_deformation = [LongGrid, LatGrid, V_def(:,2), V_def(:,1)];
 name = 'Alps_deformation_0.25x0.25_no_correlation_3';
 save([name, '.mat'],'Alps_deformation');
 
