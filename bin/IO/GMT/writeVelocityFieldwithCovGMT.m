@@ -19,7 +19,7 @@ function writeVelocityFieldwithCovGMT(VelocityField, SiteNames, filename)
 
 fileID = fopen(filename, 'w');
 fprintf(fileID, '# Velocity Field, \n');
-fprintf(fileID, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma Ve [m/yr], Sigma Vn [m/yr],      CorrVen[deg],   Site \n');
+fprintf(fileID, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma Ve [m/yr], Sigma Vn [m/yr],      CorrVen,     Site \n');
 
 formatStr = '%12.7f  %12.7f  %12.5f  %12.5f   %15e  %15e  %16.5f %9s \n';
 

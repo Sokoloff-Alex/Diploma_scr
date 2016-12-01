@@ -1,15 +1,12 @@
-function [SINEX] = readSNX(filename)
+function [SINEX] = readSNX(filename, varargin)
 %  script to parse SNX file
 %
 % Alexandr Sokolov, KEG
 % 11.10.2016
-%%
 % 
-% clear all
-% close all
-% fclose all;
-% clc
-% 
+
+flag = varargin{:}; 
+
 tic
 
 % check if file exist
@@ -54,7 +51,12 @@ DataType = {'FILE/REFERENCE';
             'SOLUTION/MATRIX_APRIORI L COVA'};
         
 %% Parsing
-for iData = [3:11]
+Blocks = 3:11;
+if ismember(flag, {'All', 'all', 'cov','with covariance'})
+   Blocks = 3:13;   
+end
+
+for iData = [Blocks]
     [status, StartEndLines]= system(['grep --line-number "',DataType{iData},'" ', fullpath,' | cut -f1 -d:']);
     if (status ~= 0) % 0 = successful
         disp(['Error: status :', numn2str(status)]);
