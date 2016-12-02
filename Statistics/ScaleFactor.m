@@ -5,7 +5,7 @@ clear all
 clc
 
 %%
-SINEX = readSNX('STA/FMC_IGB_W7.SNX');
+SINEX = readSNX('STA/FMC_IGB_W7.SNX','All');
 Lat = SINEX.SITE.ID.LAT;
 Lon = SINEX.SITE.ID.LON;
 CRD = SINEX.SOLUTION.ESTIMATE.Data.CRD;

@@ -167,9 +167,12 @@ for iLong = -4:step:18
                 p = p + 1; % point Number
 %               V_pred(p,:)   = solve_LSC_3(iLat, iLong, lat(sel), long(sel), Vn_res(sel), Ve_res(sel),  50,'no plot');   % LSC 
 %               V_pred(p,:)   = solve_LSC_alt(iLat, iLong, lat(sel), long(sel), Vn_res(sel),      Ve_res(sel) ,      'no plot');   % LSC 
-                [V_pred_point, rmsFitPoint] = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'exp1', '-v', 'bias', 'tail 0', 'no corr');   % LSC 
+                [CovSet] = getSelectCOV(CovVenuSNX, sel)
+                [V_pred_point1, rmsFitPoint1] = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'exp1', '-v', 'bias', 'tail 0', 'no corr');   % LSC 
+                [V_pred_point2] = solve_WLSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,CovSet,'exp1', '-v', 'bias', 'tail 0', 'no corr');   % WLSC 
 %                 V_pred_3(p,:) = solve_LSC(iLat, iLong, lat(sel), long(sel), Vn_res(sel)*1000, Ve_res(sel)*1000,'Hirvonen', '-v', 'no corr', 'refine')'/1000;   % LSC 
-                V_def(p,:) = V_pred_point'/1000;
+                V_def1(p,:) = V_pred_point1'/1000;
+                V_def2(p,:) = V_pred_point2'/1000;
                 rmsFit(p,:)   = rmsFitPoint/1000; % [mm/yr]
                 LatGrid(p,1)  = iLat;
                 LongGrid(p,1) = iLong;
@@ -230,7 +233,7 @@ end
 grid on
 hold off
 
-Alps_deformation = [LongGrid, LatGrid, V_def(:,2), V_def(:,1)];
+Alps_deformation = [LongGrid, LatGrid, V_def1(:,2), V_def1(:,1)];
 
 %%
 clc
@@ -249,7 +252,7 @@ writeVelocityFieldwithEllipseGMT([long(Selected) , lat(Selected), Ve_res(Selecte
 writeVelocityFieldwithCovGMT(    [long(Selected) , lat(Selected), Ve_res(Selected), Vn_res(Selected), SigmaVe(Selected)*100/2, SigmaVn(Selected)*100/2, corrVen(Selected)], names(Selected), '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov.txt')
 
 %% save results
-Alps_deformation = [LongGrid, LatGrid, V_def(:,2), V_def(:,1)];
+Alps_deformation = [LongGrid, LatGrid, V_def1(:,2), V_def1(:,1)];
 name = 'Alps_deformation_0.25x0.25_no_correlation_3';
 save([name, '.mat'],'Alps_deformation');
 

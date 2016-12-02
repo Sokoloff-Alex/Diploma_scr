@@ -21,11 +21,35 @@ fileID = fopen(filename, 'w');
 fprintf(fileID, '# Velocity Field, \n');
 fprintf(fileID, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma Ve [m/yr], Sigma Vn [m/yr],      CorrVen,     Site \n');
 
+fileID2 = fopen([filename(1:end-4),'_TH.txt'], 'w');
+fprintf(fileID2, '# Velocity Field, \n');
+fprintf(fileID2, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma Ve [m/yr], Sigma Vn [m/yr],      CorrVen,     Site \n');
+
+
 formatStr = '%12.7f  %12.7f  %12.5f  %12.5f   %15e  %15e  %16.5f %9s \n';
 
 for i = 1:size(VelocityField,1)
-   fprintf(fileID, formatStr, VelocityField(i,1:7), SiteNames{i}); 
+    SigE = (VelocityField(i,5));
+    SigN = (VelocityField(i,6));
+    
+    SigmaTH = 0.0001;
+    
+    if SigE < SigmaTH || SigN < SigmaTH
+       if SigE < SigmaTH
+          SigE = SigmaTH;
+       end
+       if SigN < SigmaTH
+          SigN = SigmaTH;
+       end
+       data = [VelocityField(i,1:4), SigE, SigN, VelocityField(i,7)]; 
+       fprintf(fileID2, formatStr, data, SiteNames{i}); 
+%        fprintf(fileID, formatStr, data, SiteNames{i}); 
+    else
+       data = [VelocityField(i,1:4), SigE, SigN, VelocityField(i,7)]; 
+       fprintf(fileID, formatStr, data, SiteNames{i}); 
+    end
 end
 fclose(fileID);
+fclose(fileID2);
 
 end

@@ -39,10 +39,6 @@ Omega_Eur = [55.9533, -97.4134,   2.6364e-07 ]';
 [Ve_res, Vn_res, Vu_res] = XYZ2ENU(CRD,V_res_xyz); % NEU components, [m/yr m/yr m/yr]
 [Ve_res_all, Vn_res_all, Vu_res_all] = XYZ2ENU(CRD_all,V_res_xyz_all); % NEU components, [m/yr m/yr m/yr]
 
-[VEL_std_xyz, VEL_std_xyz2] = merge_stations(VEL_std, VEL_std, names_all);
-
-%%
-Azim_All = Records.VEL.ENU.Ellipse.Angle;
 VEL_std = SINEX.SOLUTION.ESTIMATE.Data.VEL_STD;
 
 Sites_list = SINEX.SITE.ID.CODE;
@@ -51,55 +47,33 @@ DOMES    = cellstr(SINEX.SITE.ID.DOMES);
 SiteDome = [SINEX.SITE.ID.CODE, repmat(char(' '),297,1), SINEX.SITE.ID.DOMES];
 SiteDome_list = cellstr(SiteDome);
 
-%% Transform sigma / covariance from XYZ to ENU
+[VEL_std_xyz, VEL_std_xyz2] = merge_stations(VEL_std, VEL_std, names_all);
 
-clc
+% Azim_All = Records.VEL.ENU.Ellipse.Angle;
+
+
+% Transform sigma / covariance from XYZ to ENU
+
 SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 
-close all
-figure(2)
-hold on; grid on
-axis equal
-sigmaVenu = zeros(size(VEL_std_xyz));
-angle = size(VEL_std_xyz,1);
-corrVen = size(VEL_std_xyz,1);
-for i = 1:297 %198 %size(VEL_std_xyz,1)
-%     covVxyz = [VEL_std_xyz(i,1)^2 0 0 ;
-%                0 VEL_std_xyz(i,2)^2 0 ;
-%                0 0 VEL_std_xyz(i,3)^2];
-%    [covVenu, sigmaVenu(i,:)] = covXYZ2ENU(covVxyz, lat(i), long(i));
+[CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
+[CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
 
-    iCv = [((i-1)*6+4) : (((i-1)*6+6))];
-    covVxyzSNX = SNX_cov(iCv,iCv);
-    covVxyzSNX(1,2) = covVxyzSNX(2,1);
-    covVxyzSNX(1,3) = covVxyzSNX(3,1);
-    covVxyzSNX(2,3) = covVxyzSNX(3,2);
-    [covVenu, sigmaVenu(i,:)] = covXYZ2ENU(covVxyzSNX, lat_all(i), long_all(i));
-    %     SigmaVxyz_Cov(i,1:3) = sqrt( [covVxyzSNX(1,1), covVxyzSNX(2,2), covVxyzSNX(3,3)] );
-    SigmaVenu_Cov(i,1:3) = sqrt( [covVenu(1,1), covVenu(2,2), covVenu(3,3)] );
-    corrVen(i,:) = covVenu(1,2) / (sigmaVenu(i,1) * sigmaVenu(i,2));
-    angle(i,:) = 90 + 1/2 * atand(2*covVenu(1,2) / (covVenu(1,1) - covVenu(2,2)));
-    if sigmaVenu(1) < sigmaVenu(1);
-        angle(i,:) = angle(i,:) + 90;
-    end
-    error_ellipse([covVenu(1:2, 1:2)]*1000^2, [0 0 ],0.67, 10, 'r')
-end
-azim = 90 - angle;
 
 %%
 %  VARIANCE FACTOR                     1.800168208557666
-sc = 10*1.8
-% sigmaVenu_SNX = sigmaVenu;
-LLVS = [long_all , lat_all, Ve_res_all, Vn_res_all, sigmaVenu_SNX(:,1)*1.8*30, sigmaVenu_SNX(:,2)*1.8*20];
-writeVelocityFieldwithEllipseGMT([ LLVS, angle  ], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_SNX.txt')
-writeVelocityFieldwithCovGMT(    [ LLVS, corrVen], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_SNX.txt')
+sc = 20*1.8
+sigmaVenu_SNX = SigmaVenu;
+LLVS = [long_all , lat_all, Ve_res_all, Vn_res_all, sigmaVenu_SNX(:,1)*sc, sigmaVenu_SNX(:,2)*sc];
+writeVelocityFieldwithEllipseGMT([ LLVS, AngleV  ], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_SNX.txt')
+writeVelocityFieldwithCovGMT(    [ LLVS, CorrVen], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_SNX.txt')
 
 %%
 sc = 10
 % sigmaVenu_std = sigmaVenu;
 LLVS = [long , lat, Ve_res, Vn_res, sigmaVenu_std(:,1)*sc*1, sigmaVenu_std(:,2)*sc];
-writeVelocityFieldwithEllipseGMT([ LLVS, angle  ], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_std.txt')
-writeVelocityFieldwithCovGMT(    [ LLVS, corrVen], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_std.txt')
+writeVelocityFieldwithEllipseGMT([ LLVS, AngleV  ], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_std.txt')
+writeVelocityFieldwithCovGMT(    [ LLVS, CorrVen], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_std.txt')
 
 
 fileID = fopen('~/Alpen_Check/MAP/VelocityField/list_outliers','w');
