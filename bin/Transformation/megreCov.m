@@ -13,36 +13,41 @@ SplittedSites_list = fieldnames(SplittedSites);
 
 %% Average by columns constrained sites
 
-for iiSite = 1:length(SplittedSites_list)
-    iSet = [];
-    for i = 1:length(SplittedSites.(SplittedSites_list{iiSite}))
-        i_add = find(strcmp(names_SNX,SplittedSites.(SplittedSites_list{iiSite}){i}));
+setToBeMerged = [];
+
+for iSite = 1:length(SplittedSites_list)
+    iiSet = [];
+    for i = 1:length(SplittedSites.(SplittedSites_list{iSite}))
+        i_add = find(strcmp(names_SNX,SplittedSites.(SplittedSites_list{iSite}){i}));
         if ~isempty(i_add)
-            iSet = [iSet; i_add];
+            iiSet = [iiSet; i_add];
         end
     end
-    if ~isempty(iSet) 
-        %%
-        for j=1:length(iSet)
-            CovAveStack = zeros(3,3,j);
-%             names_unified{iiSite} = SplittedSites_list{iiSite};
-            for iiSite = [1:(iSet(1)-1),(iSet(end)+1):p]
-                % avarage covariances b/w sonstrained sites w.r.t others, by columns   
-                Cov2(iiSite, iSet(j)*3+0) = mean( Cov1(iiSite, iSet(j)*3+0) );
-                Cov2(iiSite, iSet(j)*3+1) = mean( Cov1(iiSite, iSet(j)*3+1) );
-                Cov2(iiSite, iSet(j)*3+2) = mean( Cov1(iiSite, iSet(j)*3+2) );
-                Cov2(iSet(j)*3+0, iiSite) = mean( Cov1(iSet(j)*3+0, iiSite) );
-                Cov2(iSet(j)*3+1, iiSite) = mean( Cov1(iSet(j)*3+1, iiSite) );
-                Cov2(iSet(j)*3+2, iiSite) = mean( Cov1(iSet(j)*3+2, iiSite) );
-                
-                % average by block
-                CovAveStack(1:3,1:3,j) = Cov1(iSet(j)*3-1+(1:3), iSet(j)*3-1+(1:3));
-                CovMean = mean(CovAveStack,3);
-                Cov2(iSet(j)*3-1+(1:3),iSet(j)*3-1+(1:3)) = CovMean;
-            end
+    if ~isempty(iiSet) 
+        % average blocks at diagonal
+        CovAveStackDiag = zeros(3,3,length(iiSet));
+        for iSet=1:length(iiSet)
+            % names_unified{iiSite} = SplittedSites_list{iiSite};
+            iBlock = (iiSet(iSet)-1)*3+(1:3);
+            CovAveStackDiag(:,:,iSet) = Cov1(iBlock,iBlock);
         end
-        %%
-        
+        CovMeanDiag = mean(CovAveStackDiag,3);
+        Cov2((iiSet(1)-1)*3+(1:3),(iiSet(1)-1)*3+(1:3)) = CovMeanDiag;
+
+        % avarage covariances b/w constrained sites w.r.t others, by columns   
+        CovAveStackij = zeros(3,3,length(iiSet));
+        iAffected = setdiff(1:p,iiSet);
+        for iRow = [iAffected]        
+            for iSet = 1:length(iiSet)
+                CovAveStackij(:,:,iSet) = Cov1((iRow-1)*3+(1:3), (iiSet(iSet)-1)*3+(1:3));
+            end
+            CovAveStackij_mean = mean(CovAveStackij,3);
+            Cov2((iRow-1)*3+(1:3),(iiSet(1)-1)*3+(1:3)) = CovAveStackij_mean;
+            Cov2((iiSet(1)-1)*3+(1:3),(iRow-1)*3+(1:3)) = CovAveStackij_mean; % Symmetric
+        end
+        setToBeMerged = [setToBeMerged, iiSet(1)];
+    else
+        setToBeMerged = [setToBeMerged, iSite];
     end
 end
 
@@ -50,21 +55,21 @@ end
 names_unified = names_SNX;
 
 
-for iiSite = 1:length(SplittedSites_list)
-    iSet = [];
-    for i = 1:length(SplittedSites.(SplittedSites_list{iiSite}))
-        i_add = find(strcmp(names_SNX,SplittedSites.(SplittedSites_list{iiSite}){i}));
+for iSite = 1:length(SplittedSites_list)
+    iiSet = [];
+    for i = 1:length(SplittedSites.(SplittedSites_list{iSite}))
+        i_add = find(strcmp(names_SNX,SplittedSites.(SplittedSites_list{iSite}){i}));
         if ~isempty(i_add)
-            iSet = [iSet; i_add];
+            iiSet = [iiSet; i_add];
         end
     end
 %     iSet = nanclip(iSet)
-    if ~isempty(iSet) 
-        for j=1:length(iSet)
-            iiSite = iSet(j);
-            CRD_unified(iiSite,:) = mean(CRD(iSet,:),1);
-            VEL_unified(iiSite,:) = mean(VEL(iSet,:),1);
-            names_unified{iiSite} = SplittedSites_list{iiSite};
+    if ~isempty(iiSet) 
+        for iSet=1:length(iiSet)
+            iSite = iiSet(iSet);
+            CRD_unified(iSite,:) = mean(CRD(iiSet,:),1);
+            VEL_unified(iSite,:) = mean(VEL(iiSet,:),1);
+            names_unified{iSite} = SplittedSites_list{iSite};
         end
     end
 end
@@ -75,9 +80,9 @@ CRD_ave = zeros(length(uniq_names),3);
 VEL_ave = zeros(length(uniq_names),3);
 
 for i = 1:length(uniq_names)
-    iSet = find(strcmp(names_unified,uniq_names(i)));
-    CRD_ave(i,:) = mean(CRD_unified(iSet,:),1);
-    VEL_ave(i,:) = mean(VEL_unified(iSet,:),1);
+    iiSet = find(strcmp(names_unified,uniq_names(i)));
+    CRD_ave(i,:) = mean(CRD_unified(iiSet,:),1);
+    VEL_ave(i,:) = mean(VEL_unified(iiSet,:),1);
 end
 
 
