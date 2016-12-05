@@ -195,8 +195,14 @@ C_new = [C_new_NN, C_new_NE; ...
 % Observations  
 V_obs = [Vn - mean(Vn); Ve - mean(Ve)];
 
-% Solve LSC
+
+%% Rescale 
 Cnoise = CovVel;
+% Cnoise([1:p],[1:p]) = Cnoise([1:p],[1:p])*1000^2;
+Cnoise = Cnoise*1000^2*1.8*100;
+
+% Solve LSC
+
 V_pred = C_new' * (C_obs + Cnoise)^-1 * V_obs;
 
 V_pred = V_pred + [mean(Vn); mean(Ve)];

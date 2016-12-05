@@ -8,13 +8,14 @@ clc
 [Stations, Radoms, Records] = readOUT('STA/FMC_IGB_W7.OUT');
 
 %%
-SINEX       = readSNX('STA/FMC_IGB_W7.SNX','All');
+% SINEX       = readSNX('STA/FMC_IGB_W7.SNX','All');
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
 
 
 %%
-save('SINEX.mat','SINEX')
+% save('SINEX.mat','SINEX')
+load('dat/SINEX.mat')
 
 %%
 flags = ALP_NET_CRD(:,7);
@@ -61,6 +62,11 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
+
+%% merge covariance
+[CovENU_sel] = megreCov(CovVenuSNX, names_all);
+CovENU_sel;
+%%
 
 
 %%
