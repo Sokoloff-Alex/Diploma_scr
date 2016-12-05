@@ -14,6 +14,9 @@ ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
 
 
 %%
+save('SINEX.mat','SINEX')
+
+%%
 flags = ALP_NET_CRD(:,7);
 range_flag_W = 1:length(flags);
 range_flag_W = range_flag_W(strcmp(flags, 'W') == 1);
