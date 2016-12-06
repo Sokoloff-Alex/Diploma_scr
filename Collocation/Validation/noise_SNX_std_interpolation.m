@@ -63,6 +63,15 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
 
+%% look into Covariance matrix
+% close all
+% figure(1)
+% a = SNX_cov*1.8*10 * 1000^2;
+% th = 10^-3
+% a(abs(a) >= th) = th;
+% imagesc(a)
+
+
 %% merge covariance
 [CovENU_sel] = megreCov(CovVenuSNX, names_all);
 CovENU_sel;

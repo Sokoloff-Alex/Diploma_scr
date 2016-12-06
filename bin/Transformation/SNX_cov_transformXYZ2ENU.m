@@ -4,6 +4,9 @@ function [Cov_enuSNX, SigmaVenu, CorrVen, Angle] = SNX_cov_transformXYZ2ENU(SNX_
 %
 % Transform covariance matrix from XYZ to ENU
 %
+% NOTICE! only the main diagonal block are transformed
+% todo: add transformation for off giagonal blocks
+%
 % flag  : CRD or VEL
 %
 % Alexandr Sokolov, KEG

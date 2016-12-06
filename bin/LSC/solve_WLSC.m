@@ -1,15 +1,18 @@
-function [V_pred, rmsFitting] = solve_WLSC(lat0, long0, lat, long, Vn, Ve, CovVel, fType, varargin)
+function [V_pred, rmsFitting, V_noise_pred] = solve_WLSC(lat0, long0, lat, long, Vn, Ve, CovVel, fType, varargin)
 % solve Least Square Collocation
 %
-% input   :     lat0, long0 - coordinates of grid point , [deg]
-%               lat, long   - coordinates of observation points
-%               Ve Vn       - velocity components
-%               CovVel      - covariance matrix of velosities from SNX COVA
-%                             and transfrmed by covXYZ2ENU()
-%               fType       - approx. function type ('exp1', 'Hirvonen' or 'exp2')
-%               varargin    - 'plot' to plot covariance functions
-%                           - '-v' verbose mode           
-% output  :     V_pred      - interpolated / predicted velocity vector
+% input   :     lat0, long0  - coordinates of grid point , [deg]
+%               lat, long    - coordinates of observation points
+%               Ve Vn        - velocity components
+%               CovVel       - covariance matrix of velosities from SNX COVA
+%                              and transfrmed by covXYZ2ENU()
+%               fType        - approx. function type ('exp1', 'Hirvonen' or 'exp2')
+%               varargin     - 'plot' to plot covariance functions
+%                            - '-v' verbose mode           
+% output  :     V_pred       - interpolated / predicted velocity vector
+%               V_noise_pred - predicted noise, propagated from measurement
+%                              noise
+%               rmsFitting   - rms of fitting Data points to to empirical Covariance curve
 %
 % Example :
 %   
@@ -196,17 +199,35 @@ C_new = [C_new_NN, C_new_NE; ...
 V_obs = [Vn - mean(Vn); Ve - mean(Ve)];
 
 
-%% Rescale 
+%% Rescale Covariance Matrix accoring to SINEX
+%  VARIANCE FACTOR                     1.800168208557666
+%  [m/yr]^2  -> [mm/yr]^2              1000^2
+%  Bernese scale                       10-100
 Cnoise = CovVel;
 % Cnoise([1:p],[1:p]) = Cnoise([1:p],[1:p])*1000^2;
-Cnoise = Cnoise*1000^2*1.8*100;
+Cnoise = Cnoise*1000^2 * 1.8 * 25;
 
-% Solve LSC
+%% Solve LSC
 
 V_pred = C_new' * (C_obs + Cnoise)^-1 * V_obs;
 
 V_pred = V_pred + [mean(Vn); mean(Ve)];
 
+%% propagate noise
+SigmaSquare = diag(Cnoise);
+V_noise_pred = C_new' * (C_obs + Cnoise)^-1 * SigmaSquare;
+
+%% Khale, error in dimentions
+% V_noise_pred = C_new' * (C_obs + Cnoise)^-1 * C_new; %  * SigmaSquare; 
+% V_noise_pred = diag(V_noise_pred)';
+
+%% Mihkail E.
+% Cs0 = [C_obs_NN(1,1),0; 
+%        0,C_obs_EE(1,1)];
+
+% V_noise_pred = Cs0 - C_new' * (C_obs + Cnoise)^-1 * C_new; 
+% V_noise_pred = diag(V_noise_pred)';
+% 
 %% verbose mode
 if ismember('-v', flags)
     disp(['point ::', ... 
@@ -218,6 +239,8 @@ if ismember('-v', flags)
           ' :: Cne: b = ', num2str(coeff_NE(2), '%#7.4f'), ...
           '; Vn = ', num2str(V_pred(1), '%#+7.4f'), ...
           '; Ve = ', num2str(V_pred(2), '%#+7.4f'), ...
+          '; SigmaVn^2 = ', num2str(V_noise_pred(1), '%#+7.4f'), ...
+          '; SigmaVe^2 = ', num2str(V_noise_pred(2), '%#+7.4f'), ...
           ' ; rmsNN = ', num2str(rmsNN), ...
           ' ; rmsEE = ', num2str(rmsEE), ...
           ' ; rmsNE = ', num2str(rmsNE) ]);

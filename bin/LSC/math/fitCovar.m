@@ -19,11 +19,11 @@ if ismember(functionName, {'exp1', 'Hirvonen','normal','exp2','Gaussian','gaussi
     end
     
     if strcmp(functionName, 'Hirvonen') % y = C0 / (1 + (a/x)^2) 
-           coeffs = fitHirvonen(coeffs_apr, x, y); 
+           [coeffs, rms] = fitHirvonen(coeffs_apr, x, y); 
     end
     
     if max(strcmp(functionName, {'exp2','normal', 'Gaussian','gaussian'})) % y = C0 * exp(a*x^2) 
-           coeffs = fitGaussian(coeffs_apr, x, y); 
+           [coeffs, rms] = fitGaussian(coeffs_apr, x, y); 
     end    
     
 else
