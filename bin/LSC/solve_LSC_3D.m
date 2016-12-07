@@ -34,8 +34,8 @@ arc2 = zeros(p);
 scale = R_aoi*2/(nClasses-2); % since max dist in R_aoi = diameter
 
 for i = 1:p
-    arc = distance(lat(i), long(i), lat(i:p), long(i:p))*111 ; % km
-    arc2(:,i) = distance(lat(i), long(i), lat, long)*111 ; % km
+    arc = greatcircleArc(lat(i), long(i), lat(i:p), long(i:p))*111 ; % km
+    arc2(:,i) = greatcircleArc(lat(i), long(i), lat, long)*111 ; % km
     for c = 0:nClasses-1
         J = i:p;
         sel1 = J(arc <= c*scale);    % sel1

@@ -13,8 +13,8 @@ if dim == 2
     plot(long,lat)
     xlim([-180 180])
     ylim([-90 90])
-    set(gca,'Xtick',-180:30:180)
-    set(gca,'Ytick',-90:30:90)
+%     set(gca,'Xtick',-180:30:180)
+%     set(gca,'Ytick',-90:30:90)
     
 elseif dim == 3
     lat = lat*pi/180;

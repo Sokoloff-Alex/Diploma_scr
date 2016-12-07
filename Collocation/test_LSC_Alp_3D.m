@@ -19,7 +19,7 @@ for iLong = 7:0.5:12
         LongGrid(p) = iLong;
         LatGrid(p)  = iLat;      
 
-        arc = distance(iLat, iLong,lat, long) * 111 ; % km
+        arc = greatcircleArc(iLat, iLong,lat, long) * 111 ; % km
         sel = range(arc < Max_Dist);    
         sel = intersect(sel, Selected);
         
