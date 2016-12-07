@@ -39,6 +39,18 @@ Vu = Venu(:,3);
 [x_EU, y_EU] = mean_No_NaN(Corr_EU);
 [x_NU, y_NU] = mean_No_NaN(Corr_NU);
 
+%% Filter Noise 
+% Cs(0) = Cl(0) - Cr(0)
+if ismember(flags, {'filter', '-f'})
+    CrEE = trace(CovVel(    1:p  )) * 1000^2 * 1.8 * 25 / p;
+    CrNN = trace(CovVel(  p+1:2*p)) * 1000^2 * 1.8 * 25 / p;
+    CrUU = trace(CovVel(2*p+1:3*p)) * 1000^2 * 1.8 * 25 / p;
+    y_EE(1) = y_EE(1) - CrEE;
+    y_NN(1) = y_NN(1) - CrNN;
+    y_UU(1) = y_UU(1) - CrUU;  
+end
+
+%%
 x_EE(2:end) = x_EE(2:end)*scale - scale/2;
 x_NN(2:end) = x_NN(2:end)*scale - scale/2;
 x_UU(2:end) = x_UU(2:end)*scale - scale/2;
@@ -156,19 +168,19 @@ if ismember('plot', flags)
         ' ; # obs.: ', num2str(length(lat)),...
         ' ; step = ',  num2str(scale),      ...
         ' km', ';  # Classes ', num2str(nClasses)] );
-    pl1 = plot(x_EE, y_EE, 'o--', 'Color', clr(:,1));
-    pl2 = plot(x_NN, y_NN, 'o--', 'Color', clr(:,2));
-    pl3 = plot(x_UU, y_UU, 'o--', 'Color', clr(:,3));
-    pl4 = plot(x_EN, y_EN, 'o--', 'Color', clr(:,4)); 
-    pl5 = plot(x_EU, y_EU, 'o--', 'Color', clr(:,5)); 
-    pl6 = plot(x_NU, y_NU, 'o--', 'Color', clr(:,6)); 
+    pl1 = plot(x_EE, y_EE, 'o--', 'Color', clr(1,:));
+    pl2 = plot(x_NN, y_NN, 'o--', 'Color', clr(2,:));
+    pl3 = plot(x_UU, y_UU, 'o--', 'Color', clr(3,:));
+    pl4 = plot(x_EN, y_EN, 'o--', 'Color', clr(4,:)); 
+    pl5 = plot(x_EU, y_EU, 'o--', 'Color', clr(5,:)); 
+    pl6 = plot(x_NU, y_NU, 'o--', 'Color', clr(6,:)); 
 
-    pl7  = plot(d, empiricalCovariance(fType, coeff_EE, d), 'Color', clr(:,1), 'LineWidth',2);
-    pl8  = plot(d, empiricalCovariance(fType, coeff_NN, d), 'Color', clr(:,2), 'LineWidth',2);
-    pl9  = plot(d, empiricalCovariance(fType, coeff_UU, d), 'Color', clr(:,3), 'LineWidth',2);
-    pl10 = plot(d, empiricalCovariance(fType, coeff_EN, d), 'Color', clr(:,4), 'LineWidth',2);
-    pl11 = plot(d, empiricalCovariance(fType, coeff_EU, d), 'Color', clr(:,5), 'LineWidth',2);
-    pl12 = plot(d, empiricalCovariance(fType, coeff_NU, d), 'Color', clr(:,6), 'LineWidth',2);
+    pl7  = plot(d, empiricalCovariance(fType, coeff_EE, d), 'Color', clr(1,:), 'LineWidth',2);
+    pl8  = plot(d, empiricalCovariance(fType, coeff_NN, d), 'Color', clr(2,:), 'LineWidth',2);
+    pl9  = plot(d, empiricalCovariance(fType, coeff_UU, d), 'Color', clr(3,:), 'LineWidth',2);
+    pl10 = plot(d, empiricalCovariance(fType, coeff_EN, d), 'Color', clr(4,:), 'LineWidth',2);
+    pl11 = plot(d, empiricalCovariance(fType, coeff_EU, d), 'Color', clr(5,:), 'LineWidth',2);
+    pl12 = plot(d, empiricalCovariance(fType, coeff_NU, d), 'Color', clr(6,:), 'LineWidth',2);
     
     pl13 = plot(d, coeff_NN(1).*exp(-0.005*d ), '.-k');
     pl14 = plot(d, coeff_NN(1).*exp(-0.05*d),   '--k');
