@@ -51,10 +51,8 @@ DOMES = ALP_NET_CRD(range_flag,3);
 
 load('dat/SINEX.mat')
 SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
-
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
-
 [CovVenu] = megreCov(CovVenuSNX, names_all);
 
 %% Block selection
@@ -70,28 +68,17 @@ Outliers = {'HELM','WIEN','FERR', ...
 iiOut    = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
 
-%% Estimate and remove block motion from ITRF
-% [Vel_res_Blocks, Vel_blocks, Omega_Blocks]= remove_block_motion(CRD, VEL, Sets);
-% 
-% %% Remome Plate motion from Block motion
-% [V_bl_no_plate] = remove_plate_motion(CRD, Vel_blocks, Omega_Eur);
-% [Ve_res_bl, Vn_res_bl, Vu_res_bl] = XYZ2ENU(CRD,V_bl_no_plate); 
-% dVe = Ve_res - Ve_res_bl;
-% dVn = Vn_res - Vn_res_bl;
-% t = toc;
-% disp(['proc time : ', num2str(t), ' [sec]'])
-
 %% LSC, % allocation domain for grid points
-clear LatGrid LongGrid V_pred V_pred* V_def*
+clear LatGrid LongGrid V_pred V_pred* V_def* V_SigPred rmsFit
 clc
 tic
 range = 1:length(lat);
-Max_Dist = 250; % km
+Max_Dist = 200; % km
 lim = 10;
 p = 0;
-step = 0.5;
+step = 1;
 for iLong = -4:step:18
-    for iLat =  42:step:53
+    for iLat = 42:step:53
         arc = greatcircleArc(iLat, iLong, lat, long) * 111 ; % km
         sel = range(arc < Max_Dist);    
         sel = intersect(sel, iiSel);
@@ -118,6 +105,20 @@ for iLong = -4:step:18
 end
 t2 = toc
 
+%% run Collocation again
+% prepare data
+long1 = [long; LongGrid];
+lat1  = [lat;  LatGrid];
+Venu1 = [V_def3, [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)]];
+CV_pred = diag( 0 * ones(size(V_def3,1)*3,1));
+c12 = zeros( size(V_def3,1)*3, length(Ve_res)*3);
+c21 = c12';
+
+CovVenu1 = [CV_pred,   c12  
+            c21,  CovVenu ];
+
+
+[LongGrid, LatGrid, V_def4, rmsFit, V_SigPred ] = run_Collocation(long1, lat1, Venu1, CovVenu1, [-4 18], [42 53 ], 0.5, 200, 10);
 
 %% Plot Results 2D map
 clc

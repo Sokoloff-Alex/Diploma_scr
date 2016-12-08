@@ -34,7 +34,7 @@ y = LatGrid;
 z = V_def3(:,3) *1000;
 
 
-%% interpolate default
+% interpolate default
 [X, Y] = meshgrid(-4:0.1:18, 42:0.1:53);
 vq = griddata(x, y, z, X, Y, 'natural');
 clc
@@ -60,7 +60,7 @@ title('random field with sampling locations')
 
 
 % calculate the sample variogram
-v = variogram([x y],z,'plotit',false,'maxdist',2);
+v = variogram([x y],z,'plotit',false,'maxdist',5);
 % and fit a spherical variogram
 subplot(2,2,2)
 [dum,dum,dum,vstruct] = variogramfit(v.distance,v.val,[],[],[],'model','stable');
@@ -101,9 +101,9 @@ shading interp
 set(h,'facealpha',.5)
 contour(X,Y,Zhat,'LineWidth',2)
 % axis image
-quiver(LongGrid, LatGrid, zeros(size(V_def3(:,3))), V_def3(:,3)*200, 0, 'b')
+quiver(LongGrid, LatGrid, zeros(size(V_def3(:,3))), V_def3(:,3)*100, 0, 'b')
 % quiver(x, y, zeros(size(z)), z/1000*200, 0, 'b')
-quiver(long,     lat,     zeros(size(Vu_res)),      Vu_res*200,      0, 'k', 'LineWidth',1)
+quiver(long,     lat,     zeros(size(Vu_res)),      Vu_res*100,      0, 'k', 'LineWidth',1)
 
 % quiver3(x, y, abs(z), zeros(size(z)),zeros(size(z)), z,'b')
 % text(x(z >= 0),y(z >= 0),2*z(z >= 0),names(iiSel(z >= 0)))
