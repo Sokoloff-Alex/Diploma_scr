@@ -73,7 +73,7 @@ clear LatGrid LongGrid V_pred V_pred* V_def* V_SigPred rmsFit
 clc
 tic
 range = 1:length(lat);
-Max_Dist = 200; % km
+Max_Dist = 250; % km
 lim = 10;
 p = 0;
 step = 1;
@@ -94,7 +94,7 @@ for iLong = -4:step:18
             p = p + 1; % point Number
             CovVenuSel = extractCovariance(CovVenu, sel, [1 2 3], 'split');
             Venu = [Ve_res(sel), Vn_res(sel), Vu_res(sel)]*1000;
-            [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu ,CovVenuSel,'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');   % WLSC 
+            [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu ,CovVenuSel,'exp1', '-v', 'bias', 'tail 0', 'no corr', 'no filter');   % WLSC 
             V_def3(p,:) = V_pred/1000;
             rmsFit(p,:)   = rmsFitting/1000; % [mm/yr]
             V_SigPred(p,:) = V_noise_pred;
@@ -106,19 +106,31 @@ end
 t2 = toc
 
 %% run Collocation again
-% prepare data
-long1 = [long; LongGrid];
-lat1  = [lat;  LatGrid];
-Venu1 = [V_def3, [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)]];
+% prepare /merge data
+clc
+CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
+long1 = [LongGrid; long(iiSel)];
+lat1  = [LatGrid ; lat(iiSel) ];
+Venu1 = [V_def3; [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)]];
 CV_pred = diag( 0 * ones(size(V_def3,1)*3,1));
-c12 = zeros( size(V_def3,1)*3, length(Ve_res)*3);
+c12 = zeros( size(V_def3,1)*3, length(iiSel)*3);
 c21 = c12';
-
 CovVenu1 = [CV_pred,   c12  
-            c21,  CovVenu ];
+            c21,  CovVenu2 ];
+
+%%
+clc
+[LongGrid2, LatGrid2, V_def42, rmsFit2, V_SigPred2] = run_Collocation(long1, lat1, Venu1, CovVenu1, [-4 18], [42 53 ], 0.5, 200, 10);
+%%
+[LongGrid3, LatGrid3, V_def43, rmsFit3, V_SigPred3] = run_Collocation(long1, lat1, Venu1, CovVenu1, [-4.25 18], [42.25 53 ], 0.5, 200, 10);
+
+%%
+
+LongGrid = [LongGrid2; LongGrid3];
+LatGrid  = [LatGrid2;  LatGrid3];
+V_def4   = [V_def42; V_def43];
 
 
-[LongGrid, LatGrid, V_def4, rmsFit, V_SigPred ] = run_Collocation(long1, lat1, Venu1, CovVenu1, [-4 18], [42 53 ], 0.5, 200, 10);
 
 %% Plot Results 2D map
 clc

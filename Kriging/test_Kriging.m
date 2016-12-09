@@ -16,23 +16,24 @@ x = wrapTo180(long(iiSel));
 y = lat(iiSel);
 z = Vu_res(iiSel)*1000;
 %% Combi
-
-x = [LongGrid; wrapTo180(long(iiSel))];
-y = [LatGrid; lat(iiSel)];
-z = [V_def3(:,3); Vu_res(iiSel)] *1000;
-
+% 
+% x = [LongGrid; wrapTo180(long(iiSel))];
+% y = [LatGrid; lat(iiSel)];
+% z = [V_def3(:,3); Vu_res(iiSel)] *1000;
+% 
 %% Combi 2
-iiAdd = selectRange(names, {'FDOS'});
-x = [LongGrid; wrapTo180(long(iiAdd))];
-y = [LatGrid; lat(iiAdd)];
-z = [V_def3(:,3); Vu_res(iiAdd)] *1000;
+ iiAdd = selectRange(names, {'FDOS'});
+ x = [LongGrid; wrapTo180(long(iiAdd))];
+ y = [LatGrid; lat(iiAdd)];
+ z = [V_def4(:,3); Vu_res(iiAdd)] *1000;
 
 
 %% WLCS only
 x = LongGrid;
 y = LatGrid;
-z = V_def3(:,3) *1000;
+z = V_def4(:,3) *1000;
 
+%
 
 % interpolate default
 [X, Y] = meshgrid(-4:0.1:18, 42:0.1:53);
@@ -48,7 +49,7 @@ subplot(2,2,1)
 hold on
 Earth_coast(2)
 % plot(x,y,'.k')
-quiver(x, y, zeros(size(z)), z,'b')
+% quiver(x, y, zeros(size(z)), z,'b')
 
 pcolor(X,Y,vq);
 % text(x,y,names )
@@ -101,7 +102,7 @@ shading interp
 set(h,'facealpha',.5)
 contour(X,Y,Zhat,'LineWidth',2)
 % axis image
-quiver(LongGrid, LatGrid, zeros(size(V_def3(:,3))), V_def3(:,3)*100, 0, 'b')
+quiver(LongGrid, LatGrid, zeros(size(V_def4(:,3))), V_def4(:,3)*100, 0, 'b')
 % quiver(x, y, zeros(size(z)), z/1000*200, 0, 'b')
 quiver(long,     lat,     zeros(size(Vu_res)),      Vu_res*100,      0, 'k', 'LineWidth',1)
 
@@ -115,5 +116,17 @@ title('kriging predictions')
 xlim([0 18])
 ylim([42.5 50])
 zlim([-10 10])
+
+%% Save for GMT
+
+a = grid2vector(X);
+b = grid2vector(Y);
+c = grid2vector(Zhat);
+
+% writeVelocityFieldVertical2GMT(a,b,c, '~/Alpen_Check/MAP/VelocityField/Vel_up_Kriging.txt');
+writeVelocityFieldVertical2GMT(long(iiSel),lat(iiSel),Vu_res(iiSel)*1000, '~/Alpen_Check/MAP/VelocityField/Vu_res.txt');
+
+
+
 
 
