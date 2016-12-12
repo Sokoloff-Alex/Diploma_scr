@@ -54,13 +54,29 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
 [CovVenu] = megreCov(CovVenuSNX, names_all);
+[CRD, SigmaVenu_merged, nam ] = merge_stations(CRD_all,SigmaVenu,names_all );
+
+%% save Error Bars for GMT
+fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars.txt', 'w');
+fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
+fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
+formatStr = '%12.7f  %12.7f   %15e \n';
+d = diag(CovVenu);
+SigmaVu = SigmaVenu_merged(:,3) * 1.8^(1/2) * 20; % scaled to abequate value [m/yr]
+SigmaVu_deg_yr = SigmaVu*1000 * 0.36; 
+data = [long(iiSel), lat(iiSel) + Vu_res(iiSel) * 1000 * 0.24, SigmaVu_deg_yr(iiSel)];
+
+for i = 1:length(iiSel)
+   fprintf(fileID, formatStr, data(i,:)); 
+end
+fclose(fileID);
 
 %% Block selection
 
 Outliers   = {'HELM', 'WIEN', 'OGAG', 'OBE2', ...
               'ROHR','BIWI','BI2I', 'MANS'};
             
-Outliers = {'HELM','WIEN','FERR', ...
+Outliers = {'ELMO','WIEN','FERR', ...
             'BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
             'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
             'HRIE','KTZ2', 'WLBH'};
@@ -76,9 +92,9 @@ range = 1:length(lat);
 Max_Dist = 250; % km
 lim = 10;
 p = 0;
-step = 1;
-for iLong = -4:step:18
-    for iLat = 42:step:53
+step = 0.25;
+for iLong = 0:step:17
+    for iLat = 42:step:50
         arc = greatcircleArc(iLat, iLong, lat, long) * 111 ; % km
         sel = range(arc < Max_Dist);    
         sel = intersect(sel, iiSel);
@@ -94,7 +110,7 @@ for iLong = -4:step:18
             p = p + 1; % point Number
             CovVenuSel = extractCovariance(CovVenu, sel, [1 2 3], 'split');
             Venu = [Ve_res(sel), Vn_res(sel), Vu_res(sel)]*1000;
-            [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu ,CovVenuSel,'exp1', '-v', 'bias', 'tail 0', 'no corr', 'no filter');   % WLSC 
+            [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu ,CovVenuSel,'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter', 'opt b');   % WLSC 
             V_def3(p,:) = V_pred/1000;
             rmsFit(p,:)   = rmsFitting/1000; % [mm/yr]
             V_SigPred(p,:) = V_noise_pred;
@@ -112,7 +128,7 @@ CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
 long1 = [LongGrid; long(iiSel)];
 lat1  = [LatGrid ; lat(iiSel) ];
 Venu1 = [V_def3; [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)]];
-CV_pred = diag( 0 * ones(size(V_def3,1)*3,1));
+CV_pred = diag( 0.001 * ones(size(V_def3,1)*3,1) / (1000^2 * 1.8 * 100));
 c12 = zeros( size(V_def3,1)*3, length(iiSel)*3);
 c21 = c12';
 CovVenu1 = [CV_pred,   c12  
@@ -120,12 +136,16 @@ CovVenu1 = [CV_pred,   c12
 
 %%
 clc
-[LongGrid2, LatGrid2, V_def42, rmsFit2, V_SigPred2] = run_Collocation(long1, lat1, Venu1, CovVenu1, [-4 18], [42 53 ], 0.5, 200, 10);
+[LongGrid2, LatGrid2, V_def42, rmsFit2, V_SigPred2] = run_Collocation(long1, lat1, Venu1, CovVenu1, [4 15], [43 49 ], 0.25, 100, 10);
 %%
-[LongGrid3, LatGrid3, V_def43, rmsFit3, V_SigPred3] = run_Collocation(long1, lat1, Venu1, CovVenu1, [-4.25 18], [42.25 53 ], 0.5, 200, 10);
+[LongGrid3, LatGrid3, V_def43, rmsFit3, V_SigPred3] = run_Collocation(long1, lat1, Venu1, CovVenu1, [0.25 17], [42.25 50 ], 0.5, 200, 10);
 
 %%
 
+LongGrid = LongGrid2;
+LatGrid  = LatGrid2;
+V_def4   = V_def42;
+%%
 LongGrid = [LongGrid2; LongGrid3];
 LatGrid  = [LatGrid2;  LatGrid3];
 V_def4   = [V_def42; V_def43];

@@ -49,8 +49,8 @@ for i = 1:p
     ii = (i-1) + [1:3];
     Cov_enuSNX([ii],[ii]) = covVenu;
     
-    % get sigma (for GMT)
-    SigmaVenu(i,1:3) = sqrt( [SigmaVenu(1,1), SigmaVenu(2,2), SigmaVenu(3,3)] );
+%     % get sigma (for GMT)
+%     SigmaVenu(i,1:3) = sqrt( [covVenu(1,1), covVenu(2,2), covVenu(3,3)] );
     
     % get correlation Corr_en (for GMT)
     CorrVen(i,:) = covVenu(1,2) / (SigmaVenu(i,1) * SigmaVenu(i,2));

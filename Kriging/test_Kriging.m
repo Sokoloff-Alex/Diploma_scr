@@ -4,9 +4,9 @@ close all
 clc
 
 Outliers = {'HELM','WIEN','FERR','FERH','OGAG', ...
-       'ROHR','BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
-       'TRF2','KRBG','OBE4','WT21','HKBL','PATK','PAT2', ...
-       'VAUC', 'HRIE', 'ENTZ', 'KTZ2'};
+            'ROHR','BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
+            'TRF2','KRBG','OBE4','WT21','HKBL','PATK','PAT2', ...
+            'VAUC','HRIE','ENTZ','KTZ2','BZRG'};
      
 iiOut = selectRange(names, Outliers);
 ii = 1:length(Vu_res);
@@ -15,28 +15,23 @@ iiSel = setdiff(ii, iiOut);
 x = wrapTo180(long(iiSel));
 y = lat(iiSel);
 z = Vu_res(iiSel)*1000;
-%% Combi
+%% Combine Predicted and Original
 % 
-% x = [LongGrid; wrapTo180(long(iiSel))];
-% y = [LatGrid; lat(iiSel)];
-% z = [V_def3(:,3); Vu_res(iiSel)] *1000;
-% 
-%% Combi 2
- iiAdd = selectRange(names, {'FDOS'});
- x = [LongGrid; wrapTo180(long(iiAdd))];
- y = [LatGrid; lat(iiAdd)];
- z = [V_def4(:,3); Vu_res(iiAdd)] *1000;
+x = [LongGrid; wrapTo180(long(iiSel))];
+y = [LatGrid; lat(iiSel)];
+z = [V_def3(:,3); Vu_res(iiSel)] *1000;
 
 
 %% WLCS only
 x = LongGrid;
 y = LatGrid;
-z = V_def4(:,3) *1000;
+z = V_def3(:,3) *1000;
 
-%
-
+%%
 % interpolate default
-[X, Y] = meshgrid(-4:0.1:18, 42:0.1:53);
+[X, Y] = meshgrid(0:0.05:17, 42:0.05:50);
+y = y * (4/3);
+Y = Y * (4/3);
 vq = griddata(x, y, z, X, Y, 'natural');
 clc
 
@@ -51,11 +46,11 @@ Earth_coast(2)
 % plot(x,y,'.k')
 % quiver(x, y, zeros(size(z)), z,'b')
 
-pcolor(X,Y,vq);
+pcolor(X,Y *(3/4),vq);
 % text(x,y,names )
 shading interp
-xlim([0 16])
-ylim([42.5 51])
+xlim([4 14])
+ylim([44 48])
 colorbar
 title('random field with sampling locations')
 
@@ -72,6 +67,8 @@ title('variogram')
 subplot(2,2,3)
 hold on
 axis xy
+y = y * (3/4);
+Y = Y * (3/4);
 pcolor(X(1,:),Y(:,1),Zhat); %
 shading interp
 % quiver(x, y, zeros(size(z)), z,'b')
@@ -85,12 +82,13 @@ hold on
 % contour(X,Y,Zvar); %axis image
 contour(X,Y,Zhat)
 axis xy
-% title('kriging variance')
-% title('kriging prediction')
+% title('kriging variance')#
+% title('kriging prediction'
 
 %%
 try
     close(fig2)
+    clc
 end
 fig2 = figure(2);
 hold on
@@ -100,9 +98,9 @@ Earth_coast(2)
 h = pcolor(X(1,:),Y(:,1),Zhat); %
 shading interp
 set(h,'facealpha',.5)
-contour(X,Y,Zhat,'LineWidth',2)
+contour(X,Y,Zhat,[-2:0.5:3],'LineWidth',2)
 % axis image
-quiver(LongGrid, LatGrid, zeros(size(V_def4(:,3))), V_def4(:,3)*100, 0, 'b')
+% quiver(LongGrid, LatGrid, zeros(size(V_def3(:,3))), V_def3(:,3)*100, 0, 'b')
 % quiver(x, y, zeros(size(z)), z/1000*200, 0, 'b')
 quiver(long,     lat,     zeros(size(Vu_res)),      Vu_res*100,      0, 'k', 'LineWidth',1)
 
@@ -111,10 +109,12 @@ quiver(long,     lat,     zeros(size(Vu_res)),      Vu_res*100,      0, 'k', 'Li
 % text(x(z < 0),y(z < 0),abs(z(z<0)),names(iiSel(z < 0)))
 text(long(iiOut), lat(iiOut), names(iiOut), 'Color', 'r')
 text(long(iiSel), lat(iiSel), names(iiSel), 'Color', 'b')
+text(long, lat, num2str(Vu_res*1000, '%4.1f'), 'HorizontalAlignment', 'right');
+% text(LongGrid, LatGrid, num2str(V_def3(:,3)*1000, '%4.1f'), 'HorizontalAlignment', 'right');
 colorbar
 title('kriging predictions')
-xlim([0 18])
-ylim([42.5 50])
+xlim([2 17])
+ylim([43 50])
 zlim([-10 10])
 
 %% Save for GMT
@@ -123,8 +123,8 @@ a = grid2vector(X);
 b = grid2vector(Y);
 c = grid2vector(Zhat);
 
-% writeVelocityFieldVertical2GMT(a,b,c, '~/Alpen_Check/MAP/VelocityField/Vel_up_Kriging.txt');
-writeVelocityFieldVertical2GMT(long(iiSel),lat(iiSel),Vu_res(iiSel)*1000, '~/Alpen_Check/MAP/VelocityField/Vu_res.txt');
+writeVelocityFieldVertical2GMT(a,b,c, '~/Alpen_Check/MAP/VelocityField/Vel_up_Kriging2.txt');
+% writeVelocityFieldVertical2GMT(long(iiSel),lat(iiSel),Vu_res(iiSel)*1000, '~/Alpen_Check/MAP/VelocityField/Vu_res.txt');
 
 
 

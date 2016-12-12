@@ -46,15 +46,14 @@ if max(ismember(flags, {'filter', '-f'}))
     CrNN = trace(CovVel(1*p+1:2*p, 1*p+1:2*p)) * 1000^2 * 1.8 * 100 / p;
     CrUU = trace(CovVel(2*p+1:3*p, 2*p+1:3*p)) * 1000^2 * 1.8 * 100 / p;
     
-    Cr_TH = 0.1;
-    if CrEE < Cr_TH && CrEE > 0.1*y_EE(1) ; CrEE = Cr_TH; end
-    if CrNN < Cr_TH && CrNN > 0.1*y_NN(1) ; CrNN = Cr_TH; end
-    if CrUU < Cr_TH && CrUU > 0.1*y_UU(1) ; CrUU = Cr_TH; end
+    Cr_TH = 0.05;
+    if CrEE < Cr_TH && CrEE > 0.05*y_EE(1) ; CrEE = Cr_TH; end
+    if CrNN < Cr_TH && CrNN > 0.05*y_NN(1) ; CrNN = Cr_TH; end
+    if CrUU < Cr_TH && CrUU > 0.05*y_UU(1) ; CrUU = Cr_TH; end
     
-    if CrEE < Cr_TH && CrEE < 0.1*y_EE(1) ; CrEE = 0.1*y_EE(1); end
-    if CrNN < Cr_TH && CrNN < 0.1*y_NN(1) ; CrNN = 0.1*y_NN(1); end
-    if CrUU < Cr_TH && CrUU < 0.1*y_UU(1) ; CrUU = 0.1*y_UU(1); end
-    
+    if CrEE < Cr_TH && CrEE < 0.05*y_EE(1) ; CrEE = 0.05*y_EE(1); end
+    if CrNN < Cr_TH && CrNN < 0.05*y_NN(1) ; CrNN = 0.05*y_NN(1); end
+    if CrUU < Cr_TH && CrUU < 0.05*y_UU(1) ; CrUU = 0.05*y_UU(1); end
     
     y_EE(1) = y_EE(1) - CrEE;
     y_NN(1) = y_NN(1) - CrNN;
@@ -156,6 +155,7 @@ else
     [coeff_EU, rmsEU] = fitCovar(fType, x_EU, y_EU, [y_EU(1), -0.001]);
     [coeff_NU, rmsNU] = fitCovar(fType, x_NU, y_NU, [y_NU(1), -0.001]);
 end
+
 coeff_EE(1) = y_EE(1);
 coeff_NN(1) = y_NN(1);
 coeff_UU(1) = y_UU(1);
@@ -163,8 +163,26 @@ coeff_EN(1) = y_EN(1);
 coeff_EU(1) = y_EU(1);
 coeff_NU(1) = y_NU(1);
 
-
 rmsFitting = [rmsEE, rmsNN, rmsUU, rmsEN, rmsEU, rmsNU];
+
+%% optimize coeff b
+if ismember('opt b', flags)
+    b_min = 0.005;
+    if (abs(coeff_EE(2)) > b_min)
+        coeff_EE(2) = -b_min;
+    end
+    if (abs(coeff_NN(2)) > b_min)
+        coeff_NN(2) = -b_min;
+    end
+    if (abs(coeff_UU(2)) > b_min)
+        coeff_UU(2) = -b_min;
+    end
+    
+    
+end
+
+
+
 
 
 %% plot Covariance functions, y=a*exp(b*d)
