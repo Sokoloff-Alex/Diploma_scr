@@ -44,6 +44,9 @@ height = p .* cos(lat) + (z + e^2 * N .* sin(lat)) .* sin(lat) - N;
 % return lon in range [0,2*pi)
 lon = mod(lon,2*pi);
 
+lat = rad2deg(lat);
+lon = rad2deg(lon);
+
 % correct for numerical instability in altitude near exact poles:
 % (after this correction, error is about 2 millimeters, which is about
 % the same as the numerical precision of the overall function)

@@ -1,4 +1,4 @@
-function [Omega_Est, dOmega_k, DOP, Omega_Est_stack, dOmega_k_stack] = plate_motion(Omega_approx, CRD, VEL, Iterations)
+function [Omega_Est, dOmega_k, DOP, Omega_Est_stack, dOmega_k_stack] = plate_motion(Omega_approx,flag, CRD, VEL, Iterations)
 % iteratively compute correction for Euler pole of Techtonic Plate
 % input:    Omega_approx - initial value of Euler pole [deg, deg, deg/yr];
 %           CRD : [n x 3] 
@@ -16,17 +16,42 @@ function [Omega_Est, dOmega_k, DOP, Omega_Est_stack, dOmega_k_stack] = plate_mot
 
 Omega_Est_stack = zeros(Iterations,3);
 dOmega_k_stack  = zeros(Iterations,3);
+RE = 3678*1000;
 
 dt = 1; % [yr]
 
-[Ve,Vn, Vu, lat, long,  h]  = XYZ2ENU(CRD,       VEL);
-[Ve,Vn, Vu, lat2,long2, h2] = XYZ2ENU(CRD+VEL*dt,VEL);
+if ismember(flag, {'ECEF'}) || size(CRD,2) == 3
+    disp('Coordinates / Velocities in ECEF')
+    [Ve, Vn, Vu, lat, long,  h ] = XYZ2ENU(CRD,       VEL);
+    [Ve, Vn, Vu, lat2,long2, h2] = XYZ2ENU(CRD+VEL*dt,VEL);
 
-v_lat  = (lat2  - lat) /dt; % rate, [deg/yr]
-v_long = (long2 - long)/dt; % rate, [deg/yr]
-
+    v_lat  = (lat2  - lat) /dt; % rate, [deg/yr]
+    v_long = (long2 - long)/dt; % rate, [deg/yr]
+  
+elseif ismember(flag, {'geo','geodetic','geocentric','LLH'}) || size(CRD,2) == 2
+    disp('Coordinates / Velocities in geo')
+    long   = CRD(:,1);
+    lat    = CRD(:,2);
+    
+    v_long = zeros(size(long));
+    v_lat  = zeros(size(long));
+    
+    % convertr velocities from [m/yr] -> [ged/yr]
+    for i = 1:size(VEL,1)
+        v_long(i,1) = km2deg(VEL(i,1)/1000, cosd(lat(i)) * RE);
+        v_lat(i,1)  = km2deg(VEL(i,2)/1000, RE);  
+    end
+%     [VEL, v_long, v_lat]
+    
+else
+    disp('WARNING: undefinded coordinate system: ECEF of geo (Long, Lat)');
+end
 l = zeros(length(lat)*2,1);
 A = zeros(length(lat)*2,3);
+
+disp(['Lat = ',  num2str(Omega_approx(1),'% 12.6f'), ' [deg]; ', ...
+      'Long = ', num2str(Omega_approx(2),'% 12.6f'), ' [deg]; ', ...
+      'w = ',    num2str(Omega_approx(3)*10^6,'%12.6f'), ' [ged/10^6 yr]' ]);
 
 dOmega_k = [1, 1, 1]'; % arbitrary, to pass througout while loop at 1st iter
 %% Iterate
@@ -86,15 +111,18 @@ while (abs(dOmega_k(1)) > 10^-4) || (abs(dOmega_k(2)) > 10^-4) || (abs(dOmega_k(
 % 
 %         % disp(['Observation Error : v_lat_',num2str(i),' =', num2str(v_lat_i), ' [deg]; v_long_',num2str(i),' = ', num2str(v_long_i), ' [deg]'] );
 %     end 
-    Omega_approx = Omega_approx + dOmega_k; % update value
+    Omega_approx = Omega_approx + dOmega_k; % update value     
     Omega_Est = Omega_approx;
+%     disp(['Lat = ',  num2str(Omega_Est(1),'% 12.6f'), ' [deg]; ', ...
+%           'Long = ', num2str(Omega_Est(2),'% 12.6f'), ' [deg]; ', ...
+%           'w = ',    num2str(Omega_Est(3)*10^6,'%12.6f'), ' [ged/10^6 yr]' ]);
 %     Omega_Est_stack(iter,:) = Omega_Est';
 %     dOmega_k_stack(iter,:)  = dOmega_k';
 end
 disp(['---Euler pole --- : iterations :', num2str(iter)])
 disp(['Lat = ', num2str(Omega_Est(1),'% 12.6f'), ' [deg] :: dLat = ', num2str(dOmega_k(1)), ' [deg]'])
 disp(['Lon = ', num2str(Omega_Est(2),'% 12.6f'), ' [deg] :: dLon = ', num2str(dOmega_k(2)), ' [deg]'])
-disp(['w   = ', num2str(Omega_Est(3)*10^6,'%12.6f'),' [ged/10^6 yr] :: dw = ', num2str(dOmega_k(3)), ' [deg/yr]'])
+disp(['w   = ', num2str(Omega_Est(3),'% 12e'),' [ged/yr] :: dw = ', num2str(dOmega_k(3)), ' [deg/yr]'])
 
 
 end

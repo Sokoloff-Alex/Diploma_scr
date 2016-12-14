@@ -21,9 +21,9 @@ function [Ve,Vn, Vu, lat,lon, h] = XYZ2ENU(CRD,VEL)
 %             [lat(i),lon(i),h(i)] = ecef2geodetic(X(i),Y(i),Z(i),referenceEllipsoid('wgs84'));
             [lat(i),lon(i),h(i)] = ecef2llh(X(i),Y(i),Z(i));
 
-            R = [-sin(lon(i))               cos(lon(i))                0
-                 -cos(lon(i))*sin(lat(i))  -sin(lon(i))*sin(lat(i))   cos(lat(i))
-                  cos(lon(i))*cos(lat(i))   sin(lon(i))*cos(lat(i))   sin(lat(i))];
+            R = [-sind(lon(i))                cosd(lon(i))                0
+                 -cosd(lon(i))*sind(lat(i))  -sind(lon(i))*sind(lat(i))   cosd(lat(i))
+                  cosd(lon(i))*cosd(lat(i))   sind(lon(i))*cosd(lat(i))   sind(lat(i))];
 
             Venu = ( R*[Vx(i); Vy(i); Vz(i)] )' ;
             Ve(i) = Venu(1);
@@ -32,6 +32,6 @@ function [Ve,Vn, Vu, lat,lon, h] = XYZ2ENU(CRD,VEL)
 
     %         [Ve(i),Vn(i),Vu(i)] = ecef2enu(Vx(i), Vy(i), Vz(i),lat,lon,h,referenceEllipsoid('wgs84'));  
     end
-    lat = rad2deg(lat);  
-    lon = rad2deg(lon);  
+%     lat = rad2deg(lat);  
+%     lon = rad2deg(lon);  
 end

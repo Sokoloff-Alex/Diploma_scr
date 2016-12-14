@@ -27,9 +27,9 @@ x = LongGrid;
 y = LatGrid;
 z = V_def3(:,3) *1000;
 
-%%
+%
 % interpolate default
-[X, Y] = meshgrid(0:0.05:17, 42:0.05:50);
+[X, Y] = meshgrid(0:0.1:17, 42:0.1:50);
 y = y * (4/3);
 Y = Y * (4/3);
 vq = griddata(x, y, z, X, Y, 'natural');
@@ -107,8 +107,9 @@ quiver(long,     lat,     zeros(size(Vu_res)),      Vu_res*100,      0, 'k', 'Li
 % quiver3(x, y, abs(z), zeros(size(z)),zeros(size(z)), z,'b')
 % text(x(z >= 0),y(z >= 0),2*z(z >= 0),names(iiSel(z >= 0)))
 % text(x(z < 0),y(z < 0),abs(z(z<0)),names(iiSel(z < 0)))
-text(long(iiOut), lat(iiOut), names(iiOut), 'Color', 'r')
-text(long(iiSel), lat(iiSel), names(iiSel), 'Color', 'b')
+% text(long(iiOut), lat(iiOut), names(iiOut), 'Color', 'r')
+% text(long(iiSel), lat(iiSel), names(iiSel), 'Color', 'b')
+plot(long(iiSel), lat(iiSel), '.')
 text(long, lat, num2str(Vu_res*1000, '%4.1f'), 'HorizontalAlignment', 'right');
 % text(LongGrid, LatGrid, num2str(V_def3(:,3)*1000, '%4.1f'), 'HorizontalAlignment', 'right');
 colorbar
