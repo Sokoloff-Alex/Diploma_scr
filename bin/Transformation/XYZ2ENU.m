@@ -32,6 +32,5 @@ function [Ve,Vn, Vu, lat,lon, h] = XYZ2ENU(CRD,VEL)
 
     %         [Ve(i),Vn(i),Vu(i)] = ecef2enu(Vx(i), Vy(i), Vz(i),lat,lon,h,referenceEllipsoid('wgs84'));  
     end
-%     lat = rad2deg(lat);  
-%     lon = rad2deg(lon);  
+  
 end

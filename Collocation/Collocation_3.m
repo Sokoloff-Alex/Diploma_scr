@@ -57,19 +57,19 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CRD, SigmaVenu_merged, nam ] = merge_stations(CRD_all,SigmaVenu,names_all );
 
 %% save Error Bars for GMT
-fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars.txt', 'w');
-fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
-fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
-formatStr = '%12.7f  %12.7f   %15e \n';
-d = diag(CovVenu);
-SigmaVu = SigmaVenu_merged(:,3) * 1.8^(1/2) * 20; % scaled to abequate value [m/yr]
-SigmaVu_deg_yr = SigmaVu*1000 * 0.36; 
-data = [long(iiSel), lat(iiSel) + Vu_res(iiSel) * 1000 * 0.24, SigmaVu_deg_yr(iiSel)];
-
-for i = 1:length(iiSel)
-   fprintf(fileID, formatStr, data(i,:)); 
-end
-fclose(fileID);
+% fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars.txt', 'w');
+% fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
+% fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
+% formatStr = '%12.7f  %12.7f   %15e \n';
+% d = diag(CovVenu);
+% SigmaVu = SigmaVenu_merged(:,3) * 1.8^(1/2) * 20; % scaled to abequate value [m/yr]
+% SigmaVu_deg_yr = SigmaVu*1000 * 0.36; 
+% data = [long(iiSel), lat(iiSel) + Vu_res(iiSel) * 1000 * 0.24, SigmaVu_deg_yr(iiSel)];
+% 
+% for i = 1:length(iiSel)
+%    fprintf(fileID, formatStr, data(i,:)); 
+% end
+% fclose(fileID);
 
 %% Block selection
 
@@ -93,7 +93,7 @@ Max_Dist = 250; % km
 lim = 10;
 p = 0;
 step = 0.5;
-for iLong = 0:step:17
+for iLong = -4:step:17
     for iLat = 42:step:50
         arc = greatcircleArc(iLat, iLong, lat, long) * 111 ; % km
         sel = range(arc < Max_Dist);    

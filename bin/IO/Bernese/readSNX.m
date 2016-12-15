@@ -16,7 +16,7 @@ if exist(filename, 'file') ~= 2
 else
     fullpath = which(filename);
 
-%% Blocks in SINEX file 
+%% Blocks in SINEX file , Dummy
 
 SOLUTION = struct('STATISTICS', [], ...
                   'EPOCHS', [], ...
@@ -24,6 +24,7 @@ SOLUTION = struct('STATISTICS', [], ...
                   'APRIORI', [], ...
                   'COVA_ESTIMATE', [], ...
                   'COVA_APRIORI', []);
+              
 SITE     = struct('ID', [], ...
                   'RECEIVER', [], ...
                   'ANTENNA', [], ...
@@ -50,13 +51,31 @@ DataType = {'FILE/REFERENCE';
             'SOLUTION/MATRIX_ESTIMATE L COVA';
             'SOLUTION/MATRIX_APRIORI L COVA'};
         
-%% Parsing
-Blocks = 3:11;
-if ismember(flag, {'All', 'all', 'cov','with covariance'})
-   Blocks = 3:13;   
+%% look for available DataTypes block in SNX file
+% filename = 'EPN_A_IGb08_no_COVA.SNX';
+% fullpath = which(filename);
+
+disp(['grep +[A-Z] ', fullpath, ' ']);
+[status, msgout]= system(['grep +[A-Z] ', fullpath, ' | grep + | cut --characters 2-'], '-echo');
+DataTypeAvailable = strsplit(msgout);
+range = 1:length(DataType);
+iiBlockAvailable = range(ismember(DataType, DataTypeAvailable));
+iiBlocksToBeParse = iiBlockAvailable;
+
+%% check flag and add COVA
+
+if ismember(flag, {'All', 'all', 'cov','with covariance', 'COVA'})
+   if ismember(DataType, 'SOLUTION/MATRIX_ESTIMATE L COVA');
+      iiBlocksToBeParse = [iiBlocksToBeParse, 12]; 
+   end
+   if ismember(DataType, 'SOLUTION/MATRIX_APRIORI L COVA');
+      iiBlocksToBeParse = [iiBlocksToBeParse, 13]; 
+   end
 end
 
-for iData = [Blocks]
+%% Parsing
+
+for iData = [iiBlocksToBeParse]
     [status, StartEndLines]= system(['grep --line-number "',DataType{iData},'" ', fullpath,' | cut -f1 -d:']);
     if (status ~= 0) % 0 = successful
         disp(['Error: status :', numn2str(status)]);
@@ -77,7 +96,7 @@ for iData = [Blocks]
     else
     
     % ------ parse statistics ------------
-     if iData == 3 
+     if iData == 3  % 'SOLUTION/STATISTICS'
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
@@ -106,7 +125,7 @@ for iData = [Blocks]
     % ------ parsing of statintics end ---
     
     % ------ parse site id --------------- ok
-     if iData == 4 
+     if iData == 4  % 'SITE/ID'
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
@@ -144,7 +163,7 @@ for iData = [Blocks]
     % ------ parsing of site id end ------
     
     % ------ parsing Receiver ------------
-     if iData == 5
+     if iData == 5  % 'SITE/RECEIVER'
         SiteName    = repmat(char(0),Len-3,4);
         PT          = repmat(char(0),Len-3,1);
         SolN        = zeros(Len-3,1);
@@ -179,7 +198,7 @@ for iData = [Blocks]
     % ----- parsing reseiver end ---------
 
     % ------ parsing Antenna ------------
-     if iData == 6
+     if iData == 6  % 'SITE/ANTENNA'
         SiteName    = repmat(char(0),Len-3,4);
         PT          = repmat(char(0),Len-3,1);
         SolN        = zeros(Len-3,1);
@@ -212,7 +231,7 @@ for iData = [Blocks]
     % ----- parsing Antenna end ---------
 
     % ------ parsing GPS Phase Center ------------
-     if iData == 7
+     if iData == 7 % 'SITE/GPS_PHASE_CENTER'
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID));
@@ -245,7 +264,7 @@ for iData = [Blocks]
     % ----- parsing Phase Center end ---------
     
     % ------ parsing ECCENTRICITY ------------
-    if iData == 8
+    if iData == 8   % 'SITE/ECCENTRICITY'
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID));
@@ -286,7 +305,7 @@ for iData = [Blocks]
     % ----- parsing ECCENTRICITY end ---------
     
     % ------ parse solution epochs ------- ok
-     if iData == 9 
+     if iData == 9  % 'SOLUTION/EPOCHS'
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
@@ -318,7 +337,9 @@ for iData = [Blocks]
     % ------ parse solution epochs end----
 
     % ------ parse crd and vel ----------- 
-    if iData == 10 || iData == 11 %%  parse CRD and VEL matrix 
+    %  parse CRD and VEL matrix
+    % 'SOLUTION/ESTIMATE' and  'SOLUTION/APRIORI'
+    if iData == 10 || iData == 11 
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID)); 
@@ -365,6 +386,7 @@ for iData = [Blocks]
     %  ---- parse crd and vel end ---------
      
     % -----  parse covarianse matrix ------
+    % 'SOLUTION/MATRIX_ESTIMATE L COVA' and 'SOLUTION/MATRIX_APRIORI L COVA'
     if iData == 12 || iData == 13     
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));

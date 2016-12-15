@@ -98,7 +98,9 @@ Earth_coast(2)
 h = pcolor(X(1,:),Y(:,1),Zhat); %
 shading interp
 set(h,'facealpha',.5)
-contour(X,Y,Zhat,[-2:0.5:3],'LineWidth',2)
+contour(X,Y,Zhat,[-2:0.5:-.5, 0.5:0.5:3],'LineWidth',2)
+% contour(X,Y,Zhat,[-2:0.5:3],'LineWidth',2)
+
 % axis image
 % quiver(LongGrid, LatGrid, zeros(size(V_def3(:,3))), V_def3(:,3)*100, 0, 'b')
 % quiver(x, y, zeros(size(z)), z/1000*200, 0, 'b')

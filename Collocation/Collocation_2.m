@@ -138,9 +138,9 @@ clc
 tic
 range = 1:length(lat);
 Max_Dist = 150; % km
-lim = 15;
+lim = 10;
 p = 0;
-step = 0.25;
+step = 0.5;
 for iLong = -4:step:18
     for iLat =  42:step:53
 %         if ~lwmask((90-iLat)*4+1, wrapTo360(iLong)*4+1)
