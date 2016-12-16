@@ -1,4 +1,4 @@
-function [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(lat0, long0, lat, long, Venu, CovVel, fType, varargin)
+function [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(lat0, long0, lat, long, Venu, CovVel, varargin)
 % solve Least Square Collocation in 3D
 %
 % input   :     lat0, long0  - coordinates of grid point , [deg]
@@ -6,7 +6,7 @@ function [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(lat0, long0, lat, long
 %               Venu         - velocity components
 %               CovVel       - covariance matrix of velosities from SNX COVA
 %                              and transfrmed by covXYZ2ENU()
-%               fType        - approx. function type ('exp1', 'Hirvonen' or 'exp2')
+%               flags        - approx. function type ('exp1', 'Hirvonen' or 'exp2')
 %               varargin     - 'plot' to plot covariance functions
 %                            - '-v' verbose mode           
 % output  :     V_pred       - interpolated / predicted velocity vector
@@ -16,7 +16,7 @@ function [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(lat0, long0, lat, long
 %
 % Example :
 %   
-% V_pred = solve_LSC(iLat, iLong, lat, long, Ve, Vn, Vu,CovVel, fType, 'exp1','-v')
+% V_pred = solve_LSC(iLat, iLong, lat, long, Ve, Vn, Vu,CovVel, flags, 'exp1','-v')
 %
 % Alexandr Sokolov, KEG
 % 07.12.2016
@@ -125,35 +125,35 @@ end
 %% fit curves
 if ismember('bias', flags)
     if min(y_EE) < 0
-        [coeff_EE, rmsEE] = fitCovar(fType, x_EE, y_EE + abs(min(y_EE)), [y_EE(1),-0.001]);
+        [coeff_EE, rmsEE] = fitCovar(flags, x_EE, y_EE + abs(min(y_EE)), [y_EE(1),-0.001]);
     else
-        [coeff_EE, rmsEE] = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
+        [coeff_EE, rmsEE] = fitCovar(flags, x_EE, y_EE, [y_EE(1), -0.001]);
     end
     
     if min(y_NN) < 0
-        [coeff_NN, rmsNN] = fitCovar(fType, x_NN, y_NN + abs(min(y_NN)), [y_NN(1),-0.001]);
+        [coeff_NN, rmsNN] = fitCovar(flags, x_NN, y_NN + abs(min(y_NN)), [y_NN(1),-0.001]);
     else
-        [coeff_NN, rmsNN] = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
+        [coeff_NN, rmsNN] = fitCovar(flags, x_NN, y_NN, [y_NN(1), -0.001]);
     end
     
     if min(y_UU) < 0
-        [coeff_UU, rmsUU] = fitCovar(fType, x_UU, y_UU + abs(min(y_UU)), [y_UU(1),-0.001]);
+        [coeff_UU, rmsUU] = fitCovar(flags, x_UU, y_UU + abs(min(y_UU)), [y_UU(1),-0.001]);
     else
-        [coeff_UU, rmsUU] = fitCovar(fType, x_UU, y_UU, [y_UU(1), -0.001]);
+        [coeff_UU, rmsUU] = fitCovar(flags, x_UU, y_UU, [y_UU(1), -0.001]);
     end
     
     
-    [coeff_EN, rmsEN] = fitCovar(fType, x_EN, y_EN + b_EN,           [y_EN(1),-0.001]);
-    [coeff_EU, rmsEU] = fitCovar(fType, x_EU, y_EU + b_EU,           [y_EU(1),-0.001]);
-    [coeff_NU, rmsNU] = fitCovar(fType, x_NU, y_NU + b_NU,           [y_NU(1),-0.001]);
+    [coeff_EN, rmsEN] = fitCovar(flags, x_EN, y_EN + b_EN,           [y_EN(1),-0.001]);
+    [coeff_EU, rmsEU] = fitCovar(flags, x_EU, y_EU + b_EU,           [y_EU(1),-0.001]);
+    [coeff_NU, rmsNU] = fitCovar(flags, x_NU, y_NU + b_NU,           [y_NU(1),-0.001]);
     
 else
-    [coeff_EE, rmsEE] = fitCovar(fType, x_EE, y_EE, [y_EE(1), -0.001]);
-    [coeff_NN, rmsNN] = fitCovar(fType, x_NN, y_NN, [y_NN(1), -0.001]);
-    [coeff_UU, rmsUU] = fitCovar(fType, x_UU, y_UU, [y_UU(1), -0.001]);
-    [coeff_EN, rmsEN] = fitCovar(fType, x_EN, y_EN, [y_EN(1), -0.001]);
-    [coeff_EU, rmsEU] = fitCovar(fType, x_EU, y_EU, [y_EU(1), -0.001]);
-    [coeff_NU, rmsNU] = fitCovar(fType, x_NU, y_NU, [y_NU(1), -0.001]);
+    [coeff_EE, rmsEE] = fitCovar(flags, x_EE, y_EE, [y_EE(1), -0.001]);
+    [coeff_NN, rmsNN] = fitCovar(flags, x_NN, y_NN, [y_NN(1), -0.001]);
+    [coeff_UU, rmsUU] = fitCovar(flags, x_UU, y_UU, [y_UU(1), -0.001]);
+    [coeff_EN, rmsEN] = fitCovar(flags, x_EN, y_EN, [y_EN(1), -0.001]);
+    [coeff_EU, rmsEU] = fitCovar(flags, x_EU, y_EU, [y_EU(1), -0.001]);
+    [coeff_NU, rmsNU] = fitCovar(flags, x_NU, y_NU, [y_NU(1), -0.001]);
 end
 
 coeff_EE(1) = y_EE(1);
@@ -204,12 +204,12 @@ if ismember('plot', flags)
     pl5 = plot(x_EU, y_EU, 'o--', 'Color', clr(5,:)); 
     pl6 = plot(x_NU, y_NU, 'o--', 'Color', clr(6,:)); 
 
-    pl7  = plot(d, empiricalCovariance(fType, coeff_EE, d), 'Color', clr(1,:), 'LineWidth',2);
-    pl8  = plot(d, empiricalCovariance(fType, coeff_NN, d), 'Color', clr(2,:), 'LineWidth',2);
-    pl9  = plot(d, empiricalCovariance(fType, coeff_UU, d), 'Color', clr(3,:), 'LineWidth',2);
-    pl10 = plot(d, empiricalCovariance(fType, coeff_EN, d), 'Color', clr(4,:), 'LineWidth',2);
-    pl11 = plot(d, empiricalCovariance(fType, coeff_EU, d), 'Color', clr(5,:), 'LineWidth',2);
-    pl12 = plot(d, empiricalCovariance(fType, coeff_NU, d), 'Color', clr(6,:), 'LineWidth',2);
+    pl7  = plot(d, empiricalCovariance(flags, coeff_EE, d), 'Color', clr(1,:), 'LineWidth',2);
+    pl8  = plot(d, empiricalCovariance(flags, coeff_NN, d), 'Color', clr(2,:), 'LineWidth',2);
+    pl9  = plot(d, empiricalCovariance(flags, coeff_UU, d), 'Color', clr(3,:), 'LineWidth',2);
+    pl10 = plot(d, empiricalCovariance(flags, coeff_EN, d), 'Color', clr(4,:), 'LineWidth',2);
+    pl11 = plot(d, empiricalCovariance(flags, coeff_EU, d), 'Color', clr(5,:), 'LineWidth',2);
+    pl12 = plot(d, empiricalCovariance(flags, coeff_NU, d), 'Color', clr(6,:), 'LineWidth',2);
     
     pl13 = plot(d, coeff_NN(1).*exp(-0.005*d ), '.-k');
     pl14 = plot(d, coeff_NN(1).*exp(-0.05*d),   '--k');
@@ -281,20 +281,20 @@ C_new_NU = zeros(p,1);
 for i = 1:p
    for j = 1:p
        d = greatcircleArc(lat(i), long(i), lat(j), long(j)) * 111 ; % km
-       C_obs_EE(i,j) = empiricalCovariance(fType, coeff_EE, d);
-       C_obs_NN(i,j) = empiricalCovariance(fType, coeff_NN, d);
-       C_obs_UU(i,j) = empiricalCovariance(fType, coeff_UU, d);
-       C_obs_EN(i,j) = empiricalCovariance(fType, coeff_EN, d);
-       C_obs_EU(i,j) = empiricalCovariance(fType, coeff_EU, d);
-       C_obs_NU(i,j) = empiricalCovariance(fType, coeff_NU, d);
+       C_obs_EE(i,j) = empiricalCovariance(flags, coeff_EE, d);
+       C_obs_NN(i,j) = empiricalCovariance(flags, coeff_NN, d);
+       C_obs_UU(i,j) = empiricalCovariance(flags, coeff_UU, d);
+       C_obs_EN(i,j) = empiricalCovariance(flags, coeff_EN, d);
+       C_obs_EU(i,j) = empiricalCovariance(flags, coeff_EU, d);
+       C_obs_NU(i,j) = empiricalCovariance(flags, coeff_NU, d);
    end
    d = greatcircleArc(lat0, long0, lat(i), long(i)) * 111 ; % km  
-   C_new_EE(i,1) = empiricalCovariance(fType, coeff_EE, d);
-   C_new_NN(i,1) = empiricalCovariance(fType, coeff_NN, d);
-   C_new_UU(i,1) = empiricalCovariance(fType, coeff_UU, d);
-   C_new_EN(i,1) = empiricalCovariance(fType, coeff_EN, d);
-   C_new_EU(i,1) = empiricalCovariance(fType, coeff_EU, d);
-   C_new_NU(i,1) = empiricalCovariance(fType, coeff_NU, d);
+   C_new_EE(i,1) = empiricalCovariance(flags, coeff_EE, d);
+   C_new_NN(i,1) = empiricalCovariance(flags, coeff_NN, d);
+   C_new_UU(i,1) = empiricalCovariance(flags, coeff_UU, d);
+   C_new_EN(i,1) = empiricalCovariance(flags, coeff_EN, d);
+   C_new_EU(i,1) = empiricalCovariance(flags, coeff_EU, d);
+   C_new_NU(i,1) = empiricalCovariance(flags, coeff_NU, d);
 end
 
 %% no correlation

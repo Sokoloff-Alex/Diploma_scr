@@ -84,6 +84,9 @@ Outliers = {'ELMO','WIEN','FERR', ...
 iiOut    = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
 
+%% wrie outliers files
+% writeVelocityFieldVerticalOutliers2GMT(long(iiOut), lat(iiOut), Vu_res(iiOut), names(iiOut), '~/Alpen_Check/MAP/VelocityField/VelocityFieldVertical_out.txt');
+
 %% LSC, % allocation domain for grid points
 clear LatGrid LongGrid V_pred V_pred* V_def* V_SigPred rmsFit
 clc
@@ -92,8 +95,8 @@ range = 1:length(lat);
 Max_Dist = 250; % km
 lim = 10;
 p = 0;
-step = 0.5;
-for iLong = -4:step:17
+step = 1;
+for iLong = -0:step:17
     for iLat = 42:step:50
         arc = greatcircleArc(iLat, iLong, lat, long) * 111 ; % km
         sel = range(arc < Max_Dist);    
@@ -121,24 +124,28 @@ for iLong = -4:step:17
 end
 t2 = toc
 
-%% run Collocation again
-% prepare /merge data
-clc
-CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
-long1 = [LongGrid; long(iiSel)];
-lat1  = [LatGrid ; lat(iiSel) ];
-Venu1 = [V_def3; [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)]];
-CV_pred = diag( 0.001 * ones(size(V_def3,1)*3,1) / (1000^2 * 1.8 * 100));
-c12 = zeros( size(V_def3,1)*3, length(iiSel)*3);
-c21 = c12';
-CovVenu1 = [CV_pred,   c12  
-            c21,  CovVenu2 ];
+% %% run Collocation again
+% % prepare /merge data
+% clc
+% CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
+% long1 = [LongGrid; long(iiSel)];
+% lat1  = [LatGrid ; lat(iiSel) ];
+% Venu1 = [V_def3; [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)]];
+% CV_pred = diag( 0.001 * ones(size(V_def3,1)*3,1) / (1000^2 * 1.8 * 100));
+% c12 = zeros( size(V_def3,1)*3, length(iiSel)*3);
+% c21 = c12';
+% CovVenu1 = [CV_pred,   c12  
+%             c21,  CovVenu2 ];
 
 %%
 clc
-[LongGrid2, LatGrid2, V_def42, rmsFit2, V_SigPred2] = run_Collocation(long1, lat1, Venu1, CovVenu1, [4 15], [43 49 ], 0.25, 100, 10);
+CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
+V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 %%
-[LongGrid3, LatGrid3, V_def43, rmsFit3, V_SigPred3] = run_Collocation(long1, lat1, Venu1, CovVenu1, [0.25 17], [42.25 50 ], 0.5, 200, 10);
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long, lat, V_enu_res, CovVenu2, [0 17], [42 50], 1, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+
+%%
+[LongGrid2, LatGrid2, V_def42, rmsFit2, V_SigPred2] = run_Collocation(long1, lat1, Venu1, CovVenu1, [4    15],    [43 49 ],   0.25, 100, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 %%
 

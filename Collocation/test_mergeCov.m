@@ -64,7 +64,7 @@ end
 t2 = toc
 
 %%
-Error = (V_def1 - V_def2)*10;
+% Error = (V_def1 - V_def2)*10;
 clc
 %
 s = 250;  % [mm/yr]
@@ -80,9 +80,9 @@ plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
 plot(Adriatics(:,1),Adriatics(:,2) , '--k')
 quiver(long(Selected), lat(Selected), Ve_res(Selected)*s, Vn_res(Selected)*s,  0, 'r', 'lineWidth',1)
 quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,Vn_res(iOutliers)*s, 0, 'Color',[.5 .5 .5], 'lineWidth',1)
-quiver(LongGrid,      LatGrid,      V_def1(:,2)*s,   V_def1(:,1)*s,    0, 'b', 'lineWidth',1)
-quiver(LongGrid,      LatGrid,      V_def2(:,2)*s,   V_def2(:,1)*s,    0, 'b', 'lineWidth',1)
-quiver(LongGrid,      LatGrid,      Error(:,2)*s,    Error(:,1)*s,     0, 'g', 'lineWidth',1)
+% quiver(LongGrid,      LatGrid,      V_def1(:,2)*s,   V_def1(:,1)*s,    0, 'b', 'lineWidth',1)
+% quiver(LongGrid,      LatGrid,      V_def2(:,2)*s,   V_def2(:,1)*s,    0, 'b', 'lineWidth',1)
+% quiver(LongGrid,      LatGrid,      Error(:,2)*s,    Error(:,1)*s,     0, 'g', 'lineWidth',1)
 
 plotErrorElipses('Cov', CovENU,                          long,     lat,     Ve_res,      Vn_res,      s, 0.95, 'r')
 plotErrorElipses('Sig', [V_SigPred(:,2),V_SigPred(:,1)], LongGrid, LatGrid, V_def2(:,2), V_def2(:,1), s, 0.95, 'b')
