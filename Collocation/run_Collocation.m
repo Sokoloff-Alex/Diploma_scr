@@ -1,24 +1,24 @@
-function [LongGrid, LatGrid, V_def3, rmsFit, V_SigPred ] = run_Collocation(long, lat, Venu, CovVenu, LongLim, LatLim, step, Max_Dist, nLim, varargin)
+function [LongGrid_stack, LatGrid_stack, V_pred_stack, rmsFit_stack, V_SigPred_stack ] = run_Collocation(long, lat, Venu, CovVenu, LongLim, LatLim, step, Max_Dist, nLim, varargin)
 % run Collocation
 
 % LSC, % allocation domain for grid points
-tic
+tic;
 
-flags = varargin
+flags = varargin(:);
 
 range = 1:length(lat);
 
 
-nLon = ceil(( LongLim(2) - LongLim(1) )/step) +1;
+nLon = ceil(( LongLim(2) - LongLim(1) ) / step) +1;
 nLat = ceil(( LatLim(2)  - LatLim(1)  ) / step) +1;
 n = nLat * nLon ;
 
 % Dummies
-V_def3    = zeros(n,3);
-rmsFit    = zeros(n,6);
-V_SigPred = zeros(n,3);
-LatGrid   = zeros(n,1);
-LongGrid  = zeros(n,1);
+V_pred_stak     = zeros(n,3);
+rmsFit_stack    = zeros(n,6);
+V_SigPred_stack = zeros(n,3);
+LatGrid_stack   = zeros(n,1);
+LongGrid_stack  = zeros(n,1);
 
 p = 0;
 for iLong = LongLim(1):step:LongLim(2)
@@ -34,13 +34,13 @@ for iLong = LongLim(1):step:LongLim(2)
         end
         p = p + 1; % point Number
         CovVenuSel = extractCovariance(CovVenu, sel, [1 2 3], 'split');
-%             Venu = [Ve_res(sel), Vn_res(sel), Vu_res(sel)]*1000;
-        [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu(sel,:)*1000 ,CovVenuSel, flags);   % WLSC 
-        V_def3(p,:) = V_pred/1000;
-        rmsFit(p,:)   = rmsFitting/1000; % [mm/yr]
-        V_SigPred(p,:) = V_noise_pred;
-        LatGrid(p,1)  = iLat;
-        LongGrid(p,1) = iLong;
+        % WLSC
+        [V_pred, rmsFit, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu(sel,:)*1000 ,CovVenuSel, flags);
+        V_pred_stack(p,:)    = V_pred/1000;
+        rmsFit_stack(p,:)    = rmsFit/1000; % [mm/yr]
+        V_SigPred_stack(p,:) = V_noise_pred;
+        LatGrid_stack(p,1)   = iLat;
+        LongGrid_stack(p,1)  = iLong;
     end
 end
 

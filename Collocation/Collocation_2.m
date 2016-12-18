@@ -44,7 +44,7 @@ DOMES = ALP_NET_CRD(range_flag,3);
 [V_res_xyz] = remove_plate_motion(CRD, VEL, Omega_Eur);
 [Ve_res, Vn_res, Vu_res] = XYZ2ENU(CRD,V_res_xyz); % NEU components, [m/yr m/yr m/yr]
 
-%% Block selection
+%% Block selection for hirizontal
 
 Germany    = {'POTS','DRES','GOET','ERLA','FFMJ','WTZR','WT21','KARL', ...
               'DILL','HUEG','HOFJ'}; % Stable only
@@ -104,7 +104,7 @@ Sets_names = {'Stable', 'Alps SW', 'Alps C', 'Alps W', 'Alps NE',  ...
 Selected = sort([Sets{:}]);
 len = length(Sets);
 
-% CheckSum
+%% CheckSum
 % clc
 disp(['# of stations selected : ',num2str(length(Selected))])
 disp(['# of outliers          : ',num2str(length(Outliers))])
@@ -131,6 +131,10 @@ end
 % dVn = Vn_res - Vn_res_bl;
 % t = toc;
 % disp(['proc time : ', num2str(t), ' [sec]'])
+%% Run collocation
+
+[LongGrid, LatGrid, V_def3, rmsFit, V_SigPred ] = run_Collocation(long, lat, Venu, CovVenu, LongLim, LatLim, step, Max_Dist, nLim, varargin)
+
 
 %% LSC, % allocation domain for grid points
 clear LatGrid LongGrid V_pred V_pred*

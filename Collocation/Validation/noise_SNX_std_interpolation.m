@@ -79,24 +79,24 @@ CovENU_sel;
 
 
 %%
-%  VARIANCE FACTOR                     1.800168208557666
-sc = 20*1.8
-sigmaVenu_SNX = SigmaVenu;
-LLVS = [long_all , lat_all, Ve_res_all, Vn_res_all, sigmaVenu_SNX(:,1)*sc, sigmaVenu_SNX(:,2)*sc];
-writeVelocityFieldwithEllipseGMT([ LLVS, AngleV  ], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_SNX.txt')
-writeVelocityFieldwithCovGMT(    [ LLVS, CorrVen], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_SNX.txt')
+% %  VARIANCE FACTOR                     1.800168208557666
+% sc = 20*1.8
+% sigmaVenu_SNX = SigmaVenu;
+% LLVS = [long_all , lat_all, Ve_res_all, Vn_res_all, sigmaVenu_SNX(:,1)*sc, sigmaVenu_SNX(:,2)*sc];
+% writeVelocityFieldwithEllipseGMT([ LLVS, AngleV  ], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_SNX.txt')
+% writeVelocityFieldwithCovGMT(    [ LLVS, CorrVen], names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_SNX.txt')
 
 %%
-sc = 10
-% sigmaVenu_std = sigmaVenu;
-LLVS = [long , lat, Ve_res, Vn_res, sigmaVenu_std(:,1)*sc*1, sigmaVenu_std(:,2)*sc];
-writeVelocityFieldwithEllipseGMT([ LLVS, AngleV  ], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_std.txt')
-writeVelocityFieldwithCovGMT(    [ LLVS, CorrVen], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_std.txt')
+% sc = 10
+% % sigmaVenu_std = sigmaVenu;
+% LLVS = [long , lat, Ve_res, Vn_res, sigmaVenu_std(:,1)*sc*1, sigmaVenu_std(:,2)*sc];
+% writeVelocityFieldwithEllipseGMT([ LLVS, AngleV  ], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse_std.txt')
+% writeVelocityFieldwithCovGMT(    [ LLVS, CorrVen], names, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_std.txt')
 
 
-fileID = fopen('~/Alpen_Check/MAP/VelocityField/list_outliers','w');
-fprintf(fileID, '%4s\n', Outliers{:});
-fclose(fileID);
+% fileID = fopen('~/Alpen_Check/MAP/VelocityField/list_outliers','w');
+% fprintf(fileID, '%4s\n', Outliers{:});
+% fclose(fileID);
 
 
 

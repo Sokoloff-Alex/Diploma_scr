@@ -71,7 +71,8 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 % end
 % fclose(fileID);
 
-%% Block selection
+
+%% Block selection for Vertical
 
 Outliers   = {'HELM', 'WIEN', 'OGAG', 'OBE2', ...
               'ROHR','BIWI','BI2I', 'MANS'};
@@ -80,9 +81,14 @@ Outliers = {'ELMO','WIEN','FERR', ...
             'BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
             'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
             'HRIE','KTZ2', 'WLBH'};
-   
+
 iiOut    = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
+
+%% for Horizontal 
+
+iiSel = Selected;        
+iiOut = setdiff([1:198], iiSel);
 
 %% wrie outliers files
 % writeVelocityFieldVerticalOutliers2GMT(long(iiOut), lat(iiOut), Vu_res(iiOut), names(iiOut), '~/Alpen_Check/MAP/VelocityField/VelocityFieldVertical_out.txt');
@@ -142,22 +148,12 @@ clc
 CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 %%
-[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long, lat, V_enu_res, CovVenu2, [0 17], [42 50], 1, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+clc
+%                                                                                                             LongLim LatLing step dMax nMin flags ...                                         
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 17], [41 53], 1, 250, 10, 'exp1', '-v', 'no bias', 'tail 0', 'no corr', 'filter');
 
-%%
-[LongGrid2, LatGrid2, V_def42, rmsFit2, V_SigPred2] = run_Collocation(long1, lat1, Venu1, CovVenu1, [4    15],    [43 49 ],   0.25, 100, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
-
-%%
-
-LongGrid = LongGrid2;
-LatGrid  = LatGrid2;
-V_def4   = V_def42;
-%%
-LongGrid = [LongGrid2; LongGrid3];
-LatGrid  = [LatGrid2;  LatGrid3];
-V_def4   = [V_def42; V_def43];
-
-
+%% check individual
+run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [10 10], [45 45], 1, 250, 10, 'exp1', '-v', 'no bias', 'tail 0', 'no corr', 'filter','plot');
 
 %% Plot Results 2D map
 clc
@@ -179,19 +175,30 @@ etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
 % Earth_coast(2)
 plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
 plot(Adriatics(:,1),Adriatics(:,2) , '--k')
-% quiver(long(Selected), lat(Selected), Ve_res(Selected)*s,    Vn_res(Selected)*s,  0, 'r', 'lineWidth',1)
-quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+% quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
 % quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,   Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',1)
-quiver(long(iiOut),lat(iiOut),zeros(size(iiOut))',  Vu_res(iiOut)*s, 0, 'm', 'lineWidth',1)
-text(long(iiOut),lat(iiOut), names(iiOut))
-% quiver(LongGrid,      LatGrid,      V_def3(:,1)*s,   V_def3(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def3(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+% quiver(long(iiOut),lat(iiOut),zeros(size(iiOut))',  Vu_res(iiOut)*s, 0, 'm', 'lineWidth',1)
+% text(long(iiOut),lat(iiOut), names(iiOut))
+quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+% quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % ellipce_2D([km2deg(Max_Dist,6378*cosd(iLat)), Max_Dist/111], 0, [iLong, iLat], 1)
 % text(long,lat, names)
+plotErrorElipses('Cov', CovVenu,                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
+% plotErrorElipses('Sig', [V_SigPred(:,1),V_SigPred(:,2)], LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
+plotErrorElipses('Sig', [rmsFit(:,1),rmsFit(:,2)]*1000,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
+
 title('velocity field / deformation model') 
 xlabel('Velocity EW, [mm/yr]')
 ylabel('Velocity SN, [mm/yr]')
 legend('Earth Coast','Alps Orogen boundary','Ardiatics','Residual velocity','LSC velocity','location','NorthWest')
+
+%%
+
+sc = 10
+writeVelocityFieldwithEllipseGMT([long(Selected) , lat(Selected), Ve_res(Selected), Vn_res(Selected), SigmaVe(Selected)*100/2, SigmaVn(Selected)*100/2, Azim(Selected)], names(Selected), '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Ellipse.txt')
+writeVelocityFieldwithCovGMT(    LongGrid, LatGrid, V_def(:,1), V_def(:,2), rmsFit(:,1), rmsFit(:,2), rmsFit(:,4)], names(Selected), '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov.txt')
+
 
 %% 
 
