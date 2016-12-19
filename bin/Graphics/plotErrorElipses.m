@@ -22,7 +22,7 @@ if ismember(flag , {'Cov'})
 elseif ismember(flag , {'Sig'})
     for i = 1:length(long)
         Cov = diag(abs(CovENUorSigmaENU(i,:)));
-        Cov = Cov;
+        Cov = Cov.^2;
         if det(Cov) > 0
             mu = [long(i) + Ve_res(i)*scale, lat(i) + Vn_res(i)*scale];
             % plor Error ellipse

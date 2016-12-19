@@ -72,18 +72,8 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 % fclose(fileID);
 
 
-%% Block selection for Vertical
 
-Outliers   = {'HELM', 'WIEN', 'OGAG', 'OBE2', ...
-              'ROHR','BIWI','BI2I', 'MANS'};
-            
-Outliers = {'ELMO','WIEN','FERR', ...
-            'BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
-            'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
-            'HRIE','KTZ2', 'WLBH'};
 
-iiOut    = selectRange(names, Outliers);
-iiSel = setdiff([1:198], iiOut);
 
 %% for Horizontal 
 
@@ -93,71 +83,41 @@ iiOut = setdiff([1:198], iiSel);
 %% wrie outliers files
 % writeVelocityFieldVerticalOutliers2GMT(long(iiOut), lat(iiOut), Vu_res(iiOut), names(iiOut), '~/Alpen_Check/MAP/VelocityField/VelocityFieldVertical_out.txt');
 
-%% LSC, % allocation domain for grid points
-clear LatGrid LongGrid V_pred V_pred* V_def* V_SigPred rmsFit
-clc
-tic
-range = 1:length(lat);
-Max_Dist = 250; % km
-lim = 10;
-p = 0;
-step = 1;
-for iLong = -0:step:17
-    for iLat = 42:step:50
-        arc = greatcircleArc(iLat, iLong, lat, long) * 111 ; % km
-        sel = range(arc < Max_Dist);    
-        sel = intersect(sel, iiSel);
-        if length(sel) < lim % add more stations
-            add = sort(arc);
-            add = add(1:lim); % ad 2 sites, ast is prop already included
-            iadd = ismember(arc,add);
-            inew = range(iadd);
-            sel = unique(sort([sel, inew]));
-            sel = intersect(sel, iiSel);
-        end
-        if length(sel) > 1 % do LSC !!! 
-            p = p + 1; % point Number
-            CovVenuSel = extractCovariance(CovVenu, sel, [1 2 3], 'split');
-            Venu = [Ve_res(sel), Vn_res(sel), Vu_res(sel)]*1000;
-            [V_pred, rmsFitting, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu ,CovVenuSel,'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');   % WLSC 
-            V_def3(p,:) = V_pred/1000;     % [mm/yr] -> [m/yr]
-            rmsFit(p,:) = rmsFitting/1000; % [mm/yr] -> [m/yr]
-            V_SigPred(p,:) = V_noise_pred;
-            LatGrid(p,1)  = iLat;
-            LongGrid(p,1) = iLong;
-        end
-    end
-end
-t2 = toc
-
-% %% run Collocation again
-% % prepare /merge data
-% clc
-% CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
-% long1 = [LongGrid; long(iiSel)];
-% lat1  = [LatGrid ; lat(iiSel) ];
-% Venu1 = [V_def3; [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)]];
-% CV_pred = diag( 0.001 * ones(size(V_def3,1)*3,1) / (1000^2 * 1.8 * 100));
-% c12 = zeros( size(V_def3,1)*3, length(iiSel)*3);
-% c21 = c12';
-% CovVenu1 = [CV_pred,   c12  
-%             c21,  CovVenu2 ];
-
 %%
 clc
 CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
-%%
+%% for Horizontal
 clc
 %                                                                                                             LongLim LatLing step dMax nMin flags ...                                         
-[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 17], [41 53], 0.5, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 17], [41 53], 1, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr');
+
+%% for Vertical       
+
+%% Block selection for Vertical
+
+Outliers   = {'HELM', 'WIEN', 'OGAG', 'OBE2', ...
+              'ROHR','BIWI','BI2I', 'MANS'};
+            
+Outliers = {'ELMO','WIEN','FERR', ...
+            'BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
+            'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
+            'HRIE','KTZ2', 'WLBH'};
+        
+iiOut    = selectRange(names, Outliers);
+iiSel = setdiff([1:198], iiOut);
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [1 16], [42 49], 1, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+
+%% run Kriging
+close all
+runKriging(LongGrid, LatGrid, V_def, long ,lat, Vu_res, iiSel);
 
 %% check individual
 run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [10 10], [45 45], 1, 250, 10, 'exp1', '-v', 'no bias', 'tail 0', 'no corr', 'filter','plot');
 
 %% Plot Results 2D map
 clc
-s = 250;  % [mm/yr]
+s = 500;  % [mm/yr]
 try
     close (fig7)
 end
@@ -166,27 +126,25 @@ fig7 = figure(7);
 hold on
 xlim([-6 19])
 ylim([41 53])
-% xlim([2 16])
-% ylim([43 49])
-% geoshow(Etopo_Europe, refvec_Etopo, 'DisplayType', 'texturemap');
-% demcmap(Etopo_Europe);
-% cptcmap('Europe')
 etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
 % Earth_coast(2)
-plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
+% plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
 plot(Adriatics(:,1),Adriatics(:,2) , '--k')
-quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'lineWidth',1)
-% quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+% quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+% quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+errorbar(long(iiSel), lat(iiSel)+ Vu_res(iiSel)*s, SigmaVenu(iiSel,3)*s, '.m')
+quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
 % quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,   Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',1)
 % quiver(long(iiOut),lat(iiOut),zeros(size(iiOut))',  Vu_res(iiOut)*s, 0, 'm', 'lineWidth',1)
 % text(long(iiOut),lat(iiOut), names(iiOut))
-quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-% quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-% ellipce_2D([km2deg(Max_Dist,6378*cosd(iLat)), Max_Dist/111], 0, [iLong, iLat], 1)
+% quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+errorbar(LongGrid, LatGrid + V_def(:,3)*s, rmsFit(:,3)*s, '.k')
+% errorbar(LongGrid, LatGrid + V_def(:,3)*s, V_SigPred(:,3)*s, '.k')
+quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % text(long,lat, names)
-plotErrorElipses('Cov', CovVenu,                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
+% plotErrorElipses('Cov', CovVenu,                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
 % plotErrorElipses('Sig', [V_SigPred(:,1),V_SigPred(:,2)], LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
-plotErrorElipses('Sig', ([rmsFit(:,1),rmsFit(:,2)]).^2,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
+% plotErrorElipses('Sig', ([rmsFit(:,1),rmsFit(:,2)])*10,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
 
 title('velocity field / deformation model') 
 xlabel('Velocity EW, [mm/yr]')

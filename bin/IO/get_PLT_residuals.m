@@ -1,4 +1,4 @@
-function [meanResN, meanResE, meanResU, meanResH, meanRes3D, Sites, Domes] = get_PLT_residuals(filename, Station_list)
+function [meanResN, meanResE, meanResU, meanResH, meanRes3D, Sites, Domes, res_N_stack, res_E_stack, res_U_stack] = get_PLT_residuals(filename, Station_list)
 % parse PLT file and compute residuals RMS for list of station
 % 
 % Alexandr Sokolov, KEG

@@ -1,45 +1,26 @@
-% test_kriging
-
-close all
-clc
-
-Outliers = {'HELM','WIEN','FERR','FERH','OGAG', ...
-            'ROHR','BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
-            'TRF2','KRBG','OBE4','WT21','HKBL','PATK','PAT2', ...
-            'VAUC','HRIE','ENTZ','KTZ2','BZRG'};
-     
-iiOut = selectRange(names, Outliers);
-ii = 1:length(Vu_res);
-iiSel = setdiff(ii, iiOut);
-
-x = wrapTo180(long(iiSel));
-y = lat(iiSel);
-z = Vu_res(iiSel)*1000;
-%% Combine Predicted and Original
-% 
-x = [LongGrid; wrapTo180(long(iiSel))];
-y = [LatGrid; lat(iiSel)];
-z = [V_def3(:,3); Vu_res(iiSel)] *1000;
+function [LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_def, long ,lat,  Vu_res, iiSel) 
+% function to run Kriging 
 
 
-%% WLCS only
+% WLCS only
 x = LongGrid;
 y = LatGrid;
-z = V_def3(:,3) *1000;
+z = V_def(:,3) *1000;
 
-%
-% interpolate default
-[X, Y] = meshgrid(0:0.1:17, 42:0.1:50);
+%% interpolate by default Matlab interpolator
+[X, Y] = meshgrid(min(LongGrid):0.1:max(LongGrid), min(LatGrid):0.1:max(LatGrid));
 y = y * (4/3);
 Y = Y * (4/3);
 vq = griddata(x, y, z, X, Y, 'natural');
 clc
 
+%% do Kriging
 try
     close (fig1)
 end
 fig1 = figure(1);
 subplot(2,2,1)
+colormap('jet')
 % scatter3(x,y,z); axis image; axis xy
 hold on
 Earth_coast(2)
@@ -98,6 +79,7 @@ Earth_coast(2)
 h = pcolor(X(1,:),Y(:,1),Zhat); %
 shading interp
 set(h,'facealpha',.5)
+colormap('jet')
 contour(X,Y,Zhat,[-2:0.5:-.5, 0.5:0.5:3],'LineWidth',2)
 % contour(X,Y,Zhat,[-2:0.5:3],'LineWidth',2)
 
@@ -113,23 +95,23 @@ quiver(long,     lat,     zeros(size(Vu_res)),      Vu_res*100,      0, 'k', 'Li
 % text(long(iiSel), lat(iiSel), names(iiSel), 'Color', 'b')
 plot(long(iiSel), lat(iiSel), '.')
 text(long, lat, num2str(Vu_res*1000, '%4.1f'), 'HorizontalAlignment', 'right');
-% text(LongGrid, LatGrid, num2str(V_def3(:,3)*1000, '%4.1f'), 'HorizontalAlignment', 'right');
+% text(LongGrid, LatGrid, num2str(V_def(:,3)*1000, '%4.1f'), 'HorizontalAlignment', 'right');
 colorbar
 title('kriging predictions')
-xlim([2 17])
-ylim([43 50])
-zlim([-10 10])
+xlim([min(LongGrid) max(LongGrid)])
+ylim([min(LatGrid)   max(LatGrid)])
+% zlim([-10 10]) % [mm/yr]
 
 %% Save for GMT
 
-a = grid2vector(X);
-b = grid2vector(Y);
-c = grid2vector(Zhat);
+LongK_Stack = grid2vector(X);
+LatK_Stack = grid2vector(Y);
+VuK_Stack = grid2vector(Zhat);
 
-writeVelocityFieldVertical2GMT(a,b,c, '~/Alpen_Check/MAP/VelocityField/Vel_up_Kriging2.txt');
+% writeVelocityFieldVertical2GMT(LongK_Stack,LatK_Stack,VuK_Stack, '~/Alpen_Check/MAP/VelocityField/Vel_up_Kriging2.txt');
 % writeVelocityFieldVertical2GMT(long(iiSel),lat(iiSel),Vu_res(iiSel)*1000, '~/Alpen_Check/MAP/VelocityField/Vu_res.txt');
 
 
-
+end
 
 
