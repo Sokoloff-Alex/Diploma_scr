@@ -1,11 +1,14 @@
-function writeDeformationFieldGMT(DeformationField, filename)
+function writeDeformationFieldGMT(DeformationField, filename , flag)
 
 
 fileID = fopen(filename, 'w');
 
-fprintf(fileID, '# Velocity Field, \n');
-fprintf(fileID, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma E [m/yr], Sigma N [m/yr],      Angle [deg] \n');
-
+fprintf(fileID, '# Deformation Field, \n');
+if ismember(flag, {'-e', 'Ellipse', 'azim', 'angle'})
+    fprintf(fileID, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma E [m/yr], Sigma N [m/yr],      Angle [deg] \n');
+elseif ismember(flag, {'Corr', '-c'})
+    fprintf(fileID, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Sigma E [m/yr], Sigma N [m/yr],      CorrEN      \n');
+end
 
 formatStr = '%12.7f  %12.7f  %12.5f  %12.5f   %15e  %15e  %16.5f\n';
 

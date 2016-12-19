@@ -1,4 +1,4 @@
-function plotErrorElipses(flag, CovENU, long, lat, Ve_res, Vn_res, scale, conf, color)
+function plotErrorElipses(flag, CovENUorSigmaENU, long, lat, Ve_res, Vn_res, scale, conf, color)
 % function tp plot Error elipses on map
 %
 %
@@ -11,7 +11,7 @@ function plotErrorElipses(flag, CovENU, long, lat, Ve_res, Vn_res, scale, conf, 
 
 if ismember(flag , {'Cov'})
     for i = 1:length(long)
-        Cov = extractCovariance(CovENU, i, [1 2], 'split');
+        Cov = extractCovariance(CovENUorSigmaENU, i, [1 2], 'split');
         Cov = Cov * 1000^2 * 1.8 * 25;
         if det(Cov) > 0
             mu = [long(i) + Ve_res(i)*scale, lat(i) + Vn_res(i)*scale];
@@ -21,7 +21,7 @@ if ismember(flag , {'Cov'})
     end    
 elseif ismember(flag , {'Sig'})
     for i = 1:length(long)
-        Cov = diag(abs(CovENU(i,:)));
+        Cov = diag(abs(CovENUorSigmaENU(i,:)));
         Cov = Cov;
         if det(Cov) > 0
             mu = [long(i) + Ve_res(i)*scale, lat(i) + Vn_res(i)*scale];
