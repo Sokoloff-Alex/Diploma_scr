@@ -110,7 +110,12 @@ error_ellipse(cov(v_err(:,[2,3])), mean(v_err(:,[2,3])), 0.68, 'b') % 2 sigma, 9
 xlabel('North, [mm/yr]')
 ylabel('Up, [mm/yr]')
 
-mean(v_err)
+%%
+clc
+disp(num2str([mean(v_err)], '%8.3f %8.3f %8.3f \n' ))
+disp(num2str([rms(v_err)], '%8.3f %8.3f %8.3f \n' ))
+disp(num2str([std(v_err)], '%8.3f %8.3f %8.3f \n' ))
+
 
 %% or merge solutions
 

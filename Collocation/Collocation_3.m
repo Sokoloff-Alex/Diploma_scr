@@ -142,7 +142,7 @@ errorbar(LongGrid, LatGrid + V_def(:,3)*s, rmsFit(:,3)*s, '.k')
 % errorbar(LongGrid, LatGrid + V_def(:,3)*s, V_SigPred(:,3)*s, '.k')
 quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % text(long,lat, names)
-% plotErrorElipses('Cov', CovVenu,                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
+plotErrorElipses('Cov', CovVenu,                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
 % plotErrorElipses('Sig', [V_SigPred(:,1),V_SigPred(:,2)], LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
 % plotErrorElipses('Sig', ([rmsFit(:,1),rmsFit(:,2)])*10,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
 

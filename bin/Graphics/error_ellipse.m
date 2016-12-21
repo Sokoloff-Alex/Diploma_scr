@@ -118,7 +118,7 @@ if r==3 & c==3
   
   [eigvec,eigval] = eig(C);
 
-  [X,Y,Z] = ellipsoid(0,0,0,1,1,1);
+  [X,Y,Z] = ellipsoid(0,0,0,1,1,1,50);
   XYZ = [X(:),Y(:),Z(:)]*sqrt(eigval)*eigvec';
   
   X(:) = scale*(k*XYZ(:,1)+x0);
@@ -156,7 +156,7 @@ set(gca,'nextplot',hold_state);
 %   x and y.
 function [x,y,z] = getpoints(C,clipping_radius)
 
-n=10; % Number of points around ellipse
+n=20; % Number of points around ellipse
 p=0:pi/n:2*pi; % angles around a circle
 
 [eigvec,eigval] = eig(C); % Compute eigen-stuff

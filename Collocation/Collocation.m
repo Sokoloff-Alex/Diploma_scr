@@ -120,7 +120,7 @@ clc
 
 [Vel_res_Blocks, Vel_blocks, Omega_Blocks]= remove_block_motion(CRD, VEL, Sets);
 
-%% Eemome Plate motion from Block motion
+%% Remome Plate motion from Block motion
 [V_bl_no_plate] = remove_plate_motion(CRD, Vel_blocks, Omega_Eur);
 
 [Ve_res_bl, Vn_res_bl, Vu_res_bl] = XYZ2ENU(CRD,V_bl_no_plate); 

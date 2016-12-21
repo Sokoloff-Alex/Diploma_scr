@@ -14,6 +14,8 @@ Re = 6371*1000;
 ALP_NET_CRD = readCRD('../STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('../STA/FMC_IGB_W7.VEL');
 
+Orogen_Alp  = importOrogen('dat/PB2002_orogen_Alps.txt');
+
 %%
 CRD = cell2mat( ALP_NET_CRD(:,4:6));
 VEL = cell2mat( ALP_NET_VEL(:,4:6));
@@ -45,7 +47,9 @@ for i = 1:length(list)
     points_ref_2 = points_ref_2(strcmp(names(points_ref_2), list(i)) == 0);
 end
 
-ALP_NET_CRD(points_ref_2,:)
+ALP_NET_CRD(points_ref_2,:);
+iiExclude = setdiff([1:length(ALP_NET_CRD)], points_ref_2);
+
 
 
 %%
@@ -57,6 +61,7 @@ scale = 1000;
 hold on
 grid on
 Earth_coast(2)
+plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'-.m')
 xlim([-6 18])
 ylim([41 53])
 plot(long(range_flag), lat(range_flag), '.b')
@@ -66,7 +71,7 @@ plot(long(points_ref_2), lat(points_ref_2), '*r')
 
 %% Estimate plate Euler pole
 
-[Omega_Est, dOmega_k, DOP,Omega_Est_stack, dOmega_k_stack] = plate_motion(Omega_NNR_NUVEL_1A, CRD(points_ref_2,:),VEL(points_ref_2,:), 1000);
+[Omega_Est, dOmega_k, DOP,Omega_Est_stack, dOmega_k_stack] = plate_motion(Omega_NNR_NUVEL_1A,'ECEF', CRD(points_ref_2,:),VEL(points_ref_2,:), 1000);
 
 %% get residual velocities alternative
 
@@ -77,12 +82,16 @@ plot(long(points_ref_2), lat(points_ref_2), '*r')
 
 std_vn_res = std(Vn_res(points_ref_2),1);
 std_ve_res = std(Ve_res(points_ref_2),1);
-disp(['std_vn_res = ', num2str(std_vn_res*1000), ' [mm]'])
-disp(['std_ve_res = ', num2str(std_ve_res*1000), ' [mm]'])
+disp(['std_vn_res = ', num2str(std_vn_res*1000), ' [mm/yr]'])
+disp(['std_ve_res = ', num2str(std_ve_res*1000), ' [mm/yr]'])
 
+% in box
 points_ref_2_n    = points_ref_2(abs(Vn_res(points_ref_2)) < std_vn_res); 
 points_ref_2_e    = points_ref_2(abs(Ve_res(points_ref_2)) < std_ve_res);
 points_ref_3 = intersect(points_ref_2_n, points_ref_2_e);
+
+% in circle
+points_ref_3= points_ref_2( sqrt( Vn_res(points_ref_2).^2 + Ve_res(points_ref_2).^2 ) < sqrt(std_vn_res^2 + std_ve_res^2))
 
 %% Statistics
 mean_en_all   = [mean(Ve_res((range_flag))), mean(Vn_res(range_flag))];
@@ -95,22 +104,25 @@ end
 fig9 = figure(9);
 hold on
 grid on
-plot(Ve_res(range_flag)*1000, Vn_res(range_flag)*1000, '.b', 'lineWidth',2)
+axis equal
+pl1 = plot(Ve_res(range_flag)*1000, Vn_res(range_flag)*1000, '.b', 'lineWidth',2);
 % text(v_long_res(range_flag)*1000, v_lat_res(range_flag)*1000, names(range_flag),'HorizontalAlignment','right')
-plot(Ve_res(points_ref_2)*1000, Vn_res(points_ref_2)*1000, '*m','lineWidth',3)
-plot(Ve_res(points_ref_3)*1000, Vn_res(points_ref_3)*1000, '*r','lineWidth',3)
-plot(mean_en_all(1)*1000,   mean_en_all(2)*1000,   'xg','lineWidth',5)
+pl2 = plot(Ve_res(points_ref_2)*1000, Vn_res(points_ref_2)*1000, '.m','lineWidth',3);
+pl3 = plot(Ve_res(points_ref_3)*1000, Vn_res(points_ref_3)*1000, '*r','lineWidth',3);
+% plot(mean_en_all(1)*1000,   mean_en_all(2)*1000,   'xg','lineWidth',5)
 plot(mean_en_sel_2(1)*1000, mean_en_sel_3(2)*1000, 'xk','lineWidth',5)
-error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000)
+pl4 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.683,1, 'r');
+pl5 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.955,1, 'b');
+pl6 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.997,1, 'k');
 xlabel('velocity EW, [mm/yr]')
 ylabel('velocity SN, [mm/yr]')
-legend('all stations', 'selected: IGB')
+legend([pl1 pl2 pl3 pl4 pl5 pl6], 'Alps Orogen', 'selected', 'selected: 1 sigma', '1 sigma', '2 sigma', '3 sigma')
 title('Residual velocity')
 hold off
 
 %% Refinment of Euler pole estimation
 
-[Omega_Est, dOmega_k2, DOP2, Omega_Est_stack2, dOmega_k_stack2] = plate_motion(Omega_Est, CRD(points_ref_3,:), VEL(points_ref_3,:), 1000);
+[Omega_Est, dOmega_k2, DOP2, Omega_Est_stack2, dOmega_k_stack2] = plate_motion(Omega_Est,'ECEF',  CRD(points_ref_3,:), VEL(points_ref_3,:), 1000);
 %% get residual velocities alternative
 
 [V_res_xyz] = remove_plate_motion(CRD, VEL, Omega_Est);
