@@ -54,7 +54,9 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
 [CovVenu] = megreCov(CovVenuSNX, names_all);
-[CRD, SigmaVenu_merged, nam ] = merge_stations(CRD_all,SigmaVenu,names_all );
+[CRD, SigmaVenu_merged, name ] = merge_stations(CRD_all,SigmaVenu,names_all);
+[CRD, AngleV_merged] = merge_stations(CRD_all,AngleV,names_all)
+Angle_v = AngleV_merged(:,1);
 
 %% save Error Bars for GMT
 % fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars.txt', 'w');
@@ -71,6 +73,34 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 % end
 % fclose(fileID);
 
+%% compute common observation period
+
+t_start = SINEX.SOLUTION.EPOCHS.DATA_START;
+t_end   = SINEX.SOLUTION.EPOCHS.DATA_END;
+
+t_start = [str2num(t_start(:,1:2)) + str2num(t_start(:,4:6))/365.25]
+t_end   = [str2num(t_end(  :,1:2)) + str2num(t_end(  :,4:6))/365.25]
+
+dt = t_end - t_start;
+
+%%
+[dtobs_sum] = merge_stations_sum(dt,names_all);
+
+%%
+close all
+figure(1)
+hist(dtobs_sum,10)
+
+%% save full table of velocity field
+% d = diag(CovVenu);
+clc
+Sigma_Venu = SigmaVenu_merged * 1.8^(1/2) * 20 * 1000;
+data = [wrapTo180(long), lat, Ve_res*1000, Sigma_Venu(:,1), Vn_res*1000, Sigma_Venu(:,2), Angle_v, Vu_res*1000, Sigma_Venu(:,3), dtobs_sum];
+formatStr = '%4s  %8.3f\t %8.3f\t %5.2f  %5.2f   %5.2f  %5.2f   %5.1f     %5.2f  %5.2f   %4.1f \n';
+disp('Site  Long,     Lat,          Ve     SVe     Vn     SVn     angle     Vu     Svu   Tobs')
+for i = 1:length(long)
+    fprintf(formatStr, name{i}, data(i,:)); 
+end
 
 
 
