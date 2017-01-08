@@ -36,9 +36,9 @@ for iLong = LongLim(1):step:LongLim(2)
         CovVenuSel = extractCovariance(CovVenu, sel, [1 2 3], 'split');
         % WLSC
         [V_pred, rmsFit, V_noise_pred] = solve_WLSC3(iLat, iLong, lat(sel), long(sel), Venu(sel,:)*1000 ,CovVenuSel, flags);
-        V_pred_stack(p,:)    = V_pred/1000;
-        rmsFit_stack(p,:)    = rmsFit/(1000); % [mm/yr]
-        V_SigPred_stack(p,:) = V_noise_pred;
+        V_pred_stack(p,:)    = V_pred/1000;       % [mm/yr] -> [m/yr]
+        rmsFit_stack(p,:)    = rmsFit/1000;       % [mm/yr] -> [m/yr]
+        V_SigPred_stack(p,:) = V_noise_pred;      % [mm/yr]**2 
         LatGrid_stack(p,1)   = iLat;
         LongGrid_stack(p,1)  = iLong;
     end

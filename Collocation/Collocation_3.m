@@ -103,8 +103,6 @@ for i = 1:length(long)
 end
 
 
-
-
 %% for Horizontal 
 
 iiSel = Selected;        
@@ -154,32 +152,32 @@ end
 clr = lines(8);
 fig7 = figure(7);
 hold on
-xlim([-6 19])
-ylim([41 53])
+xlim([-2 19])
+ylim([41 52])
 etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
 % Earth_coast(2)
 % plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
-plot(Adriatics(:,1),Adriatics(:,2) , '--k')
-% quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+% plot(Adriatics(:,1),Adriatics(:,2) , '--k')
+quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'lineWidth',1)
 % quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-errorbar(long(iiSel), lat(iiSel)+ Vu_res(iiSel)*s, SigmaVenu(iiSel,3)*s, '.m')
-quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
-% quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,   Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',1)
+% errorbar(long(iiSel), lat(iiSel)+ Vu_res(iiSel)*s, SigmaVenu(iiSel,3)*s, '.m')
+% quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,   Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',1)
 % quiver(long(iiOut),lat(iiOut),zeros(size(iiOut))',  Vu_res(iiOut)*s, 0, 'm', 'lineWidth',1)
 % text(long(iiOut),lat(iiOut), names(iiOut))
-% quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-errorbar(LongGrid, LatGrid + V_def(:,3)*s, rmsFit(:,3)*s, '.k')
+quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+% errorbar(LongGrid, LatGrid + V_def(:,3)*s, rmsFit(:,3)*s, '.k')
 % errorbar(LongGrid, LatGrid + V_def(:,3)*s, V_SigPred(:,3)*s, '.k')
-quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+% quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % text(long,lat, names)
 plotErrorElipses('Cov', CovVenu,                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
-% plotErrorElipses('Sig', [V_SigPred(:,1),V_SigPred(:,2)], LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
-% plotErrorElipses('Sig', ([rmsFit(:,1),rmsFit(:,2)])*10,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
+plotErrorElipses('Sig', sqrt([V_SigPred(:,1),V_SigPred(:,2)])*2, LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
+% plotErrorElipses('Sig', ([rmsFit(:,1),rmsFit(:,2)])*1000,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
 
 title('velocity field / deformation model') 
 xlabel('Velocity EW, [mm/yr]')
 ylabel('Velocity SN, [mm/yr]')
-legend('Earth Coast','Alps Orogen boundary','Ardiatics','Residual velocity','LSC velocity','location','NorthWest')
+legend('Residual velocity','Outliers','LSC velocity','location','NorthWest')
 
 %%
 clc
