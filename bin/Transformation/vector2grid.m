@@ -4,13 +4,13 @@ function [MapGrid, LongGrid, LatGrid] =  vector2grid(MapStack, LongStack, LatSta
 % Alexandr Sokolov, KEG
 % 14.11.2016
 
-LongLength = length(unique(sort(LongStack)));
-LatLength  = length(unique(sort(LatStack)));
+LongLength = length(unique(sort(LongStack)))
+LatLength  = length(unique(sort(LatStack)))
 MapNCol = size(MapStack,2);
 
-LongGrid = NaN(LongLength, LatLength);
-LatGrid  = NaN(LongLength, LatLength);
-MapGrid  = NaN(LongLength, LatLength,MapNCol);
+LongGrid = NaN(LatLength, LongLength);
+LatGrid  = NaN(LatLength, LongLength);
+MapGrid  = NaN(LatLength, LongLength, MapNCol);
 
 p = 0;
 for iLong = 1:LongLength

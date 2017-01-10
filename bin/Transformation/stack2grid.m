@@ -1,5 +1,5 @@
 function [GridMatrix] =  stack2grid(Stack)
-% function to wrap vector stack(p,1) into matrix(n,m), n * m = p;
+% function to wrap vector stack(p,k) into matrix(n,m), n * m = p;
 %
 % Alexandr Sokolov, KEG
 % 23.11.2016

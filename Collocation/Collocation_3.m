@@ -250,33 +250,3 @@ hold off
 % end
 % fclose(fileID);
 
-%% Cross-section
-r=1:198;
-iiB=r(lat>=45.5);
-iiT=r(lat<=49);
-iiR=r(long<=13);
-iiL=r(long>=12.5);
-iiBox = intersect(intersect(iiL, iiR), intersect(iiT,iiB) );
-iiBox = setdiff(iiBox,iiOut);
-close all
-figure(5)
-hold on
-grid on
-plot(lat(iiBox),Vn_res(iiBox)*1000,'.b')
-% plot(lat(iiBox),Vu_res(iiBox)*1000,'.b')
-
-text(lat(iiBox),Vn_res(iiBox)*1000,names(iiBox))
-nLon = size(ETOPO_Alps.Etopo_Europe,1);
-nLat = size(ETOPO_Alps.Etopo_Europe,2);
-step = ETOPO_Alps.refvec_Etopo(1);
-Lat0 = ETOPO_Alps.refvec_Etopo(2);
-Lon0 = ETOPO_Alps.refvec_Etopo(3);
-LonRange = [ Lon0, Lon0 + nLat/step];
-LatRange = [ Lat0, Lat0 - nLon/step];
-% Vq = interp2(-100:10:4000, ((Lat0-49)*step):((Lat0-45.5)*step), (Lon0+12.5)*60);
-prof = improfile(ETOPO_Alps.Etopo_Europe,[(Lon0+12.5)*60, (Lon0+12.5)*60], [(Lat0-49)*step, (Lat0-45.5)*step]);
-clear elevProfile vLat
-elevProfile = ETOPO_Alps.Etopo_Europe(((Lat0-49)*step):((Lat0-45.5)*step), (Lon0+12.5)*step);
-vLat = [45.5:1/60:49];
-plot(vLat, elevProfile/100,'-.g')
-
