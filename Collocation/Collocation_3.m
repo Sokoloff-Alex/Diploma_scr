@@ -107,6 +107,7 @@ end
 
 iiSel = Selected;        
 iiOut = setdiff([1:198], iiSel);
+iOutliers = iiOut;
 
 %% wrie outliers files
 % writeVelocityFieldVerticalOutliers2GMT(long(iiOut), lat(iiOut), Vu_res(iiOut), names(iiOut), '~/Alpen_Check/MAP/VelocityField/VelocityFieldVertical_out.txt');
@@ -146,38 +147,42 @@ run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [10 10], [45 45], 
 %% Plot Results 2D map
 clc
 s = 500;  % [mm/yr]
+s2 = 0.2;
 try
     close (fig7)
 end
 clr = lines(8);
 fig7 = figure(7);
 hold on
-xlim([-2 19])
+xlim([-2 18])
 ylim([41 52])
 etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
 % Earth_coast(2)
 % plot(Orogen_Alp(:,1),Orogen_Alp(:,2),'--m')
 % plot(Adriatics(:,1),Adriatics(:,2) , '--k')
-quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'lineWidth',0.5)
 % quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % errorbar(long(iiSel), lat(iiSel)+ Vu_res(iiSel)*s, SigmaVenu(iiSel,3)*s, '.m')
 % quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
-quiver(long(iOutliers),lat(iOutliers),Ve_res(iOutliers)*s,   Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',1)
+quiver(long(iOutliers),lat(iOutliers), Ve_res(iOutliers)*s,   Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',0.5)
 % quiver(long(iiOut),lat(iiOut),zeros(size(iiOut))',  Vu_res(iiOut)*s, 0, 'm', 'lineWidth',1)
 % text(long(iiOut),lat(iiOut), names(iiOut))
-quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',0.5)
 % errorbar(LongGrid, LatGrid + V_def(:,3)*s, rmsFit(:,3)*s, '.k')
 % errorbar(LongGrid, LatGrid + V_def(:,3)*s, V_SigPred(:,3)*s, '.k')
 % quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % text(long,lat, names)
-plotErrorElipses('Cov', CovVenu,                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
-plotErrorElipses('Sig', sqrt([V_SigPred(:,1),V_SigPred(:,2)])*2, LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
+plotErrorElipses('Cov', CovVenu*sqrt(s2),                         long,     lat,     Ve_res,     Vn_res,     s, 0.95, 'r')
+plotErrorElipses('Sig', sqrt([V_SigPred(:,1),V_SigPred(:,2)])*s2, LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
 % plotErrorElipses('Sig', ([rmsFit(:,1),rmsFit(:,2)])*1000,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
 
 title('velocity field / deformation model') 
-xlabel('Velocity EW, [mm/yr]')
-ylabel('Velocity SN, [mm/yr]')
+% xlabel('Velocity EW, [mm/yr]')
+% ylabel('Velocity SN, [mm/yr]')
 legend('Residual velocity','Outliers','LSC velocity','location','NorthWest')
+set(gcf, 'PaperType', 'A4');
+print(fig7,'-dpng','-r300','Noise_Prop.png')
+
 
 %%
 clc
@@ -244,3 +249,34 @@ hold off
 %    fprintf(fileID, formatStr, Alps_deformation(i,:)); 
 % end
 % fclose(fileID);
+
+%% Cross-section
+r=1:198;
+iiB=r(lat>=45.5);
+iiT=r(lat<=49);
+iiR=r(long<=13);
+iiL=r(long>=12.5);
+iiBox = intersect(intersect(iiL, iiR), intersect(iiT,iiB) );
+iiBox = setdiff(iiBox,iiOut);
+close all
+figure(5)
+hold on
+grid on
+plot(lat(iiBox),Vn_res(iiBox)*1000,'.b')
+% plot(lat(iiBox),Vu_res(iiBox)*1000,'.b')
+
+text(lat(iiBox),Vn_res(iiBox)*1000,names(iiBox))
+nLon = size(ETOPO_Alps.Etopo_Europe,1);
+nLat = size(ETOPO_Alps.Etopo_Europe,2);
+step = ETOPO_Alps.refvec_Etopo(1);
+Lat0 = ETOPO_Alps.refvec_Etopo(2);
+Lon0 = ETOPO_Alps.refvec_Etopo(3);
+LonRange = [ Lon0, Lon0 + nLat/step];
+LatRange = [ Lat0, Lat0 - nLon/step];
+% Vq = interp2(-100:10:4000, ((Lat0-49)*step):((Lat0-45.5)*step), (Lon0+12.5)*60);
+prof = improfile(ETOPO_Alps.Etopo_Europe,[(Lon0+12.5)*60, (Lon0+12.5)*60], [(Lat0-49)*step, (Lat0-45.5)*step]);
+clear elevProfile vLat
+elevProfile = ETOPO_Alps.Etopo_Europe(((Lat0-49)*step):((Lat0-45.5)*step), (Lon0+12.5)*step);
+vLat = [45.5:1/60:49];
+plot(vLat, elevProfile/100,'-.g')
+

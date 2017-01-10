@@ -350,16 +350,19 @@ V_pred = ( V_pred + [mean(Ve); mean(Vn); mean(Vu)] )' ;
 SigmaSquare = diag(Cnoise);
 V_noise_pred = C_new' * (C_obs + Cnoise)^-1 * SigmaSquare;
 V_noise_pred = V_noise_pred';
+
+
 %% Khale, error in dimentions
 % V_noise_pred = C_new' * (C_obs + Cnoise)^-1 * C_new; %  * SigmaSquare; 
 % V_noise_pred = diag(V_noise_pred)';
 
 %% Mihkail E.
-% Cs0 = [C_obs_NN(1,1),0; 
-%        0,C_obs_EE(1,1)];
+Cs0 = [C_obs_NN(1,1),0,0; 
+       0,C_obs_EE(1,1),0;
+       0,0,C_obs_UU(1,1)];
 
-% V_noise_pred = Cs0 - C_new' * (C_obs + Cnoise)^-1 * C_new; 
-% V_noise_pred = diag(V_noise_pred)';
+V_noise_pred = C_new' * (C_obs + Cnoise)^-1 * C_new; 
+V_noise_pred = diag(V_noise_pred)';
 % 
 %% verbose mode
 if ismember('-v', flags)
