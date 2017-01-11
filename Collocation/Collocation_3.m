@@ -92,15 +92,15 @@ figure(1)
 hist(dtobs_sum,10)
 
 %% save full table of velocity field
-% d = diag(CovVenu);
-clc
-Sigma_Venu = SigmaVenu_merged * 1.8^(1/2) * 20 * 1000;
-data = [wrapTo180(long), lat, Ve_res*1000, Sigma_Venu(:,1), Vn_res*1000, Sigma_Venu(:,2), Angle_v, Vu_res*1000, Sigma_Venu(:,3), dtobs_sum];
-formatStr = '%4s  %8.3f\t %8.3f\t %5.2f  %5.2f   %5.2f  %5.2f   %5.1f     %5.2f  %5.2f   %4.1f \n';
-disp('Site  Long,     Lat,          Ve     SVe     Vn     SVn     angle     Vu     Svu   Tobs')
-for i = 1:length(long)
-    fprintf(formatStr, name{i}, data(i,:)); 
-end
+% % d = diag(CovVenu);
+% clc
+% Sigma_Venu = SigmaVenu_merged * 1.8^(1/2) * 20 * 1000;
+% data = [wrapTo180(long), lat, Ve_res*1000, Sigma_Venu(:,1), Vn_res*1000, Sigma_Venu(:,2), Angle_v, Vu_res*1000, Sigma_Venu(:,3), dtobs_sum];
+% formatStr = '%4s  %8.3f\t %8.3f\t %5.2f  %5.2f   %5.2f  %5.2f   %5.1f     %5.2f  %5.2f   %4.1f \n';
+% disp('Site  Long,     Lat,          Ve     SVe     Vn     SVn     angle     Vu     Svu   Tobs')
+% for i = 1:length(long)
+%     fprintf(formatStr, name{i}, data(i,:)); 
+% end
 
 
 %% for Horizontal 
@@ -181,7 +181,7 @@ title('velocity field / deformation model')
 % ylabel('Velocity SN, [mm/yr]')
 legend('Residual velocity','Outliers','LSC velocity','location','NorthWest')
 set(gcf, 'PaperType', 'A4');
-print(fig7,'-dpng','-r300','Noise_Prop.png')
+% print(fig7,'-dpng','-r300','Noise_Prop.png')
 
 
 %%
