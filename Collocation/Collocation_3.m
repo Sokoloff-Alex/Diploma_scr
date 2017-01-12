@@ -176,6 +176,7 @@ plotErrorElipses('Cov', CovVenu*sqrt(s2),                         long,     lat,
 plotErrorElipses('Sig', sqrt([V_SigPred(:,1),V_SigPred(:,2)])*s2, LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'b')
 % plotErrorElipses('Sig', ([rmsFit(:,1),rmsFit(:,2)])*1000,  LongGrid, LatGrid, V_def(:,1), V_def(:,2), s, 0.95, 'm')
 
+
 title('velocity field / deformation model') 
 % xlabel('Velocity EW, [mm/yr]')
 % ylabel('Velocity SN, [mm/yr]')
@@ -184,6 +185,20 @@ set(gcf, 'PaperType', 'A4');
 % print(fig7,'-dpng','-r300','Noise_Prop.png')
 
 
+%%
+clc
+close all
+figure(2)
+hold on
+
+Earth_coast(2)
+% etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
+% scatter(LongGrid, LatGrid, V_SigPred(:,3)*100,V_SigPred(:,3),'fill')
+mesh(LongGrid, LatGrid, V_SigPred(:,3))
+
+colorbar
+xlim([-2 18])
+ylim([41 52])
 %%
 clc
 %  VARIANCE FACTOR                     1.800168208557666
