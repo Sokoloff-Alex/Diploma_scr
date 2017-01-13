@@ -1,4 +1,4 @@
-function [LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_def, long ,lat,  Vu_res, iiSel) 
+function [LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_def, long ,lat,  Vu_res, iiSel,c,maxdist) 
 % function to run Kriging 
 
 
@@ -12,7 +12,7 @@ z = V_def(:,3) *1000;
 y = y * (4/3);
 Y = Y * (4/3);
 vq = griddata(x, y, z, X, Y, 'natural');
-clc
+% clc
 
 %% do Kriging
 try
@@ -37,7 +37,7 @@ title('random field with sampling locations')
 
 
 % calculate the sample variogram
-v = variogram([x y],z,'plotit',false,'maxdist',5);
+v = variogram([x y],z,'plotit',false,'maxdist',maxdist);
 % and fit a spherical variogram
 subplot(2,2,2)
 [dum,dum,dum,vstruct] = variogramfit(v.distance,v.val,[],[],[],'model','stable');
@@ -80,7 +80,7 @@ h = pcolor(X(1,:),Y(:,1),Zhat); %
 shading interp
 set(h,'facealpha',.5)
 colormap('jet')
-contour(X,Y,Zhat,[-2:0.5:-.5, 0.5:0.5:3],'LineWidth',2)
+contour(X,Y,Zhat,c,'LineWidth',2)
 % contour(X,Y,Zhat,[-2:0.5:3],'LineWidth',2)
 
 % axis image

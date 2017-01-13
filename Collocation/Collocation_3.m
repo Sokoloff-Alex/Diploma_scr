@@ -55,7 +55,7 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
 [CovVenu] = megreCov(CovVenuSNX, names_all);
 [CRD, SigmaVenu_merged, name ] = merge_stations(CRD_all,SigmaVenu,names_all);
-[CRD, AngleV_merged] = merge_stations(CRD_all,AngleV,names_all)
+[CRD, AngleV_merged] = merge_stations(CRD_all,AngleV,names_all);
 Angle_v = AngleV_merged(:,1);
 
 %% save Error Bars for GMT
@@ -105,6 +105,8 @@ hist(dtobs_sum,10)
 
 %% for Horizontal 
 
+Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', ...
+                'ROHR','BIWI','BI2I'};
 iiSel = Selected;        
 iiOut = setdiff([1:198], iiSel);
 iOutliers = iiOut;
@@ -135,11 +137,30 @@ Outliers = {'ELMO','WIEN','FERR', ...
         
 iiOut    = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
-[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [1 16], [42 49], 1, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
+% VerrMin = (0.2/1000/50)^2/1.8;
+% CovVenu2(CovVenu2 < VerrMin) = VerrMin;
+V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [1 17], [41 49], 0.5, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 %% run Kriging
 close all
-runKriging(LongGrid, LatGrid, V_def, long ,lat, Vu_res, iiSel);
+c = [-2:0.5:-.5, 0.5:0.5:3];
+runKriging(LongGrid, LatGrid, V_def, long ,lat, Vu_res, iiSel,c,5);
+
+%% run Kriging
+close all
+sig = sqrt(diag(CovVenu));
+sig = [sig(1:3:end),sig(2:3:end),sig(1:3:end)]*sqrt(1.8)*50;
+sig(sig < 0.0001) = 0.0001;
+c = [0.2:0.2:2];
+[LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_SigPred/1000, long ,lat, sig(:,3), iiSel,c,5);
+%%
+write_xyzTable([LongK_Stack, LatK_Stack, VuK_Stack],'~/Alpen_Check/MAP/Deformation/Verr_est.txt','%12.7f %12.7f %12.3f\n')
+
+%%
+print(fig2,'-depsc','Verr_est.epsc','-r300')
+print(fig2,'-dpng', 'Verr_est.png', '-r300')
 
 %% check individual
 run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [10 10], [45 45], 1, 250, 10, 'exp1', '-v', 'no bias', 'tail 0', 'no corr', 'filter','plot');
@@ -193,9 +214,14 @@ hold on
 
 Earth_coast(2)
 % etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
-% scatter(LongGrid, LatGrid, V_SigPred(:,3)*100,V_SigPred(:,3),'fill')
-mesh(LongGrid, LatGrid, V_SigPred(:,3))
 
+Verr_grid = stack2grid([LongGrid, LatGrid, V_SigPred(:,3)]);
+quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
+quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
+scatter(LongGrid, LatGrid, abs(V_SigPred(:,3))*200,abs(V_SigPred(:,3)),'fill')
+% h = pcolor(Verr_grid(:,:,1)+0.5,Verr_grid(:,:,2)+.5,Verr_grid(:,:,3)*1)
+% shading interp
+% set(h,'facealpha',.5)
 colorbar
 xlim([-2 18])
 ylim([41 52])
