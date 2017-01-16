@@ -1,4 +1,4 @@
-function [V_pred, rmsFitting, V_noise_pred, Cs0] = solve_WLSC3(lat0, long0, lat, long, Venu, CovVel, varargin)
+function [V_pred, rmsFitting, V_noise_pred, Csig0] = solve_WLSC3(lat0, long0, lat, long, Venu, CovVel, varargin)
 % solve Least Square Collocation in 3D
 %
 % input   :     lat0, long0  - coordinates of grid point , [deg]
@@ -347,9 +347,9 @@ V_pred = C_new' * (C_obs + Cnoise)^-1 * V_obs;
 V_pred = ( V_pred + [mean(Ve); mean(Vn); mean(Vu)] )' ;
 
 %% propagate noise
-SigmaSquare = diag(Cnoise);
-V_noise_pred = C_new' * (C_obs + Cnoise)^-1 * SigmaSquare;
-V_noise_pred = V_noise_pred';
+% SigmaSquare = diag(Cnoise);
+% V_noise_pred = C_new' * (C_obs + Cnoise)^-1 * SigmaSquare;
+% V_noise_pred = V_noise_pred';
 
 
 %% Khale, error in dimentions
@@ -362,9 +362,9 @@ Cs0 = [coeff_EE(1),0,0;
        0,0,coeff_UU(1)];
 
 V_noise_pred = Cs0 - C_new' * (C_obs + Cnoise)^-1 * C_new; 
-V_noise_pred = diag(V_noise_pred)';
+V_noise_pred = sqrt(diag(V_noise_pred))';
 
-Cs0 = diag(Cs0);
+Csig0 = sqrt(diag(Cs0));
 % 
 %% verbose mode
 if ismember('-v', flags)

@@ -107,10 +107,8 @@ Angle_v = AngleV_merged(:,1);
 
 Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', ...
                 'ROHR','BIWI','BI2I'};
-            
-iiSel = Selected;        
-iiOut = setdiff([1:198], iiSel);
-iOutliers = iiOut;
+iiOut = selectRange(names, Outliers);
+iiSel = setdiff([1:198], iiOut);
 
 %% wrie outliers files
 % writeVelocityFieldVerticalOutliers2GMT(long(iiOut), lat(iiOut), Vu_res(iiOut), names(iiOut), '~/Alpen_Check/MAP/VelocityField/VelocityFieldVertical_out.txt');
@@ -136,15 +134,13 @@ Outliers = {'ELMO','WIEN','FERR', ...
             'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
             'HRIE','KTZ2', 'WLBH'};
         
-        
-        
 iiOut    = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
 CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
 VerrMin = (0.3/1000/25)^2/1.8; % in [m/yr]^2, scaled to SNX
 CovVenu2(CovVenu2 < VerrMin) = VerrMin;
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
-[LongGrid, LatGrid, V_def, rmsFit, V_SigPred, Cs0] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 18], [41 53], 0.5, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred, Cs0] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 18], [41 53], 1, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 %% run Kriging
 close all
@@ -160,9 +156,6 @@ c = [0.2:0.2:2];
 [LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_SigPred/1000, long ,lat, sig(:,3), iiSel,c,5);
 %%
 write_xyzTable([LongK_Stack, LatK_Stack, VuK_Stack],'~/Alpen_Check/MAP/Deformation/Verr_up_est.txt','%12.7f %12.7f %12.3f\n')
-
-
-
 
 
 %%
@@ -192,7 +185,7 @@ quiver(long(iiSel), lat(iiSel), Ve_res(iiSel)*s,    Vn_res(iiSel)*s,  0, 'r', 'l
 % quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
 % errorbar(long(iiSel), lat(iiSel)+ Vu_res(iiSel)*s, SigmaVenu(iiSel,3)*s, '.m')
 % quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
-quiver(long(iOutliers),lat(iOutliers), Ve_res(iOutliers)*s,   Vn_res(iOutliers)*s, 0, 'm', 'lineWidth',0.5)
+quiver(long(iiOut),lat(iiOut), Ve_res(iiOut)*s,   Vn_res(iiOut)*s, 0, 'm', 'lineWidth',0.5)
 % quiver(long(iiOut),lat(iiOut),zeros(size(iiOut))',  Vu_res(iiOut)*s, 0, 'm', 'lineWidth',1)
 % text(long(iiOut),lat(iiOut), names(iiOut))
 quiver(LongGrid,      LatGrid,      V_def(:,1)*s,   V_def(:,2)*s,    0, 'Color',clr(1,:), 'lineWidth',0.5)
@@ -219,26 +212,46 @@ close all
 figure(2)
 hold on
 
-Earth_coast(2)
+% Earth_coast(2)
 % etopo_fig = showETOPO(ETOPO_Alps.Etopo_Europe, ETOPO_Alps.refvec_Etopo);
 
-Verr_grid = stack2grid([LongGrid, LatGrid, V_SigPred(:,3)]);
-quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
-quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-% scatter(LongGrid, LatGrid, abs(V_SigPred(:,3))*200,abs(V_SigPred(:,3)),'fill')
-% scatter(LongGrid, LatGrid, abs(Css(:,3))*200,abs(Css(:,3)),'fill')
-a = Cs0 - V_SigPred;
-noise_assumed = 0.5 % [mm/yr]
-Sig_conv = noise_assumed - a;
-% scatter(LongGrid, LatGrid, abs(a(:,3))*200,abs(a(:,3)),'fill','o')
-scatter(LongGrid, LatGrid, abs(Sig_conv(:,3))*200, abs(Sig_conv(:,3)),'fill','o')
+% Verr_grid = stack2grid([LongGrid, LatGrid, V_SigPred(:,3)]);
+% quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))',   Vu_res(iiSel)*s,  0, 'r')
+% quiver(LongGrid,    LatGrid,    zeros(size(LongGrid)), V_def(:,3)*s,     0, 'Color',clr(1,:))
 
-% h = pcolor(Verr_grid(:,:,1)+0.5,Verr_grid(:,:,2)+.5,Verr_grid(:,:,3)*1)
-% shading interp
-% set(h,'facealpha',.5)
+a2 = abs(Cs0.^2 - V_SigPred.^2);
+a = sqrt(abs(a2));
+noise_assumed = 0.5 ; % [mm/yr]
+Sig_conv = sqrt(noise_assumed^2 - a2);
+
+
+subplot(2,2,1)
+hold on
+scatter(LongGrid, LatGrid, abs(Cs0(:,3))*200, (Cs0(:,3)),'fill')
+legend('Cs0 only')
 colorbar
-xlim([-4 18])
-ylim([41 53])
+caxis([0 1.2])
+
+subplot(2,2,2)
+hold on
+scatter(LongGrid, LatGrid, abs(V_SigPred(:,3))*200, (V_SigPred(:,3)),'fill')
+legend('Predicted, LSC, Cs0 - a')
+colorbar
+caxis([0 1])
+
+subplot(2,2,3)
+hold on
+scatter(LongGrid, LatGrid, abs(a(:,3))*200, (a(:,3)),'fill','o')
+legend('a only')
+colorbar
+caxis([0 1.2])
+
+subplot(2,2,4)
+hold on
+scatter(LongGrid, LatGrid, abs(rmsFit(:,3))*1000*500, rmsFit(:,3)*1000,'fill','o')
+legend('rms fitting')
+colorbar
+% caxis([0 1])
 
 %%
 clc
