@@ -37,7 +37,9 @@
 *.jpg  -crlf -diff -merge
 *.png  -crlf -diff -merge
 *.ps   -crlf -diff -merge
+*.eps  -crlf -diff -merge
 *.grd  -crlf -diff -merge
+
 
 # Standard to msysgit
 *.doc	 diff=astextplain

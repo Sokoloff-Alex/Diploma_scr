@@ -53,29 +53,32 @@ c_v_err = cov(v_err);
 %%
 
 close all
-figure(2)
+fig2 = figure(2);
 subplot(2,2,1)
 hold on
 axis equal
 axis vis3d
 grid on
-plot3(v_err(:,1),v_err(:,2),v_err(:,3),'.b')
+plot3(v_err(:,1),v_err(:,2),v_err(:,3),'.r','MarkerSize',16)
 plot3(v_err(:,1),v_err(:,2),-2*ones(51,1),'.b')
 plot3(v_err(:,1),2*ones(51,1),v_err(:,3),'.b')
 plot3(2*ones(51,1),v_err(:,2),v_err(:,3),'.b')
-text(v_err(:,1),v_err(:,2),v_err(:,3), names(iiALPcom))
-plot3(mean(v_err(:,1)),mean(v_err(:,2)),mean(v_err(:,3)),'*r')
-legend(['ALPNET vs EPN, sigmaVe = ', num2str(sqrt(c_v_err(1,1))), ...
-       ' ; sigmaVn = ', num2str(sqrt(c_v_err(2,2)), '%3.2f') , ...
-       ' ; sigmaVu = ', num2str(sqrt(c_v_err(3,3)), '%3.2f') , ' [mm/yr]']); 
-error_ellipse(c_v_err, mean(v_err), 0.95, 'r') % 2 sigma, 95 % confidence
+% text(v_err(:,1),v_err(:,2),v_err(:,3), names(iiALPcom))
+plot3(mean(v_err(:,1)),mean(v_err(:,2)),mean(v_err(:,3)),'xk')
+% legend(['ALPNET vs EPN, sigmaVe = ', num2str(sqrt(c_v_err(1,1))), ...
+%        ' ; sigmaVn = ', num2str(sqrt(c_v_err(2,2)), '%3.2f') , ...
+%        ' ; sigmaVu = ', num2str(sqrt(c_v_err(3,3)), '%3.2f') , ' [mm/yr]']);
+% title(['ALPNET vs EPN'])
+% error_ellipse(c_v_err, mean(v_err), 0.95, 'r') % 2 sigma, 95 % confidence
 % error_ellipse(c_v_err, mean(v_err), 0.68, 'b') % 2 sigma, 95 % confidence
 xlabel('East, [mm/yr]')
 ylabel('North, [mm/yr]')
 zlabel('Up, [mm/yr]')
-xlim([-2 2])
-ylim([-2 2])
-zlim([-2 2])
+xlim([-1.5 1.5])
+ylim([-1.5 1.5])
+zlim([-2 2.3])
+view(-50,25)
+hold off 
 
 subplot(2,2,2)
 hold on
@@ -83,10 +86,11 @@ axis equal
 grid on
 plot(v_err(:,1),v_err(:,2), '.b')
 plot(mean(v_err(:,1)),mean(v_err(:,2)),'*r')
-error_ellipse(cov(v_err(:,[1,2])), mean(v_err(:,[1,2])), 0.95, 'r') % 2 sigma, 95 % confidence
-error_ellipse(cov(v_err(:,[1,2])), mean(v_err(:,[1,2])), 0.68, 'b') % 2 sigma, 95 % confidence
+error_ellipse(cov(v_err(:,[1,2])), mean(v_err(:,[1,2])), 0.95, '--r') % 2 sigma, 95 % confidence
+error_ellipse(cov(v_err(:,[1,2])), mean(v_err(:,[1,2])), 0.68, '--k') % 2 sigma, 95 % confidence
 xlabel('East, [mm/yr]')
 ylabel('North, [mm/yr]')
+xlim([-1.1 0.5])
 
 subplot(2,2,3)
 hold on
@@ -94,8 +98,8 @@ axis equal
 grid on
 plot(v_err(:,1),v_err(:,3), '.b')
 plot(mean(v_err(:,1)),mean(v_err(:,3)),'*r')
-error_ellipse(cov(v_err(:,[1,3])), mean(v_err(:,[1,3])), 0.95, 'r') % 2 sigma, 95 % confidence
-error_ellipse(cov(v_err(:,[1,3])), mean(v_err(:,[1,3])), 0.68, 'b') % 2 sigma, 95 % confidence
+error_ellipse(cov(v_err(:,[1,3])), mean(v_err(:,[1,3])), 0.95, '--r') % 2 sigma, 95 % confidence
+error_ellipse(cov(v_err(:,[1,3])), mean(v_err(:,[1,3])), 0.68, '--k') % 2 sigma, 95 % confidence
 xlabel('East, [mm/yr]')
 ylabel('Up, [mm/yr]')
 
@@ -103,18 +107,22 @@ subplot(2,2,4)
 hold on
 axis equal
 grid on
-plot(v_err(:,2),v_err(:,3), '.b')
+pl1 = plot(v_err(:,2),v_err(:,3), '.b')
 plot(mean(v_err(:,2)),mean(v_err(:,3)),'*r')
-error_ellipse(cov(v_err(:,[2,3])), mean(v_err(:,[2,3])), 0.95, 'r') % 2 sigma, 95 % confidence
-error_ellipse(cov(v_err(:,[2,3])), mean(v_err(:,[2,3])), 0.68, 'b') % 2 sigma, 95 % confidence
+pl2 = error_ellipse(cov(v_err(:,[2,3])), mean(v_err(:,[2,3])), 0.95, '--r') % 2 sigma, 95 % confidence
+pl3 = error_ellipse(cov(v_err(:,[2,3])), mean(v_err(:,[2,3])), 0.68, '--k') % 2 sigma, 95 % confidence
 xlabel('North, [mm/yr]')
 ylabel('Up, [mm/yr]')
+legend([pl1 pl2 pl3], 'observations','2 sigma','1 sigma')
+
+print(fig2, 'ALP_NET_vs_EPN.eps','-depsc','-r300');
+
 
 %%
 clc
 disp(num2str([mean(v_err)], '%8.3f %8.3f %8.3f \n' ))
-disp(num2str([rms(v_err)], '%8.3f %8.3f %8.3f \n' ))
-disp(num2str([std(v_err)], '%8.3f %8.3f %8.3f \n' ))
+disp(num2str([rms(v_err)],  '%8.3f %8.3f %8.3f \n' ))
+disp(num2str([std(v_err)],  '%8.3f %8.3f %8.3f \n' ))
 
 
 %% or merge solutions

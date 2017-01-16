@@ -73,23 +73,23 @@ Angle_v = AngleV_merged(:,1);
 % end
 % fclose(fileID);
 
-%% compute common observation period
-
-t_start = SINEX.SOLUTION.EPOCHS.DATA_START;
-t_end   = SINEX.SOLUTION.EPOCHS.DATA_END;
-
-t_start = [str2num(t_start(:,1:2)) + str2num(t_start(:,4:6))/365.25]
-t_end   = [str2num(t_end(  :,1:2)) + str2num(t_end(  :,4:6))/365.25]
-
-dt = t_end - t_start;
+% %% compute common observation period
+% 
+% t_start = SINEX.SOLUTION.EPOCHS.DATA_START;
+% t_end   = SINEX.SOLUTION.EPOCHS.DATA_END;
+% 
+% t_start = [str2num(t_start(:,1:2)) + str2num(t_start(:,4:6))/365.25]
+% t_end   = [str2num(t_end(  :,1:2)) + str2num(t_end(  :,4:6))/365.25]
+% 
+% dt = t_end - t_start;
+% 
+% %%
+% [dtobs_sum] = merge_stations_sum(dt,names_all);
 
 %%
-[dtobs_sum] = merge_stations_sum(dt,names_all);
-
-%%
-close all
-figure(1)
-hist(dtobs_sum,10)
+% close all
+% figure(1)
+% hist(dtobs_sum,10)
 
 %% save full table of velocity field
 % % d = diag(CovVenu);
@@ -107,6 +107,7 @@ hist(dtobs_sum,10)
 
 Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', ...
                 'ROHR','BIWI','BI2I'};
+            
 iiSel = Selected;        
 iiOut = setdiff([1:198], iiSel);
 iOutliers = iiOut;
@@ -121,7 +122,7 @@ V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 %% for Horizontal
 clc
 %                                                                                                             LongLim LatLing step dMax nMin flags ...                                         
-[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 17], [41 53], 1, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr');
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 18], [41 53], 1, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'no filter');
 
 %% for Vertical       
 
@@ -135,13 +136,15 @@ Outliers = {'ELMO','WIEN','FERR', ...
             'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
             'HRIE','KTZ2', 'WLBH'};
         
+        
+        
 iiOut    = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
 CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
-% VerrMin = (0.2/1000/50)^2/1.8;
-% CovVenu2(CovVenu2 < VerrMin) = VerrMin;
+VerrMin = (0.3/1000/25)^2/1.8; % in [m/yr]^2, scaled to SNX
+CovVenu2(CovVenu2 < VerrMin) = VerrMin;
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
-[LongGrid, LatGrid, V_def, rmsFit, V_SigPred] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [1 17], [41 49], 0.5, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def, rmsFit, V_SigPred, Cs0] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 18], [41 53], 0.5, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 %% run Kriging
 close all
@@ -156,7 +159,11 @@ sig(sig < 0.0001) = 0.0001;
 c = [0.2:0.2:2];
 [LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_SigPred/1000, long ,lat, sig(:,3), iiSel,c,5);
 %%
-write_xyzTable([LongK_Stack, LatK_Stack, VuK_Stack],'~/Alpen_Check/MAP/Deformation/Verr_est.txt','%12.7f %12.7f %12.3f\n')
+write_xyzTable([LongK_Stack, LatK_Stack, VuK_Stack],'~/Alpen_Check/MAP/Deformation/Verr_up_est.txt','%12.7f %12.7f %12.3f\n')
+
+
+
+
 
 %%
 print(fig2,'-depsc','Verr_est.epsc','-r300')
@@ -206,7 +213,7 @@ set(gcf, 'PaperType', 'A4');
 % print(fig7,'-dpng','-r300','Noise_Prop.png')
 
 
-%%
+%% Plot for vertical
 clc
 close all
 figure(2)
@@ -218,13 +225,41 @@ Earth_coast(2)
 Verr_grid = stack2grid([LongGrid, LatGrid, V_SigPred(:,3)]);
 quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))', Vu_res(iiSel)*s,  0, 'r', 'lineWidth',1)
 quiver(LongGrid,      LatGrid,      zeros(size(LongGrid)),   V_def(:,3)*s,    0, 'Color',clr(1,:), 'lineWidth',1)
-scatter(LongGrid, LatGrid, abs(V_SigPred(:,3))*200,abs(V_SigPred(:,3)),'fill')
+% scatter(LongGrid, LatGrid, abs(V_SigPred(:,3))*200,abs(V_SigPred(:,3)),'fill')
+% scatter(LongGrid, LatGrid, abs(Css(:,3))*200,abs(Css(:,3)),'fill')
+a = Cs0 - V_SigPred;
+noise_assumed = 0.5 % [mm/yr]
+Sig_conv = noise_assumed - a;
+% scatter(LongGrid, LatGrid, abs(a(:,3))*200,abs(a(:,3)),'fill','o')
+scatter(LongGrid, LatGrid, abs(Sig_conv(:,3))*200, abs(Sig_conv(:,3)),'fill','o')
+
 % h = pcolor(Verr_grid(:,:,1)+0.5,Verr_grid(:,:,2)+.5,Verr_grid(:,:,3)*1)
 % shading interp
 % set(h,'facealpha',.5)
 colorbar
-xlim([-2 18])
-ylim([41 52])
+xlim([-4 18])
+ylim([41 53])
+
+%%
+clc
+close all
+[LongK_Stack, LatK_Stack, Cs0_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, Cs0/1000, long ,lat, sig(:,3), iiSel,c,5);
+% scatter(LatK_Stack, LongK_Stack, Cs0_Stack)
+write_xyzTable([LongK_Stack, LatK_Stack, abs(Cs0_Stack)],'~/Alpen_Check/MAP/Deformation/Verr_up_Cs0.txt','%12.3f %12.3f %12e\n')
+
+%%
+close all
+[LongK_Stack, LatK_Stack, V_SigPred_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_SigPred/1000, long ,lat, sig(:,3), iiSel,c,5);
+write_xyzTable([LongK_Stack, LatK_Stack, abs(V_SigPred_Stack)],'~/Alpen_Check/MAP/Deformation/Verr_up_Mikhail.txt','%12.3f %12.3f %12e\n')
+
+%%
+close all
+[LongK_Stack, LatK_Stack, Sig_conv_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, Sig_conv/1000, long ,lat, sig(:,3), iiSel,c,5);
+% write_xyzTable([LongK_Stack, LatK_Stack, abs(Sig_conv_Stack)],'~/Alpen_Check/MAP/Deformation/Verr_up_conv.txt','%12.3f %12.3f %12e\n')
+
+
+
+
 %%
 clc
 %  VARIANCE FACTOR                     1.800168208557666

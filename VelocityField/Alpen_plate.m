@@ -98,27 +98,88 @@ mean_en_all   = [mean(Ve_res((range_flag))), mean(Vn_res(range_flag))];
 mean_en_sel_2 = [mean(Ve_res(points_ref_2)), mean(Vn_res(points_ref_2))];
 mean_en_sel_3 = [mean(Ve_res(points_ref_3)), mean(Vn_res(points_ref_3))];
 
+
+%%
+
+%%
+% The new defaults will not take effect if there are any open figures. To
+% use them, we close all figures, and then repeat the first example.
+close all;
+clc
+
+% Defaults for this blog post
+width =  8;     % Width in inches
+height = 7.7;    % Height in inches
+alw = 0.75;    % AxesLineWidth
+fsz = 11;      % Fontsize
+lw =  1;      % LineWidth
+msz = 14;       % MarkerSize
+
+% The properties we've been using in the figures
+set(0,'defaultLineLineWidth',lw);   % set the default line width to lw
+set(0,'defaultLineMarkerSize',msz); % set the default line marker size to msz
+set(0,'defaultLineLineWidth',lw);   % set the default line width to lw
+set(0,'defaultLineMarkerSize',msz); % set the default line marker size to msz
+
+% Set the default Size for display
+defpos = get(0,'defaultFigurePosition');
+set(0,'defaultFigurePosition', [defpos(1) defpos(2) width*100, height*100]);
+
+% Set the defaults for saving/printing to a file
+set(0,'defaultFigureInvertHardcopy','on'); % This is the default anyway
+set(0,'defaultFigurePaperUnits','inches'); % This is the default anyway
+defsize = get(gcf, 'PaperSize');
+left = (defsize(1)- width)/2;
+bottom = (defsize(2)- height)/2;
+defsize = [left, bottom, width, height];
+set(0, 'defaultFigurePaperPosition', defsize);
+
 try
     close (fig9);
 end
 fig9 = figure(9);
+subplot(4,4,[1:3,5:7,9:11])
 hold on
 grid on
 axis equal
-pl1 = plot(Ve_res(range_flag)*1000, Vn_res(range_flag)*1000, '.b', 'lineWidth',2);
+% axis square
+pl1 = plot(Ve_res(range_flag)*1000, Vn_res(range_flag)*1000, '.b', 'MarkerSize',msz);
 % text(v_long_res(range_flag)*1000, v_lat_res(range_flag)*1000, names(range_flag),'HorizontalAlignment','right')
-pl2 = plot(Ve_res(points_ref_2)*1000, Vn_res(points_ref_2)*1000, '.m','lineWidth',3);
-pl3 = plot(Ve_res(points_ref_3)*1000, Vn_res(points_ref_3)*1000, '*r','lineWidth',3);
+pl2 = plot(Ve_res(points_ref_2)*1000, Vn_res(points_ref_2)*1000, '.','Color',[0 .35 0],'MarkerSize',msz);
+pl3 = plot(Ve_res(points_ref_3)*1000, Vn_res(points_ref_3)*1000, '.r','MarkerSize',msz);
 % plot(mean_en_all(1)*1000,   mean_en_all(2)*1000,   'xg','lineWidth',5)
-plot(mean_en_sel_2(1)*1000, mean_en_sel_3(2)*1000, 'xk','lineWidth',5)
-pl4 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.683,1, 'r');
-pl5 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.955,1, 'b');
-pl6 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.997,1, 'k');
-xlabel('velocity EW, [mm/yr]')
+plot(mean_en_sel_2(1)*1000, mean_en_sel_3(2)*1000, 'xk','MarkerSize',7)
+pl4 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.683,1, '--r');
+pl5 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.955,1, '--b');
+pl6 = error_ellipse([std_ve_res^2,0;0,std_vn_res^2]*1000*1000, mean_en_sel_2*1000, 0.997,1, '--k');
 ylabel('velocity SN, [mm/yr]')
-legend([pl1 pl2 pl3 pl4 pl5 pl6], 'Alps Orogen', 'selected', 'selected: 1 sigma', '1 sigma', '2 sigma', '3 sigma')
 title('Residual velocity')
+legend([pl1 pl2 pl3 pl4 pl5 pl6], 'Alps Orogen', 'selected', 'selected: 1 sigma', '1 sigma', '2 sigma', '3 sigma')
+
+xlim([-1 1.2])
+ylim([-1 1.2])
 hold off
+subplot(4,4,[13:15])
+hold on
+[counts,bins] = hist(Ve_res(points_ref_2)*1000,[-1:0.05:1]);
+bar(bins+0.02,counts,0.75,'FaceColor',[0 .5 0])
+[counts,bins] = hist(Ve_res(points_ref_3)*1000,[-1:0.05:1]);
+bar(bins,counts,0.75,'r')
+xlabel('velocity WE, [mm/yr]')
+ylabel('# of obs')
+xlim([-1 1.2])
+grid on
+subplot(4,4,[4,8,12])
+hold on
+[counts,bins] = hist(Vn_res(points_ref_2)*1000,[-1:0.05:1]); %# get counts and bin locations
+barh(bins+0.02,counts,0.75,'FaceColor',[0 .5 0])
+[counts,bins] = hist(Vn_res(points_ref_3)*1000,[-1:0.05:1]); %# get counts and bin locations
+barh(bins,counts,0.75,'r')
+ylim([-1 1.2])
+grid on
+xlabel('# of obs')
+
+% print(fig9, 'Residual_velocity_elipses_200.eps','-depsc','-r200');
 
 %% Refinment of Euler pole estimation
 
