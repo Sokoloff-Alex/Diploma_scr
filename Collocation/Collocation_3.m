@@ -124,7 +124,7 @@ clc
 
 %% for Vertical       
 
-%% Block selection for Vertical
+% Block selection for Vertical
 
 Outliers   = {'HELM', 'WIEN', 'OGAG', 'OBE2', ...
               'ROHR','BIWI','BI2I', 'MANS'};
@@ -219,6 +219,10 @@ hold on
 % quiver(long(iiSel), lat(iiSel), zeros(size(iiSel))',   Vu_res(iiSel)*s,  0, 'r')
 % quiver(LongGrid,    LatGrid,    zeros(size(LongGrid)), V_def(:,3)*s,     0, 'Color',clr(1,:))
 
+%
+Cs0 = abs(Cs0);
+V_SigPred = abs(V_SigPred);
+
 a2 = abs(Cs0.^2 - V_SigPred.^2);
 a = sqrt(abs(a2));
 noise_assumed = 0.5 ; % [mm/yr]
@@ -230,26 +234,26 @@ hold on
 scatter(LongGrid, LatGrid, abs(Cs0(:,3))*200, (Cs0(:,3)),'fill')
 legend('Cs0 only')
 colorbar
-caxis([0 1.2])
+% caxis([0 1.2])
 
 subplot(2,2,2)
 hold on
 scatter(LongGrid, LatGrid, abs(V_SigPred(:,3))*200, (V_SigPred(:,3)),'fill')
 legend('Predicted, LSC, Cs0 - a')
 colorbar
-caxis([0 1])
+% caxis([0 1])
 
 subplot(2,2,3)
 hold on
 scatter(LongGrid, LatGrid, abs(a(:,3))*200, (a(:,3)),'fill','o')
 legend('a only')
 colorbar
-caxis([0 1.2])
+% caxis([0 1.2])
 
 subplot(2,2,4)
 hold on
-scatter(LongGrid, LatGrid, abs(rmsFit(:,3))*1000*500, rmsFit(:,3)*1000,'fill','o')
-legend('rms fitting')
+scatter(LongGrid, LatGrid, abs(rmsFit(:,3))*1000*200, rmsFit(:,3)*1000,'fill','o')
+legend('sqrt(rms) fitting')
 colorbar
 % caxis([0 1])
 
@@ -270,7 +274,15 @@ close all
 [LongK_Stack, LatK_Stack, Sig_conv_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, Sig_conv/1000, long ,lat, sig(:,3), iiSel,c,5);
 % write_xyzTable([LongK_Stack, LatK_Stack, abs(Sig_conv_Stack)],'~/Alpen_Check/MAP/Deformation/Verr_up_conv.txt','%12.3f %12.3f %12e\n')
 
+%%
+close all
+[LongK_Stack, LatK_Stack, rms_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, rmsFit, long ,lat, sig(:,3), iiSel,c,5);
+write_xyzTable([LongK_Stack, LatK_Stack, abs(rms_Stack)],'~/Alpen_Check/MAP/Deformation/Verr_up_rms.txt','%12.3f %12.3f %12e\n')
 
+%%
+close all
+[LongK_Stack, LatK_Stack, a_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, a/1000, long ,lat, sig(:,3), iiSel,c,5);
+write_xyzTable([LongK_Stack, LatK_Stack, abs(a_Stack)],'~/Alpen_Check/MAP/Deformation/Verr_up_cov.txt','%12.3f %12.3f %12e\n')
 
 
 %%
