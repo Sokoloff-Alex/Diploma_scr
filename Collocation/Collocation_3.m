@@ -38,6 +38,8 @@ VEL_all = cell2mat( ALP_NET_VEL(range_flag,4:6));
 names_all = ALP_NET_CRD(range_flag,2);
 DOMES = ALP_NET_CRD(range_flag,3);
 
+[Ve_all,Vn_all, Vu_all, lat_all, long_all,  h_all]  = XYZ2ENU(CRD_all,VEL_all);
+
 % Megre artificial stations
 [CRD,VEL,names] = merge_stations(CRD_all,VEL_all,names_all);
 
@@ -57,6 +59,8 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CRD, SigmaVenu_merged, name ] = merge_stations(CRD_all,SigmaVenu,names_all);
 [CRD, AngleV_merged] = merge_stations(CRD_all,AngleV,names_all);
 Angle_v = AngleV_merged(:,1);
+
+%% 
 
 %% save Error Bars for GMT
 % fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars.txt', 'w');
@@ -103,6 +107,18 @@ Angle_v = AngleV_merged(:,1);
 % end
 
 
+%% save  full horizontal velocity field
+clc
+fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vel_hor_total_SNX_nonames.txt','w');
+Sigma_Venu = SigmaVenu_merged * 1.8^(1/2) * 20 * 1000;
+data = [wrapTo180(long_all), lat_all, Ve_all, Vn_all, SigmaVenu(:,1)*1.8*20, SigmaVenu(:,2)*1.8*20, AngleV];
+formatStr = '%10.7f  %10.7f   %8.5f  %8.5f   %10.6f  %10.6f  %5.1f \n';
+header = 'Long [deg],  Lat[deg],    Ve[m/yr],  Vn[m/yr],  SVn[m/yr], SVe[m/yr], angle[deg],    Name\n';
+fprintf(fileID, header);
+for i = 1:length(names_all)
+    fprintf(fileID, formatStr, data(i,:)); 
+end
+fclose(fileID);
 %% for Horizontal 
 
 Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', ...
