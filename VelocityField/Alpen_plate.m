@@ -239,20 +239,40 @@ hold off
 [xn,yn,zn] = geodetic2ecef(deg2rad(Omega_NNR_NUVEL_1A(1)),deg2rad(Omega_NNR_NUVEL_1A(2)),0,referenceEllipsoid('unitsphere'));
 [xe,ye,ze] = geodetic2ecef(deg2rad(Omega_Est(1)),         deg2rad(Omega_Est(2)),         0,referenceEllipsoid('unitsphere'));
 
+
 try
     close (fig2)
 end
 fig2 = figure(2);
-scale = 50*1000*1000;
+scale = 100*1000*1000;
 hold on
 grid on
+axis vis3d 
+view([121 45])
 Earth_coast(3)
-quiver3(CRD(range_flag,1),CRD(range_flag,2),CRD(range_flag,3), V_res_xyz(range_flag,1)*scale,V_res_xyz(range_flag,2)*scale,V_res_xyz(range_flag,3)*scale, 0)
-quiver3(CRD(points_ref_3,1),CRD(points_ref_3,2),CRD(points_ref_3,3), V_res_xyz(points_ref_3,1)*scale,V_res_xyz(points_ref_3,2)*scale,V_res_xyz(points_ref_3,3)*scale, 0)
+% quiver3(CRD(range_flag,1),CRD(range_flag,2),CRD(range_flag,3), V_res_xyz(range_flag,1)*scale,V_res_xyz(range_flag,2)*scale,V_res_xyz(range_flag,3)*scale, 0)
+% quiver3(CRD(points_ref_3,1),CRD(points_ref_3,2),CRD(points_ref_3,3), V_res_xyz(points_ref_3,1)*scale,V_res_xyz(points_ref_3,2)*scale,V_res_xyz(points_ref_3,3)*scale, 0)
+pl1 = quiver3(CRD(points_ref_3,1),CRD(points_ref_3,2),CRD(points_ref_3,3), VEL(points_ref_3,1)*scale,VEL(points_ref_3,2)*scale,VEL(points_ref_3,3)*scale, 0, 'Linewidth',0.5);
+a = 1:360;
 
-plot3(xe*Re,ye*Re,ze*Re,'*k')
-plot3([-xe xe]*Re*1.2,[-ye ye]*Re*1.2, [-ze ze]*Re*1.2, 'k', 'lineWidth', 2 )
-plot3([-xn xn]*Re*1.2,[-yn yn]*Re*1.2, [-zn zn]*Re*1.2, 'b', 'lineWidth', 2 )
+plot3(Re*sind(a),Re*cosd(a),[zeros(length(a))],'--','Color',[.5 .5 .5])
+plot3(Re*sind(a),[zeros(length(a))], Re*cosd(a),'--','Color',[.5 .5 .5])
+plot3([zeros(length(a))],Re*sind(a),Re*cosd(a),'--','Color',[.5 .5 .5])
+
+pl2 = plot3([-xn xn]*Re*1.2,[-yn yn]*Re*1.2, [-zn zn]*Re*1.2, 'k', 'lineWidth', 3 );
+pl3 = plot3([-xe xe]*Re*1.2,[-ye ye]*Re*1.2, [-ze ze]*Re*1.2, 'r', 'lineWidth', 3 );
+
+
+plotCircle(Omega_Est(2),Omega_Est(1),'--r')
+plotCircle(Omega_NNR_NUVEL_1A(2),Omega_NNR_NUVEL_1A(1),'--k')
+legend([pl1 pl2 pl3],'Station Velocities','NUVEL-1A Euler pole','Estimated Euler pole')
+xlabel('x, [m]')
+ylabel('y, [m]')
+zlabel('z, [m]')
+
+% print(fig2,'-dpng', '-r300','EulerPole_EU.png')
+
+
 
 %%
 for i=1:length(points_ref_3)
