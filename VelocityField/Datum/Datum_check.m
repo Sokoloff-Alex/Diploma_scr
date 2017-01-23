@@ -44,37 +44,86 @@ bottom = (defsize(2)- height)/2;
 defsize = [left, bottom, width, height];
 set(0, 'defaultFigurePaperPosition', defsize);
 
-%
+% plot Figure
 close all
 fig1 = figure(1);
+subplot(24,1,[1:4]);
 hold on
 grid on
 % plot(Datum_dr(:,1),Datum_dr(:,2)*1000,'.k')
-plot(Datum_dr(:,1),Datum_dr(:,3)*1000+10,'.r')
-plot(Datum_dr(:,1),Datum_dr(:,4)*1000+20,'.','Color',[0 .5 0])
-plot(Datum_dr(:,1),Datum_dr(:,5)*1000+30,'.b')
-plot(Datum_dr(:,1), de*1000+40, '.r')
-plot(Datum_dr(:,1), dn*1000+50, '.','Color',[0 .5 0])
-plot(Datum_dr(:,1), du*1000+60, '.b')
-% text(660,2,   'RMS')
-text(660,1+10, ['dX, rms = ', num2str( rms(Datum_dr(:,3))*1000,'%3.2f'), ' mm'])
-text(660,1+20, ['dY, rms = ', num2str( rms(Datum_dr(:,4))*1000,'%3.2f'), ' mm'])
-text(660,1+30, ['dZ, rms = ', num2str( rms(Datum_dr(:,5))*1000,'%3.2f'), ' mm'])
-text(660,1+40, ['dE, rms = ', num2str( rms(de)*1000,'%3.2f'), ' mm'])
-text(660,1+50, ['dN, rms = ', num2str( rms(dn)*1000,'%3.2f'), ' mm'])
-text(660,1+60, ['dU, rms = ', num2str( rms(du)*1000,'%3.2f'), ' mm'])
+plot(Datum_dr(:,1),Datum_dr(:,3)*1000,'.r')
+% legend(['dX, rms = ', num2str( rms(Datum_dr(:,3))*1000,'%3.2f'), ' mm'])
+text(660,1, ['dX, rms = ', num2str( rms(Datum_dr(:,3))*1000,'%3.2f'), ' mm'])
 xlim([0 800])
-% legend('RMS','dx','dy','dz')
-xlabel('Solution Number')
-ylabel('Distance, [mm]')
-% set(f1,'FontSize',24)
-% set(findall(gcf,'-property','FontSize'),'FontSize',24)
-% set(gca,'FontSize',10,'fontWeight','bold')
-% set(findall(gcf,'type','text'),'FontSize',10,'fontWeight','bold')
+ylim([-5 +5])
+set(gca, 'YTick',[-4:2:4])
+set(gca, 'XTickLabel', [])
+ylabel('mm')
+title('Offsets')
+
 hold off
+
+subplot(24,1,[5:8]);
+hold on
+grid on
+plot(Datum_dr(:,1),Datum_dr(:,4)*1000,'.','Color',[0 .5 0])
+text(660,1, ['dY, rms = ', num2str( rms(Datum_dr(:,4))*1000,'%3.2f'), ' mm'])
+xlim([0 800])
+ylim([-5 +5])
+set(gca, 'YTick',[-4:2:4])
+set(gca, 'XTickLabel', [])
+ylabel('mm')
+hold off
+
+subplot(24,1,[9:12]);
+hold on
+grid on
+plot(Datum_dr(:,1),Datum_dr(:,5)*1000,'.b')
+text(660,1, ['dZ, rms = ', num2str( rms(Datum_dr(:,5))*1000,'%3.2f'), ' mm'])
+xlim([0 800])
+ylim([-5 +5])
+set(gca, 'YTick',[-4:2:4])
+set(gca, 'XTickLabel', [])
+ylabel('mm')
+hold off
+
+subplot(24,1,[13:16]);
+hold on
+grid on
+plot(Datum_dr(:,1), de*1000, '.r')
+text(660,1, ['dE, rms = ', num2str( rms(de)*1000,'%3.2f'), ' mm'])
+xlim([0 800])
+ylim([-5 +5])
+set(gca, 'YTick',[-4:2:4])
+set(gca, 'XTickLabel', [])
+ylabel('mm')
+hold off
+
+subplot(24,1,[17:20]);
+hold on
+grid on
+plot(Datum_dr(:,1), dn*1000, '.','Color',[0 .5 0])
+text(660,1, ['dN, rms = ', num2str( rms(dn)*1000,'%3.2f'), ' mm'])
+xlim([0 800])
+ylim([-5 +5])
+set(gca, 'YTick',[-4:2:4])
+set(gca, 'XTickLabel', [])
+ylabel('mm')
+hold off
+
+subplot(24,1,[21:24]);
+hold on
+grid on
+plot(Datum_dr(:,1), du*1000, '.b')
+text(660,1, ['dU, rms = ', num2str( rms(du)*1000,'%3.2f'), ' mm'])
+xlim([0 800])
+ylim([-5 +5])
+set(gca, 'YTick',[-4:2:4])
+xlabel('Solution Number')
+ylabel('mm')
+hold off
+
 
 %%
 
-
-
-print(fig1, 'DatumCheck.eps','-depsc','-r300');
+print(fig1, '../../dat/Pics/DatumCheck_2.eps','-depsc','-r300');

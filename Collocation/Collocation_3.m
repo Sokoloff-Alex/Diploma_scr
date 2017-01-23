@@ -63,21 +63,24 @@ Angle_v = AngleV_merged(:,1);
 %% 
 
 %% save Error Bars for GMT
-% fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars.txt', 'w');
-% fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
-% fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
-% formatStr = '%12.7f  %12.7f   %15e \n';
-% d = diag(CovVenu);
-% SigmaVu = SigmaVenu_merged(:,3) * 1.8^(1/2) * 20; % scaled to abequate value [m/yr]
-% SigmaVu_deg_yr = SigmaVu*1000 * 0.36; 
-% data = [long(iiSel), lat(iiSel) + Vu_res(iiSel) * 1000 * 0.24, SigmaVu_deg_yr(iiSel)];
-% 
-% for i = 1:length(iiSel)
-%    fprintf(fileID, formatStr, data(i,:)); 
-% end
-% fclose(fileID);
+fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars_all.txt', 'w');
+fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
+fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
+formatStr = '%12.7f  %12.7f   %15e \n';
+d = diag(CovVenu);
+SigmaVu = SigmaVenu_merged(:,3) * 1.8^(1/2) * 20; % scaled to abequate value [m/yr]
+SigmaVu_deg_yr = SigmaVu*1000 * 0.36; 
 
-% %% compute common observation period
+%data = [long, lat + Vu_res * 1000 * 0.24, SigmaVu_deg_yr]; old
+
+data = [long, lat + Vu_res * 1000 * 0.29, SigmaVu_deg_yr];
+
+for i = 1:length(Vu_res)
+   fprintf(fileID, formatStr, data(i,:)); 
+end
+fclose(fileID);
+
+%% compute common observation period
 % 
 % t_start = SINEX.SOLUTION.EPOCHS.DATA_START;
 % t_end   = SINEX.SOLUTION.EPOCHS.DATA_END;
