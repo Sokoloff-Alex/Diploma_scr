@@ -6,6 +6,7 @@ clc
 
 %%
 SINEX = readSNX('STA/FMC_IGB_W7.SNX','All');
+% save('SINEX.mat','SINEX')
 Lat = SINEX.SITE.ID.LAT;
 Lon = SINEX.SITE.ID.LON;
 CRD = SINEX.SOLUTION.ESTIMATE.Data.CRD;
@@ -20,7 +21,9 @@ SiteDome_list = cellstr(SiteDome);
 
 clc
 SiteDome_list_test = SiteDome_list(1:20);
-[rmsENU(:,2), rmsENU(:,1), rmsENU(:,3), Sites] = get_PLT_residuals('STA/FMC_IGB_W7.PLT', SiteDome_list);
+[rmsENU(:,2), rmsENU(:,1), rmsENU(:,3), Sites] = get_PLT_residuals('../STA/FMC_IGB_W7.PLT', SiteDome_list);
+
+% save('PLT_rmsENU.mat','rmsENU')
 
 %%
 find(strcmp(SiteDome_list,'KA3L 14216M001'))
@@ -50,7 +53,8 @@ CRD_std_enu = sigma_enu;
 
 %%
 
-
+SigmaRenu_Cov = SigmaRenu;
+close all
 try
     close (fig1)
 end
@@ -94,6 +98,8 @@ legend([pl1, pl2 pl3 pl4 pl5 pl6], {['SNX Sigma_e, rms = ' , num2str(rms(CRD_std
 hold off
 
 %%
+
+SigmaVenu_Cov = SigmaVenu;
 clc
 scalePLT_SNX_std = rmsENU./CRD_std_enu;
 scalePLT_SNX_sig = rmsENU./(SigmaRenu_Cov*1.8);
@@ -124,17 +130,17 @@ disp('Ave. scale                 E         N         U')
 disp(['PLT/SNX_std           : ', num2str(mean(scalePLT_SNX_std, 1),'%10.2f')])
 disp(['PLT/SNX_sig           : ', num2str(mean(scalePLT_SNX_sig, 1),'%10.2f')])
 disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(scaleSNX_std_sig, 1),'%10.2f')])
-disp(['VEL/CRD SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV, 1),'%10.2f')])
+disp(['CRD/VEL SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV, 1),'%10.2f')])
 disp(['for selected stations : ', Stations(range_w)'])
 disp(['PLT/SNX_std           : ', num2str(mean(scalePLT_SNX_std(range_w,:), 1),'%10.2f')])
 disp(['PLT/SNX_sig           : ', num2str(mean(scalePLT_SNX_sig(range_w,:), 1),'%10.2f')])
 disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(scaleSNX_std_sig(range_w,:), 1),'%10.2f')])
-disp(['VEL/CRD SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV(range_w,:), 1),'%10.2f')])
+disp(['CRD/VEL SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV(range_w,:), 1),'%10.2f')])
 disp(['for selected stations : ', Stations(sel_good)'])
 disp(['PLT/SNX_std           : ', num2str(mean(scalePLT_SNX_std(sel_good,:), 1),'%10.2f')])
 disp(['PLT/SNX_sig           : ', num2str(mean(scalePLT_SNX_sig(sel_good,:), 1),'%10.2f')])
 disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(scaleSNX_std_sig(sel_good,:), 1),'%10.2f')])
-disp(['VEL/CRD SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV(sel_good,:), 1),'%10.2f')])
+disp(['CRD/VEL SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV(sel_good,:), 1),'%10.2f')])
 %%
 Station = SiteDome_list{8};
 [N, E, U, MJD, Epoch] = get_PLT_timeseries('Velocity_field/FMC_IGB_W7.PLT',Station );

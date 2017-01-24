@@ -129,7 +129,8 @@ get_Repeatability('Results/FCSIGSB.OUT')
 %%
 clc
 
-listRINEXtimesort = load('Results/list_RINEX_time_sort');
+load('../dat/list_RINEX_time_sort.mat');
+% save('../dat/list_RINEX_time_sort.mat','listRINEXtimesort')
 
 %%
 RINEX_Datapool = zeros(13,366);
@@ -146,8 +147,9 @@ disp('Done')
 
 %% Asign RINEX to Networks
 
-ALPEN      = {'AGNE','BOSC','BREI','CARZ','DEVE','ELMO','FAHR','FDOS','FERH','FERR','HELM','HGRA','HRIE','MAVE','MBEL','MITT','MOCA','OATO','PARO','POGG','PORA','SOND','WART'};
+ALPEN      = {'AGNE','BOSC','CARZ','DEVE','ELMO','FDOS','FERH','FERR','HELM','MAVE','MBEL','MITT','MOCA','OATO','PARO','POGG','PORA','SOND',};
 AUSTRIA    = {'GMND','GRAZ','HFL2','HFLK','HKBL','KOE2','KOET','KRBG','KTZ2','KTZB','PAT2','PATK','PFA2','PFAN','RIED','ROHR','SBG2','SBGZ','TRF2','TRFB','VLCH','VLKM','WELS','WIEN'};
+DGFI       = {'BREI','FAHR','HGRA','HRIE','WART'};
 FREDNET    = {'ACOM','AFAL','CANV','CODR','FUSE','JOAN','MDEA','MPRA','NOVE','PAZO','SUSE','TRIE','UDI1','UDIN','VARM','ZOUF'};
 RENAG      = {'AGDE','AIGL','AJAC','ALPE','AUBU','AXPV','BANN','BART','BAUB','BUAN','CHAR','CHIZ','CHTL','CLFD','COMO','ENTZ','EOST','ERCK','ESAB','FJCP','GINA','GRAS','GROI','HEAU','JANU','JOUX','LACA','LROC','LUCE','MAKS','MANS','MARS','MICH','MODA','MOGN','MTPL','NICA','NICE','PALI','PARD','PQRL','PUYA','PUYV','RIXH','ROSD','SJDV','SLVT','STJ9','STMR','TLSE','TORI','VALD','WLBH'};
 ORPHEON    = {'ALLE','ANNO','ARMI','AUMO','AVEN','BIWI','BLIX','BUIS','BURE','CAPA','CAZE','CHAM','CHMX','CHRN','CLAP','CURA','ESNO','FCLZ','FENO','FRAC','GUIL','JUVI','LAJA','LEBE','LFAZ','LUVI','MOLA','MOLV','MONT','MOUS','OGAG','PIGN','PLOE','POLI','PUEC','RABU','RSTL','SAPI','SAUV','SETE','SIMA','SOPH','SOUR','STEY','STGR','TENC','TRES','TROC','TROP','VAUC','VIGY'};
@@ -165,10 +167,10 @@ for i = 1:length(ORPHEON)   Table5(i,1:2) = {ORPHEON{i},'ORPHEON'}; end;
 for i = 1:length(GREF)      Table6(i,1:2) = {GREF{i},   'GREF'};    end;
 for i = 1:length(EUREF)     Table7(i,1:2) = {EUREF{i},  'EUREF'};   end;
 for i = 1:length(IGS)       Table8(i,1:2) = {IGS{i},    'IGS'};     end;
-
+for i = 1:length(DGFI);     Table9(i,1:2) = {DGFI{i},   'DGFI'};    end;
 %
 
-Table = [Table1; Table2; Table3; Table4; Table5; Table6; Table7; Table8]
+Table = [Table1; Table2; Table3; Table4; Table5; Table6; Table7; Table8; Table9]
 
 Table_sorted = sortrows(Table)
 
@@ -193,21 +195,23 @@ for i = 1:length(listRINEXtimesort)
                     net = 8;
                 case 'EUREF'; 
                     net = 7;
-                case 'ALPEN';
-                    net = 1;
-                case 'AUSTRIA';
-                    net = 2;
+                case 'DGFI';  
+                    net = 9;
+                case 'GREF';  
+                    net = 6;
                 case 'FREDNET';
                     net = 3;
                 case 'RENAG'; 
                     net = 4;
                 case 'ORPHEON';
                     net = 5;
-                case 'GREF';  
-                    net = 6;
+                case 'AUSTRIA';
+                    net = 2;
+                case 'ALPEN';
+                    net = 1;
                 otherwise 
                     disp(['Site ', mat2str(SITE) , ' in not assgned to the network'])
-                    net = 9;
+                    net = 10;
             end                      
             Matrix(yy,ddd,net) = Matrix(yy,ddd,net)+1;
             break;      
@@ -226,6 +230,8 @@ ORPHEON_rinex = [Matrix(1,:,5)';Matrix(2,1:365,5)';Matrix(3,1:365,5)';Matrix(4,1
 GREF_rinex    = [Matrix(1,:,6)';Matrix(2,1:365,6)';Matrix(3,1:365,6)';Matrix(4,1:365,6)';Matrix(5,:,6)';Matrix(6,1:365,6)';Matrix(7,1:365,6)';Matrix(8,1:365,6)';Matrix(9,:,6)';Matrix(10,1:365,6)';Matrix(11,1:365,6)';Matrix(12,1:365,6)';Matrix(13,:,6)'];
 EUREF_rinex   = [Matrix(1,:,7)';Matrix(2,1:365,7)';Matrix(3,1:365,7)';Matrix(4,1:365,7)';Matrix(5,:,7)';Matrix(6,1:365,7)';Matrix(7,1:365,7)';Matrix(8,1:365,7)';Matrix(9,:,7)';Matrix(10,1:365,7)';Matrix(11,1:365,7)';Matrix(12,1:365,7)';Matrix(13,:,7)'];
 IGS_rinex     = [Matrix(1,:,8)';Matrix(2,1:365,8)';Matrix(3,1:365,8)';Matrix(4,1:365,8)';Matrix(5,:,8)';Matrix(6,1:365,8)';Matrix(7,1:365,8)';Matrix(8,1:365,8)';Matrix(9,:,8)';Matrix(10,1:365,8)';Matrix(11,1:365,8)';Matrix(12,1:365,8)';Matrix(13,:,8)'];
+DGFI_rinex    = [Matrix(1,:,9)';Matrix(2,1:365,9)';Matrix(3,1:365,9)';Matrix(4,1:365,9)';Matrix(5,:,9)';Matrix(6,1:365,9)';Matrix(7,1:365,9)';Matrix(8,1:365,9)';Matrix(9,:,9)';Matrix(10,1:365,9)';Matrix(11,1:365,9)';Matrix(12,1:365,9)';Matrix(13,:,9)'];
+
 
 %%
 % # of sites estimated
@@ -265,10 +271,44 @@ RINEX_computedA = [Sites_CRD_estimatedA(1,:),Sites_CRD_estimatedA(2,1:365),Sites
 
 RINEX_quantity = [RINEX_Datapool(1,:),RINEX_Datapool(2,1:365),RINEX_Datapool(3,1:365),RINEX_Datapool(4,1:365),RINEX_Datapool(5,:),RINEX_Datapool(6,1:365),RINEX_Datapool(7,1:365),RINEX_Datapool(8,1:365),RINEX_Datapool(9,:),RINEX_Datapool(10,1:365),RINEX_Datapool(11,1:365),RINEX_Datapool(12,1:365),RINEX_Datapool(13,:)];
 
-clr = colormap(colorcube(10));
+%% improve plot quality
+%
+% The new defaults will not take effect if there are any open figures. To
+% use them, we close all figures, and then repeat the first example.
+close all;
+clc
 
+% Defaults for this blog post
+width = 9;     % Width in inches
+height = 7;    % Height in inches
+alw = 0.75;    % AxesLineWidth
+fsz = 8;       % Fontsize
+lw =  1;       % LineWidth
+msz =8;       % MarkerSize
+
+% The properties we've been using in the figures
+set(0,'defaultLineLineWidth',lw);   % set the default line width to lw
+set(0,'defaultLineMarkerSize',msz); % set the default line marker size to msz
+set(0,'defaultLineLineWidth',lw);   % set the default line width to lw
+set(0,'defaultLineMarkerSize',msz); % set the default line marker size to msz
+
+% Set the default Size for display
+defpos = get(0,'defaultFigurePosition');
+set(0,'defaultFigurePosition', [defpos(1) defpos(2) width*100, height*100]);
+
+% Set the defaults for saving/printing to a file
+set(0,'defaultFigureInvertHardcopy','on'); % This is the default anyway
+set(0,'defaultFigurePaperUnits','inches'); % This is the default anyway
+defsize = get(gcf, 'PaperSize');
+left = (defsize(1)- width)/2;
+bottom = (defsize(2)- height)/2;
+defsize = [left, bottom, width, height];
+set(0, 'defaultFigurePaperPosition', defsize);
+
+
+clr = colormap(colorcube(11));
 close all
-figure(3)
+fig3 =figure(3);
 hold on
 grid on
 startDate = datenum('01-01-2004');
@@ -276,20 +316,37 @@ endDate   = datenum('12-31-2016');
 xData = linspace(startDate,endDate,365*13+4);
 % plot(xData,RINEX_computedW,'r')
 % plot(xData,RINEX_computedA,'g')
-plot(xData,ALPEN_rinex,'.-','Color',clr(2,:))
-plot(xData,AUSTRIA_rinex,'.-','Color',clr(3,:))
-plot(xData,FREDNET_rinex,'.-','Color',clr(4,:))
-plot(xData,RENAG_rinex,'.-','Color',clr(5,:))
-plot(xData,ORPHEON_rinex,'.-','Color',clr(6,:))
-plot(xData,GREF_rinex,'.-','Color',clr(7,:))
-plot(xData,EUREF_rinex,'.-','Color',clr(8,:))
-plot(xData,IGS_rinex,'.-','Color',clr(9,:))
-% plot(xData,RINEX_quantity,'.-k')
 
-ylabel(' # of RINEX files in $D/RINEX/')
+subplot(5,1,[1:2])
+hold on
+grid on
+plot(xData,RINEX_quantity,'.k')
+ylabel(' # of RINEX files')
 datetick('x','yyyy')
-legend('ALPEN','AUSTRIA','FREDNET','RENAG','ORPHEON','GREF','EUREF','IGS','Location','NorthEast' )
+set(gca,'XTickLabel',[])
+legend('Total # of RINEX files','Location','NorthWest')
+subplot(5,1,[3:5])
+hold on
+grid on
+plot(xData,ALPEN_rinex,'.','Color',[0 .5 0])
+plot(xData,AUSTRIA_rinex,'.','Color',clr(3,:))
+plot(xData,FREDNET_rinex,'.','Color',clr(4,:))
+plot(xData,RENAG_rinex,'.','Color',clr(5,:))
+plot(xData,ORPHEON_rinex,'.','Color',clr(6,:))
+plot(xData,GREF_rinex,'.','Color',clr(7,:))
+plot(xData,EUREF_rinex,'.','Color',clr(8,:))
+plot(xData,IGS_rinex,'.','Color',[200 100 0]/255)
+plot(xData,DGFI_rinex,'.','Color',clr(9,:))
+xlabel('Epoch, [year]')
+ylabel(' # of RINEX files per Network')
+datetick('x','yyyy')
+h_legend = legend('Alpen','Austria','FReDNet','RENAG','ORPHEON','GREF','EUREF','IGS','DGFI','Location','NorthWest' );
+set(h_legend,'FontSize',8);
 
+%
+
+print(fig3,'-depsc','-r300','../dat/Pics/NumberOfRINEXfiels.eps')
+% print(fig3,'-dpng', '-r300','../dat/Pics/NumberOfRINEXfiels.png')
 
 %%
 
