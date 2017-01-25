@@ -1,4 +1,4 @@
-function [V_pred, rmsFitting, V_noise_pred, Csig0] = solve_WLSC3(lat0, long0, lat, long, Venu, CovVel, varargin)
+function [V_pred, rmsFitting, V_noise_pred, Csig0] = solve_WLSC3(lat0, long0, lat, long, Venu, CovVel, Cov_scale, varargin)
 % solve Least Square Collocation in 3D
 %
 % input   :     lat0, long0  - coordinates of grid point , [deg]
@@ -336,7 +336,7 @@ C_new = [C_new_EE, C_new_EN, C_new_EU
 %  Bernese scale                       10-100
 Cnoise = CovVel;
 % Cnoise([1:p],[1:p]) = Cnoise([1:p],[1:p])*1000^2;
-Cnoise = Cnoise*1000^2 * 1.8 * 25;
+Cnoise = Cnoise*1000^2 * 1.8 * Cov_scale;
 
 %% Solve LSC
 % Observations  

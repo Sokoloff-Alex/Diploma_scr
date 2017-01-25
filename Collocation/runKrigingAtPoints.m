@@ -1,4 +1,4 @@
-function [LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_def, long ,lat,  Vu_res, iiSel,c,maxdist, clim,gridsize, varargin) 
+function [LongK_Stack, LatK_Stack, VuK_Stack , fig1, fig2, V_p] = runKrigingAtPoints(LongGrid, LatGrid, V_def, long ,lat,  Vu_res, iiSel,c,maxdist, clim,gridsize,  varargin) 
 % function to run Kriging 
 
 if ~isempty(varargin)
@@ -67,6 +67,15 @@ contour(X,Y,Zhat)
 axis xy
 % title('kriging variance')#
 % title('kriging prediction'
+
+% Compute values at specific points
+
+V_p = zeros(length(lat),1);
+
+for i = 1:length(lat)
+    i
+    V_p(i,:) = kriging(vstruct,x,y,z,long(i),lat(i),50);
+end
 
 %%
 try

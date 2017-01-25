@@ -127,7 +127,7 @@ Dx = hypot(bsxfun(@minus,x,x'),bsxfun(@minus,y,y'));
 
 % if we have a bounded variogram model, it is convenient to set distances
 % that are longer than the range to the range since from here on the
-% variogram value remains the same and we don£t need composite functions.
+% variogram value remains the same and we donï¿½t need composite functions.
 switch vstruct.type;
     case 'bounded'
         Dx = min(Dx,vstruct.range);
@@ -165,12 +165,12 @@ end
 nrloops   = ceil(numest/chunksize);
 
 % initialize the waitbar
-h  = waitbar(0,'Kr...kr...kriging');
+% h  = waitbar(0,'Kr...kr...kriging');
 
 % now loop 
 for r = 1:nrloops;
     % waitbar 
-    waitbar(r / nrloops,h);
+%     waitbar(r / nrloops,h);
     
     % built chunks
     if r<nrloops
@@ -208,7 +208,7 @@ for r = 1:nrloops;
 end
 
 % close waitbar
-close(h)
+% close(h)
 
 % reshape zi
 zi = reshape(zi,sizest);
