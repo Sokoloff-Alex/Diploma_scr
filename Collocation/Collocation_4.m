@@ -28,7 +28,7 @@ ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
 
 
-%%
+%
 flags = ALP_NET_CRD(:,7);
 range_flag_W = 1:length(flags);
 range_flag_W = range_flag_W(strcmp(flags, 'W') == 1);
@@ -163,46 +163,46 @@ CovVenu2(CovVenu2 < VerrMin) = VerrMin;
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 
 %% run for trend on regular grid
-[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42.5 53], 0.5, 200, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42 53], 0.5, 200, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
-%% run Kriging for treng on regular grid and at GNSS stations
+% run Kriging for treng on regular grid and at GNSS stations
 % close all
 c = [-3:0.5:3];
 % [LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack, fig1, fig2] = runKriging(LongGrid, LatGrid, V_def_tr1, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
 [LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack, fig1, fig2, V_p] = runKrigingAtPoints(LongGrid, LatGrid, V_def_tr1, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
 
-%% run 1st collocation: estimate the trend only at the explicit points (GNSS stations) 
+% run 1st collocation: estimate the trend only at the explicit points (GNSS stations) 
 % clc
 [V_def_trend, V_Sigma_trend] = run_collocation_trend(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, 200, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
-%% run Kriging for trend
+% run Kriging for trend at GNSS stations only (crude results)
 % % close all
 % c = [-3:0.5:3];
 % runKriging(wrapTo180(long(iiSel)), lat(iiSel), V_def_trend, long(iiSel) ,lat(iiSel), V_def_trend(:,3), [1:length(iiSel)],c,3,[], names);
 
-%% run 2nd collocation: for stochastic part (signal)
+% run 2nd collocation: for stochastic part (signal)
 
 signal = V_enu_res - V_def_trend;
 signal(:,3) = V_enu_res(:,3) - V_p(iiSel)/1000;
 
-[LongGrid, LatGrid, V_def, rmsFit, V_Ts_Sig] = run_Collocation(long(iiSel), lat(iiSel), signal, CovVenu2, Cov_scale, [0 18], [42.5 53], 0.5, 100, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def, rmsFit, V_Ts_Sig] = run_Collocation(long(iiSel), lat(iiSel), signal, CovVenu2, Cov_scale, [0 18], [42 53], 0.5, 100, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 
-%% run Kriging for signal
+% run Kriging for signal
 % close all
 c = [-0.5:0.1:0.5];
 stochastic_signal = (Vu_res(iiSel)-V_def_trend(:,3))*1;
 % [LongK_Stoch_Stack, LatK_Stoch_Stack, VuK_Stoch_Stack] =runKriging(LongGrid, LatGrid, V_def, long(iiSel) ,lat(iiSel), stochastic_signal, [1:length(iiSel)],c,5, [],0.1,  names(iiSel));
 [LongK_Stoch_Stack, LatK_Stoch_Stack, VuK_Stoch_Stack, fig1, fig2, V_p_st] = runKrigingAtPoints(LongGrid, LatGrid, V_def, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
 
-%% run Kriging for Sigma trend
+% run Kriging for Sigma trend
 % close all
 c = [0:0.1:1];
 % runKriging(wrapTo180(long(iiSel)), lat(iiSel), V_Sigma_trend/1000, long ,lat, sig(:,3), iiSel,c,4);
 [LongK_Stack, LatK_Stack, VuK_Tr_sigma_Stack] = runKriging(LongGrid, LatGrid, abs(V_Sig_tr)/1000, long ,lat, Vu_res, iiSel,c,4, [], 0.1);
 
 
-%% run Kriging for Sigma stochastic signal 
+% run Kriging for Sigma stochastic signal 
 % close all
 sig = sqrt(diag(CovVenu));
 sig = [sig(1:3:end),sig(2:3:end),sig(1:3:end)]*sqrt(1.8)*50;
@@ -210,17 +210,25 @@ sig(sig < 0.0001) = 0.0001;
 c = [0:0.05:0.4];
 [LongK_Stack, LatK_Stack, VuK_St_sigma_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_Ts_Sig/1000, long ,lat, sig(:,3), iiSel,c,4,[],0.1);
 
-%% plot 6 maps: total =  Trens + Stohastic Signal,  all with precision
+% plot 6 maps: total =  Trens + Stohastic Signal,  all with precision
 
 TrS = VuK_Tr_Stack +  VuK_Stoch_Stack;
 [Tr_Grid, LongGrid2, LatGrid2] =  vector2grid(VuK_Tr_Stack, LongK_Tr_Stack, LatK_Tr_Stack);
 [St_Grid] =       vector2grid(VuK_Stoch_Stack,    LongK_Tr_Stack, LatK_Tr_Stack);
 [Tr_sigma_Grid] = vector2grid(VuK_Tr_sigma_Stack, LongK_Tr_Stack, LatK_Tr_Stack);
 [St_sigma_Grid] = vector2grid(VuK_St_sigma_Stack, LongK_Tr_Stack, LatK_Tr_Stack);
-
 Tr_S_Grid = Tr_Grid + St_Grid;
 
-%
+%% save Collocation results for 6 figures
+
+write_xyzTable([LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack],    '~/Alpen_Check/MAP/Deformation/Vu_Trend.txt', '%8.3f %8.3f %8e\n');
+write_xyzTable([LongK_Tr_Stack, LatK_Tr_Stack, VuK_Stoch_Stack], '~/Alpen_Check/MAP/Deformation/Vu_Signal.txt', '%8.3f %8.3f %8e\n');
+write_xyzTable([LongK_Tr_Stack, LatK_Tr_Stack, (VuK_Tr_Stack+VuK_Stoch_Stack)], '~/Alpen_Check/MAP/Deformation/Vu_TrendWithSignal.txt', '%8.3f %8.3f %8e\n');
+write_xyzTable([LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_sigma_Stack], '~/Alpen_Check/MAP/Deformation/Vu_Trend_sigma.txt', '%8.3f %8.3f %8e\n');
+write_xyzTable([LongK_Tr_Stack, LatK_Tr_Stack, VuK_St_sigma_Stack], '~/Alpen_Check/MAP/Deformation/Vu_Signal_sigma.txt', '%8.3f %8.3f %8e\n');
+write_xyzTable([LongK_Tr_Stack, LatK_Tr_Stack, (VuK_Tr_sigma_Stack+VuK_St_sigma_Stack)],    '~/Alpen_Check/MAP/Deformation/Vu_TrendAndSignal_sigma.txt', '%8.3f %8.3f %8e\n');
+
+%% plot 
 close all
 figure(1)
 subplot(4,6,[1,2,7,8])
@@ -238,7 +246,7 @@ colormap('jet')
 contour(LongGrid2, LatGrid2, Tr_S_Grid,'LineWidth',2);
 colorbar
 xlim([0  18])
-ylim([42.5 53])
+ylim([42 53])
 title('total LSC')
 
 subplot(4,6,[3,4,9,10])
@@ -252,8 +260,8 @@ contour(LongGrid2, LatGrid2, Tr_Grid,'LineWidth',2);
 colorbar
 % caxis([-1.5 2])
 xlim([0  18])
-ylim([42.5 53])
-title('Trend LSC')
+ylim([42 53])
+title('Estimated Trend LSC')
 
 subplot(4,6,[5,6,11,12])
 hold on
@@ -265,8 +273,8 @@ colormap('jet')
 contour(LongGrid2, LatGrid2, St_Grid,'LineWidth',2)
 colorbar
 xlim([0  18])
-ylim([42.5 53])
-title('Stohastic signal LSC')
+ylim([42 53])
+title('Estimaetd Stohastic signal LSC')
 
 subplot(4,6,[15,16,21,22])
 hold on
@@ -278,7 +286,7 @@ colormap('jet')
 contour(LongGrid2, LatGrid2, Tr_sigma_Grid,'LineWidth',2)
 colorbar
 xlim([0  18])
-ylim([42.5 53])
+ylim([42 53])
 % caxis([0 .5])
 title('Trend sigma')
 
@@ -292,7 +300,7 @@ colormap('jet')
 contour(LongGrid2, LatGrid2, St_sigma_Grid,'LineWidth',2)
 colorbar
 xlim([0  18])
-ylim([42.5 53])
+ylim([42 53])
 % caxis([0 .5])
 title('Stochastic signal sigma')
 
@@ -307,9 +315,9 @@ contour(LongGrid2, LatGrid2, Tr_sigma_Grid + St_sigma_Grid ,'LineWidth',1)
 plot(long(iiSel), lat(iiSel), '.')
 colorbar
 xlim([0  18])
-ylim([42.5 53])
+ylim([42 53])
 % caxis([0 .65])
-title('ERROR total C_t_+C_s_s + C_n_n')
+title('ERROR total C_t_t+C_s_s')
 
 %%
 close all
@@ -341,6 +349,9 @@ err = Vu_res*1000 - (V_p - V_p_st);
 scatter(wrapTo180(long(iiSel)), lat(iiSel), 50*ones(length(iiSel),1), V_p_st(iiSel),'o', 'filled')
 colorbar
 title('signal')
+
+
+
 
 
 %%
