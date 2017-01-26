@@ -146,8 +146,6 @@ clc
 
 %% for Vertical       
 
-% Block selection for Vertical
-
 Outliers   = {'HELM', 'WIEN', 'OGAG', 'OBE2', ...
               'ROHR','BIWI','BI2I', 'MANS'};
             
@@ -165,71 +163,58 @@ CovVenu2(CovVenu2 < VerrMin) = VerrMin;
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 
 %% run for trend on regular grid
-[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42 53], 0.5, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42.5 53], 0.5, 200, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
-%% run Kriging for treng on regular grid
+%% run Kriging for treng on regular grid and at GNSS stations
 % close all
 c = [-3:0.5:3];
-[LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack, fig1, fig2] = runKriging(LongGrid, LatGrid, V_def_tr1, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
+% [LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack, fig1, fig2] = runKriging(LongGrid, LatGrid, V_def_tr1, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
+[LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack, fig1, fig2, V_p] = runKrigingAtPoints(LongGrid, LatGrid, V_def_tr1, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
 
-% [LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack, fig1, fig2, V_p] = runKrigingAtPoints(LongGrid, LatGrid, V_def_tr1, long ,lat, Vu_res, iiSel,c,5,[],0.2, names);
-
-%%
-figure
-hold on
-Earth_coast(2)
-
-xlim([0  18])
-ylim([42 53])
-[Vu_res - V_p]
-%% run 1st collocation: estimate the trend
-clc
+%% run 1st collocation: estimate the trend only at the explicit points (GNSS stations) 
+% clc
 [V_def_trend, V_Sigma_trend] = run_collocation_trend(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, 200, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
-
 %% run Kriging for trend
-% close all
-c = [-3:0.5:3];
-runKriging(wrapTo180(long(iiSel)), lat(iiSel), V_def_trend, long(iiSel) ,lat(iiSel), V_def_trend(:,3), [1:length(iiSel)],c,3,[], names);
-
+% % close all
+% c = [-3:0.5:3];
+% runKriging(wrapTo180(long(iiSel)), lat(iiSel), V_def_trend, long(iiSel) ,lat(iiSel), V_def_trend(:,3), [1:length(iiSel)],c,3,[], names);
 
 %% run 2nd collocation: for stochastic part (signal)
 
 signal = V_enu_res - V_def_trend;
 signal(:,3) = V_enu_res(:,3) - V_p(iiSel)/1000;
-% signal(120,:) = [ 0 0 0];
 
-
-iiSel2 = setdiff(iiSel, selectRange(names, {'CARZ','PARO'}));
-[LongGrid, LatGrid, V_def, rmsFit, V_Ts_Sig] = run_Collocation(long(iiSel), lat(iiSel), signal, CovVenu2, Cov_scale, [0 18], [42 53], 0.5, 100, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def, rmsFit, V_Ts_Sig] = run_Collocation(long(iiSel), lat(iiSel), signal, CovVenu2, Cov_scale, [0 18], [42.5 53], 0.5, 100, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 
 %% run Kriging for signal
 % close all
-c = [-0.2:0.1:0.2];
+c = [-0.5:0.1:0.5];
 stochastic_signal = (Vu_res(iiSel)-V_def_trend(:,3))*1;
-[LongK_Stoch_Stack, LatK_Stoch_Stack, VuK_Stoch_Stack] =runKriging(LongGrid, LatGrid, V_def, long(iiSel) ,lat(iiSel), stochastic_signal, [1:length(iiSel)],c,5, [],0.1,  names(iiSel));
+% [LongK_Stoch_Stack, LatK_Stoch_Stack, VuK_Stoch_Stack] =runKriging(LongGrid, LatGrid, V_def, long(iiSel) ,lat(iiSel), stochastic_signal, [1:length(iiSel)],c,5, [],0.1,  names(iiSel));
+[LongK_Stoch_Stack, LatK_Stoch_Stack, VuK_Stoch_Stack, fig1, fig2, V_p_st] = runKrigingAtPoints(LongGrid, LatGrid, V_def, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
 
 %% run Kriging for Sigma trend
 % close all
 c = [0:0.1:1];
 % runKriging(wrapTo180(long(iiSel)), lat(iiSel), V_Sigma_trend/1000, long ,lat, sig(:,3), iiSel,c,4);
-[LongK_Stack, LatK_Stack, VuK_Tr_sigma_Stack] = runKriging(LongGrid,               LatGrid,    abs(V_Sig_tr)/1000,     long ,lat, Vu_res, iiSel,c,4, [], 0.1);
+[LongK_Stack, LatK_Stack, VuK_Tr_sigma_Stack] = runKriging(LongGrid, LatGrid, abs(V_Sig_tr)/1000, long ,lat, Vu_res, iiSel,c,4, [], 0.1);
 
 
 %% run Kriging for Sigma stochastic signal 
 % close all
-% sig = sqrt(diag(CovVenu));
-% sig = [sig(1:3:end),sig(2:3:end),sig(1:3:end)]*sqrt(1.8)*50;
-% sig(sig < 0.0001) = 0.0001;
+sig = sqrt(diag(CovVenu));
+sig = [sig(1:3:end),sig(2:3:end),sig(1:3:end)]*sqrt(1.8)*50;
+sig(sig < 0.0001) = 0.0001;
 c = [0:0.05:0.4];
 [LongK_Stack, LatK_Stack, VuK_St_sigma_Stack , fig1, fig2] = runKriging(LongGrid, LatGrid, V_Ts_Sig/1000, long ,lat, sig(:,3), iiSel,c,4,[],0.1);
 
-%% Trens + Stohastic Signal
+%% plot 6 maps: total =  Trens + Stohastic Signal,  all with precision
 
 TrS = VuK_Tr_Stack +  VuK_Stoch_Stack;
-[Tr_Grid, LongGrid2, LatGrid2] =  vector2grid(VuK_Tr_Stack,    LongK_Tr_Stack, LatK_Tr_Stack);
-[St_Grid] =  vector2grid(VuK_Stoch_Stack, LongK_Tr_Stack, LatK_Tr_Stack);
+[Tr_Grid, LongGrid2, LatGrid2] =  vector2grid(VuK_Tr_Stack, LongK_Tr_Stack, LatK_Tr_Stack);
+[St_Grid] =       vector2grid(VuK_Stoch_Stack,    LongK_Tr_Stack, LatK_Tr_Stack);
 [Tr_sigma_Grid] = vector2grid(VuK_Tr_sigma_Stack, LongK_Tr_Stack, LatK_Tr_Stack);
 [St_sigma_Grid] = vector2grid(VuK_St_sigma_Stack, LongK_Tr_Stack, LatK_Tr_Stack);
 
@@ -253,13 +238,13 @@ colormap('jet')
 contour(LongGrid2, LatGrid2, Tr_S_Grid,'LineWidth',2);
 colorbar
 xlim([0  18])
-ylim([42 53])
+ylim([42.5 53])
 title('total LSC')
 
 subplot(4,6,[3,4,9,10])
 hold on
 Earth_coast(2)
-h = pcolor(LongGrid2, LatGrid2, Tr_Grid )
+h = pcolor(LongGrid2, LatGrid2, Tr_Grid );
 shading interp
 set(h,'facealpha',.5)
 colormap('jet')
@@ -267,7 +252,7 @@ contour(LongGrid2, LatGrid2, Tr_Grid,'LineWidth',2);
 colorbar
 % caxis([-1.5 2])
 xlim([0  18])
-ylim([42 53])
+ylim([42.5 53])
 title('Trend LSC')
 
 subplot(4,6,[5,6,11,12])
@@ -278,10 +263,9 @@ shading interp
 set(h,'facealpha',.5)
 colormap('jet')
 contour(LongGrid2, LatGrid2, St_Grid,'LineWidth',2)
-plot(long(iiSel), lat(iiSel), '.')
 colorbar
 xlim([0  18])
-ylim([42 53])
+ylim([42.5 53])
 title('Stohastic signal LSC')
 
 subplot(4,6,[15,16,21,22])
@@ -294,7 +278,8 @@ colormap('jet')
 contour(LongGrid2, LatGrid2, Tr_sigma_Grid,'LineWidth',2)
 colorbar
 xlim([0  18])
-ylim([42 53])
+ylim([42.5 53])
+% caxis([0 .5])
 title('Trend sigma')
 
 subplot(4,6,[17,18,23,24])
@@ -307,9 +292,55 @@ colormap('jet')
 contour(LongGrid2, LatGrid2, St_sigma_Grid,'LineWidth',2)
 colorbar
 xlim([0  18])
-ylim([42 53])
+ylim([42.5 53])
+% caxis([0 .5])
 title('Stochastic signal sigma')
 
+subplot(4,6,[13,14,19,20])
+hold on
+Earth_coast(2)
+h = pcolor(LongGrid2, LatGrid2, Tr_sigma_Grid + St_sigma_Grid );
+shading interp
+set(h,'facealpha',.5)
+colormap('jet')
+contour(LongGrid2, LatGrid2, Tr_sigma_Grid + St_sigma_Grid ,'LineWidth',1)
+plot(long(iiSel), lat(iiSel), '.')
+colorbar
+xlim([0  18])
+ylim([42.5 53])
+% caxis([0 .65])
+title('ERROR total C_t_+C_s_s + C_n_n')
+
+%%
+close all
+figure(1)
+subplot(2,2,1)
+hold on
+scatter(wrapTo180(long(iiSel)), lat(iiSel), 50*ones(length(iiSel),1), Vu_res(iiSel)*1000,'o', 'filled')
+colorbar
+title('measurements')
+
+subplot(2,2,2)
+hold on
+err = Vu_res*1000 - (V_p - V_p_st);
+scatter(wrapTo180(long(iiSel)), lat(iiSel), 50*ones(length(iiSel),1), err(iiSel),'o', 'filled')
+colorbar
+title('measurements - LSC interp')
+% caxis([-1 1])
+
+subplot(2,2,3)
+hold on
+tr_st = (V_p - V_p_st);
+scatter(wrapTo180(long(iiSel)), lat(iiSel), 50*ones(length(iiSel),1), tr_st(iiSel),'o', 'filled')
+colorbar
+title('LSC interp')
+
+subplot(2,2,4)
+hold on
+err = Vu_res*1000 - (V_p - V_p_st);
+scatter(wrapTo180(long(iiSel)), lat(iiSel), 50*ones(length(iiSel),1), V_p_st(iiSel),'o', 'filled')
+colorbar
+title('signal')
 
 
 %%
