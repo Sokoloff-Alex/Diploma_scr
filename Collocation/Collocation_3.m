@@ -60,8 +60,6 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CRD, AngleV_merged] = merge_stations(CRD_all,AngleV,names_all);
 Angle_v = AngleV_merged(:,1);
 
-%% 
-
 %% save Error Bars for GMT
 fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars_all.txt', 'w');
 fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
