@@ -5,7 +5,9 @@ function [SINEX] = readSNX(filename, varargin)
 % 11.10.2016
 % 
 
-flag = varargin{:}; 
+if ~isempty(varargin)
+    flag = varargin{:}; 
+end
 
 tic
 
@@ -152,7 +154,7 @@ for iData = [iiBlocksToBeParse]
             Lat_m = str2double(line(61:62));
             Lat_s = str2double(line(64:67));
             Lat(iRow,1) = dms2degrees([Lat_d, Lat_m, Lat_s]);
-            H(iRow,1) = str2double(line(69:75));       
+            H(iRow,1) = str2double(line(69:end));       
         end
         disp(fgetl(fileID));
         fclose(fileID);
@@ -180,13 +182,19 @@ for iData = [iiBlocksToBeParse]
             line = fgetl(fileID);
             SiteName(iRow,:) = line(2:5);
             PT(iRow,1) = line(8);
-            SolN(iRow,1) = str2num(line(10:13));
+            SolNumber = line(10:13);
+            if strcmp(SolNumber, '----')
+                SolN(iRow,1) = iRow;
+            else
+                SolN(iRow,1) = str2num(SolNumber);
+            end
             T(iRow,1) = line(15);
             DATA_START(iRow,:) = line(17:28);
             DATA_END(iRow,:)   = line(30:41);
             Receiver(iRow,:)   = line(43:62);
             SN(iRow,:) = line(64:68);
-            Firmware(iRow,:) = line(70:80);
+            FW = line(70:length(line));
+            Firmware(iRow,1:length(FW)) = FW;
         end
         disp(fgetl(fileID));
         fclose(fileID);
@@ -214,12 +222,18 @@ for iData = [iiBlocksToBeParse]
             line = fgetl(fileID);
             SiteName(iRow,:) = line(2:5);
             PT(iRow,1) = line(8);
-            SolN(iRow,1) = str2num(line(10:13));
+            SolNumber = line(10:13);
+            if strcmp(SolNumber, '----')
+                SolN(iRow,1) = iRow;
+            else
+                SolN(iRow,1) = str2num(SolNumber);
+            end
             T(iRow,1) = line(15);
             DATA_START(iRow,:) = line(17:28);
             DATA_END(iRow,:)   = line(30:41);
             Antenna(iRow,:)   = line(43:62);
-            SN(iRow,:) = line(64:68);
+            SerNum =  line(64:end);
+            SN(iRow,1:length(SerNum)) = SerNum;
         end
         disp(fgetl(fileID));
         fclose(fileID);
@@ -253,7 +267,8 @@ for iData = [iiBlocksToBeParse]
             L2_N = str2double(line(57:62));
             L2_E = str2double(line(64:69));
             L2_PCO(iRow,:) = [L2_U, L2_N, L2_E];
-            Comment(iRow,:) = line(71:80);
+            Comm = line(71:end);
+            Comment(iRow,1:length(Comm)) = Comm;
         end
         disp(fgetl(fileID));
         fclose(fileID);
@@ -281,7 +296,12 @@ for iData = [iiBlocksToBeParse]
             line = fgetl(fileID);
             SiteName(iRow,:) = line(2:5);
             PT(iRow,1) = line(8);
-            SolN(iRow,1) = str2num(line(10:13));
+            SolNumber = line(10:13);
+            if strcmp(SolNumber, '----')
+                SolN(iRow,1) = iRow;
+            else
+                SolN(iRow,1) = str2num(SolNumber);
+            end
             T(iRow,1) = line(15);
             DATA_START(iRow,:) = line(17:28);
             DATA_END(iRow,:)   = line(30:41);
@@ -319,7 +339,12 @@ for iData = [iiBlocksToBeParse]
             line = fgetl(fileID);
             SiteName(iRow,:) = line(2:5);
             PT(iRow,1) = line(8);
-            SolN(iRow,1) = str2double(line(10:13));
+            SolNumber = line(10:13);
+            if strcmp(SolNumber, '----')
+                SolN(iRow,1) = iRow;
+            else
+                SolN(iRow,1) = str2num(SolNumber);
+            end
             DATA_START(iRow,:) = line(17:28);
             DATA_END(iRow,:)   = line(30:41);
             MEAN_EPOCH(iRow,:) = line(43:54);

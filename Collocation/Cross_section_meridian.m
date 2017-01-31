@@ -76,7 +76,7 @@ bottom = (defsize(2)- height)/2;
 defsize = [left, bottom, width, height];
 set(0, 'defaultFigurePaperPosition', defsize);
 
-%
+%%
 close all
 fig = figure(5);
 hs(1) = subplot(11,1,[1:4]);
