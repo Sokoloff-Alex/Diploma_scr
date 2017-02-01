@@ -32,7 +32,6 @@ DOMES = ALP_NET_CRD(range_flag,3);
 [Ve_all,Vn_all, Vu_all, lat_all, long_all,  h_all]  = XYZ2ENU(CRD_all,VEL_all);
 
 
-
 load('../dat/SNX/SINEX.mat')
 SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');

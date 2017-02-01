@@ -12,11 +12,11 @@ end
 tic
 
 % check if file exist
-
-if exist(filename, 'file') ~= 2
-    disp(['ERROR, File not found: ',filename])
+filename
+fullpath = filename
+if exist(fullpath, 'file') ~= 2
+    disp(['ERROR, File not found: ',fullpath])
 else
-    fullpath = which(filename);
 
 %% Blocks in SINEX file , Dummy
 
@@ -58,7 +58,8 @@ DataType = {'FILE/REFERENCE';
 % fullpath = which(filename);
 
 disp(['grep +[A-Z] ', fullpath, ' ']);
-[status, msgout]= system(['grep +[A-Z] ', fullpath, ' | grep + | cut --characters 2-'], '-echo');
+comm = ['grep +[A-Z] ', fullpath, ' | awk ', '''' ,'{if( substr($1,1,1) == "+") print}', '''' ,' |  cut --characters 2-']
+[status, msgout]= system(comm, '-echo');
 DataTypeAvailable = strsplit(msgout);
 range = 1:length(DataType);
 iiBlockAvailable = range(ismember(DataType, DataTypeAvailable));
@@ -248,14 +249,22 @@ for iData = [iiBlocksToBeParse]
      if iData == 7 % 'SITE/GPS_PHASE_CENTER'
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
-        disp(fgetl(fileID));
-        disp(fgetl(fileID));
-        Antenna = repmat(char(0),Len-4,20);
-        SN      = repmat(char(0),Len-4,5);
-        Comment = repmat(char(0),Len-4,10);
-        L1_PCO  = zeros(Len-4,3);
-        L2_PCO  = zeros(Len-4,3);
-        for iRow = 1:Len-4
+%         disp(fgetl(fileID));
+        line = fgetl(fileID);
+        word = line(2:22);
+        if ismember(word , {'________TYPE________','DESCRIPTION_________'})
+            disp(line); 
+        else
+            disp(line);
+            disp(fgetl(fileID));
+            Len = Len - 1;
+        end
+        Antenna = repmat(char(0),Len-3,20);
+        SN      = repmat(char(0),Len-3,5);
+        Comment = repmat(char(0),Len-3,10);
+        L1_PCO  = zeros(Len-3,3);
+        L2_PCO  = zeros(Len-3,3);
+        for iRow = 1:Len-3
             line = fgetl(fileID);
             Antenna(iRow,:) = line(2:21);
             SN(iRow,:) = line(23:27);
@@ -282,8 +291,16 @@ for iData = [iiBlocksToBeParse]
     if iData == 8   % 'SITE/ECCENTRICITY'
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
-        disp(fgetl(fileID));
-        disp(fgetl(fileID));
+        line = fgetl(fileID);
+        word = line(2:5);
+        if ismember( word, {'CODE', 'SITE'})
+            disp(line);
+            % start parsing table
+        else
+            disp(line);
+            disp(fgetl(fileID));
+            Len = Len - 1 ;
+        end
         SiteName    = repmat(char(0),Len-3,4);
         PT          = repmat(char(0),Len-3,1);
         SolN        = zeros(Len-3,1);
@@ -291,8 +308,8 @@ for iData = [iiBlocksToBeParse]
         DATA_START  = repmat(char(0),Len-3,12);
         DATA_END    = repmat(char(0),Len-3,12);
         AXE         = repmat(char(0),Len-3,3);
-        Ecc_UNE = zeros(Len-4,3);
-        for iRow = 1:Len-4
+        Ecc_UNE = zeros(Len-3,3);
+        for iRow = 1:Len-3
             line = fgetl(fileID);
             SiteName(iRow,:) = line(2:5);
             PT(iRow,1) = line(8);
@@ -386,8 +403,8 @@ for iData = [iiBlocksToBeParse]
             end
             Site = line(15:18);
             PT = line(21);
-            SolN = str2double(line(23:26));            
-            StationData(iBlock,:) = {iBlock, Site, PT, SolN,  Constrains};             
+            SolN = (line(23:26));            
+            StationData(iBlock,:) = {iBlock, Site, PT, SolN, Constrains};             
             CRD_table(iBlock,:) = Value(1:3); 
             CRD_STD_table(iBlock,:) = Std_dev(1:3);
             VEL_table(iBlock,:) = Value(4:6); 
@@ -398,6 +415,11 @@ for iData = [iiBlocksToBeParse]
             Records = struct('NumberOfStations', {NumberOfEntries}, ...
                 'StationData', {StationData}, 'Data', Data);
         end
+        
+        ArrStDat = Records.StationData;
+        Str_St_Data = struct('iBlock', {ArrStDat(:,1)}, 'Site', {ArrStDat(:,2)}, 'PT', {ArrStDat(:,3)}, 'SolN', {ArrStDat(:,4)}, 'Constr', {ArrStDat(:,5)});
+        Records.StationData = Str_St_Data;
+        
         disp(fgetl(fileID));
         fclose(fileID);
         
