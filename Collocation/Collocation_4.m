@@ -55,7 +55,7 @@ DOMES = ALP_NET_CRD(range_flag,3);
 
 %% Covariance
 
-load('dat/SINEX.mat')
+load('../dat/SINEX.mat')
 SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
