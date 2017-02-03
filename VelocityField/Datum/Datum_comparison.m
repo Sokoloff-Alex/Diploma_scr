@@ -13,18 +13,18 @@ clc
 %%
 % 
 % ALP_SNX = readSNX('../../dat/SNX/FMC_IGB_W7_noCov.SNX','no COVA');
-IGB_SNX = readSNX('../../dat/SNX/IGb08_noCov.snx', 'no COVA');
-IGS_SNX = readSNX('../../dat/SNX/IGS16P26.snx', 'no COVA');
-EPN_SNX = readSNX('../../dat/SNX/EPN_A_IGb08_no_COVA.SNX', 'no COVA');
+% IGB_SNX = readSNX('../../dat/SNX/IGb08_noCov.snx', 'no COVA');
+% IGS_SNX = readSNX('../../dat/SNX/IGS16P26.snx', 'no COVA');
+% EPN_SNX = readSNX('../../dat/SNX/EPN_A_IGb08_no_COVA.SNX', 'no COVA');
 
 % save('../../dat/SNX/IGb08_noCov.SNX.mat',  'IGB_SNX')
 % save('../../dat/SNX/IGS16P26.SNX.mat',     'IGS_SNX')
-% save('../../dat/SNX/IGb08_no_COVA.SNX.mat','EPN_SNX')
+% save('../../dat/SNX/EPN_A_IGb08_no_COVA.SNX.mat','EPN_SNX')
 
 %%
 load('../../dat/SNX/IGb08_noCov.SNX.mat')
 load('../../dat/SNX/IGSIGS16P26.SNX.mat')
-load('../../dat/SNX/IGb08_no_COVA.SNX.mat')
+load('../../dat/SNX/EPN_A_IGb08_no_COVA.SNX.mat')
 
 %% form tables: name, CRD, VEL
 set_ref_sites = {'GRAS', 'GRAZ', 'LROC', 'MEDI', 'WTZR', 'ZIMM'};

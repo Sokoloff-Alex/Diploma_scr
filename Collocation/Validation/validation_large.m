@@ -13,7 +13,9 @@ clear TableVel_Valid
 
 %% load EPN solution
 clc
-EPN_SNX = readSNX('EPN_A_IGb08_no_COVA.SNX', 'no COVA');
+% EPN_SNX = readSNX('../../dat/SNX/EPN_A_IGb08_no_COVA.SNX', 'no COVA');
+% load('../../dat/SNX/EPN_SNX')
+load('../../dat/SNX/EPN_A_IGb08_no_COVA.SNX.mat')
 Omega_Eur = [55.9533, -97.4134,   2.6364e-07 ]';
 %% remove plare motion from SNX solution
 
