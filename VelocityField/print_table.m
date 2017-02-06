@@ -16,7 +16,7 @@ load('ETOPO_Alps.mat')
 %
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
-16/1
+
 
 %
 flags = ALP_NET_CRD(:,7);
