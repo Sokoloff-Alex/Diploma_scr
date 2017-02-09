@@ -5,7 +5,11 @@ clear all
 clc
 
 %%
-SINEX = readSNX('STA/FMC_IGB_W7.SNX','All');
+% https://www.iers.org/SharedDocs/Publikationen/EN/IERS/Documents/ac/sinex/sinex_v201_appendix2_pdf.pdf?__blob=publicationFile&v=2
+
+
+% SINEX = readSNX('STA/FMC_IGB_W7.SNX','All');
+load('../dat/SNX/SINEX.mat');
 % save('SINEX.mat','SINEX')
 Lat = SINEX.SITE.ID.LAT;
 Lon = SINEX.SITE.ID.LON;
@@ -24,6 +28,7 @@ SiteDome_list_test = SiteDome_list(1:20);
 [rmsENU(:,2), rmsENU(:,1), rmsENU(:,3), Sites] = get_PLT_residuals('../STA/FMC_IGB_W7.PLT', SiteDome_list);
 
 % save('PLT_rmsENU.mat','rmsENU')
+load('PLT_rmsENU.mat')
 
 %%
 find(strcmp(SiteDome_list,'KA3L 14216M001'))
@@ -62,7 +67,7 @@ fig1 = figure(1);
 subplot(2,1,1)
 hold on
 plot(CRD_std*1000)
-plot(SigmaRenu_Cov*1000*1.8,'.-')
+plot(SigmaRenu_Cov*1000,'.-')
 plot([1, length(CRD_std_enu)], [mean(CRD_std_enu(:,1)), mean(CRD_std_enu(:,1))]*1000, '--b')
 plot([1, length(CRD_std_enu)], [mean(CRD_std_enu(:,2)), mean(CRD_std_enu(:,2))]*1000, '--g')
 plot([1, length(CRD_std_enu)], [mean(CRD_std_enu(:,3)), mean(CRD_std_enu(:,3))]*1000, '--r')
@@ -76,9 +81,9 @@ pl3 = plot(CRD_std_enu(:,3)*1000,'-r');
 pl4 = plot(rmsENU(:,1)*1000,'.-b');
 pl5 = plot(rmsENU(:,2)*1000,'.-g');
 pl6 = plot(rmsENU(:,3)*1000,'.-r');
-plot(SigmaRenu_Cov(:,1)*1000*1.8,'x-b')
-plot(SigmaRenu_Cov(:,2)*1000*1.8,'x-g')
-plot(SigmaRenu_Cov(:,3)*1000*1.8,'x-r')
+plot(SigmaRenu_Cov(:,1)*1000,'x-b')
+plot(SigmaRenu_Cov(:,2)*1000,'x-g')
+plot(SigmaRenu_Cov(:,3)*1000,'x-r')
 
 plot([1, length(CRD_std_enu)], [rms(CRD_std_enu(:,1)), rms(CRD_std_enu(:,1))]*1000, '--b')
 plot([1, length(CRD_std_enu)], [rms(CRD_std_enu(:,2)), rms(CRD_std_enu(:,2))]*1000, '--g')
@@ -101,46 +106,53 @@ hold off
 
 SigmaVenu_Cov = SigmaVenu;
 clc
-scalePLT_SNX_std = rmsENU./CRD_std_enu;
-scalePLT_SNX_sig = rmsENU./(SigmaRenu_Cov*1.8);
-scaleSNX_std_sig = CRD_std_enu./(SigmaRenu_Cov*1.8);
-scaleSNX_sig_RV  = SigmaRenu_Cov./SigmaVenu_Cov;
+scalePLT_SNX_std = mean(rmsENU,1) ./ mean(CRD_std_enu,1);
+scalePLT_SNX_sig = mean(rmsENU,1) ./ mean(SigmaRenu_Cov,1);
+scaleSNX_std_sig = mean(CRD_std_enu,1) ./ mean(SigmaRenu_Cov,1);
+scaleSNX_sig_RV  = mean(SigmaRenu_Cov,1) ./ mean(SigmaVenu_Cov,1);
 
-try
-    close (fig2)
-end
-fig2 = figure(2);
-hold on; grid on
-plot(scalePLT_SNX_std,'-')
-plot(scalePLT_SNX_sig,'.-')
-plot(scaleSNX_std_sig,'x-')
-plot(range_w, scalePLT_SNX_std(range_w,:), '*')
-plot(range_w, scalePLT_SNX_sig(range_w,:), '*')
-plot(range_w, scaleSNX_std_sig(range_w,:), '*')
-legend('e','n','u')
-% ylim([-100 100])
-hold off  
+% try
+%     close (fig2)
+% end
+% fig2 = figure(2);
+% hold on; grid on
+% % plot(scalePLT_SNX_std,'.')
+% plot(scalePLT_SNX_sig,'.')
+% % plot(range_w, scalePLT_SNX_std(range_w,:), '*')
+% plot(range_w, scalePLT_SNX_sig(range_w,:), 'o')
+% legend('e','n','u')
+% % ylim([-100 100])
+% hold off  
 
 disp('mean rms ,                  E         N         U')
 disp(['CRD PLT rms           : ',num2str(mean(rmsENU,     1)*1000,'%10.4f' ), '  [mm]'])
-disp(['CRD SNX sdt           : ',num2str(mean(CRD_std_enu,1)*1000,'%10.4f' ), '  [mm]'])
-disp(['CRD SNX 1sigma        : ',num2str(mean(SigmaRenu_Cov,1)*1000*1.8,'%10.4f' ), '  [mm]'])
-disp(['VEL SNX 1sigma        : ',num2str(mean(SigmaVenu_Cov,1)*1000*1.8,'%10.4f' ), '  [mm/yr]'])
+% disp(['CRD SNX sdt           : ',num2str(mean(CRD_std_enu,1)*1000,'%10.4f' ), '  [mm]'])
+disp(['CRD SNX 1sigma        : ',num2str(mean(SigmaRenu_Cov,1)*1000,'%10.4f' ), '  [mm]'])
 disp('Ave. scale                 E         N         U')
-disp(['PLT/SNX_std           : ', num2str(mean(scalePLT_SNX_std, 1),'%10.2f')])
-disp(['PLT/SNX_sig           : ', num2str(mean(scalePLT_SNX_sig, 1),'%10.2f')])
-disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(scaleSNX_std_sig, 1),'%10.2f')])
-disp(['CRD/VEL SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV, 1),'%10.2f')])
+% disp(['PLT/SNX_std           : ', num2str(scalePLT_SNX_std,'%10.2f')])
+disp(['PLT/SNX_sig           : ', num2str(scalePLT_SNX_sig,'%10.2f')])
+% disp(['SNX_sdt/SNX_sig       :  ',num2str(scaleSNX_std_sig,'%10.2f')])
+
 disp(['for selected stations : ', Stations(range_w)'])
-disp(['PLT/SNX_std           : ', num2str(mean(scalePLT_SNX_std(range_w,:), 1),'%10.2f')])
-disp(['PLT/SNX_sig           : ', num2str(mean(scalePLT_SNX_sig(range_w,:), 1),'%10.2f')])
-disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(scaleSNX_std_sig(range_w,:), 1),'%10.2f')])
-disp(['CRD/VEL SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV(range_w,:), 1),'%10.2f')])
+disp(['CRD PLT rms           : ',num2str(mean(rmsENU(range_w,:),     1)*1000,'%10.4f' ), '  [mm]'])
+% disp(['CRD SNX sdt           : ',num2str(mean(CRD_std_enu(range_w,:),1)*1000,'%10.4f' ), '  [mm]'])
+disp(['CRD SNX 1sigma        : ',num2str(mean(SigmaRenu_Cov(range_w,:),1)*1000,'%10.4f' ), '  [mm]'])
+% disp(['PLT/SNX_std           : ', num2str(mean(rmsENU(range_w,:),1) ./ mean(CRD_std_enu(range_w,:), 1),'%10.2f')])
+disp(['PLT/SNX_sig           : ', num2str(mean(rmsENU(range_w,:),1) ./ mean(SigmaRenu_Cov(range_w,:), 1),'%10.2f')])
+% disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(CRD_std_enu(range_w,:), 1) ./ mean(SigmaRenu_Cov(range_w,:), 1),'%10.2f')])
 disp(['for selected stations : ', Stations(sel_good)'])
-disp(['PLT/SNX_std           : ', num2str(mean(scalePLT_SNX_std(sel_good,:), 1),'%10.2f')])
-disp(['PLT/SNX_sig           : ', num2str(mean(scalePLT_SNX_sig(sel_good,:), 1),'%10.2f')])
-disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(scaleSNX_std_sig(sel_good,:), 1),'%10.2f')])
-disp(['CRD/VEL SNX_sig       :  ',num2str(mean(scaleSNX_sig_RV(sel_good,:), 1),'%10.2f')])
+disp(['CRD PLT rms           : ',num2str(mean(rmsENU(sel_good,:),     1)*1000,'%10.4f' ), '  [mm]'])
+% disp(['CRD SNX sdt           : ',num2str(mean(CRD_std_enu(sel_good,:),1)*1000,'%10.4f' ), '  [mm]'])
+disp(['CRD SNX 1sigma        : ',num2str(mean(SigmaRenu_Cov(sel_good,:),1)*1000,'%10.4f' ), '  [mm]'])
+% disp(['PLT/SNX_std           : ', num2str(mean(rmsENU(sel_good,:),1) ./ mean(CRD_std_enu(sel_good,:), 1),'%10.2f')])
+disp(['PLT/SNX_sig           : ', num2str(mean(rmsENU(sel_good,:),1) ./ mean(SigmaRenu_Cov(sel_good,:), 1),'%10.2f')])
+% disp(['SNX_sdt/SNX_sig       :  ',num2str(mean(CRD_std_enu(sel_good,:), 1) ./ mean(SigmaRenu_Cov(sel_good,:), 1),'%10.2f')])
+disp('--------------------------------------------')
+disp(['Final scale fartor to use:'])
+ScaleCov = mean(rmsENU,1) ./ mean(SigmaRenu_Cov,1);
+disp(['PLT/SNX_sig           : ', num2str(ScaleCov,'%10.2f')])
+
+
 %%
 Station = SiteDome_list{8};
 [N, E, U, MJD, Epoch] = get_PLT_timeseries('Velocity_field/FMC_IGB_W7.PLT',Station );

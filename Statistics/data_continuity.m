@@ -71,7 +71,7 @@ height = 4;    % Height in inches
 alw = 0.75;    % AxesLineWidth
 fsz = 7;       % Fontsize
 lw =  1;       % LineWidth
-msz = 14;      % MarkerSize
+msz = 10;      % MarkerSize
 
 % The properties we've been using in the figures
 set(0,'defaultLineLineWidth',lw);   % set the default line width to lw
@@ -92,14 +92,22 @@ set(0, 'defaultFigurePaperPosition', defsize);
 
 close all
 
+ScaleCov = [49 31 23];
+ScaleCov = [65 41 31]; %PLT_rms / SNX_sig
+% % ScaleCov = [52 18 42]; %PLT_rms / SNX_std
+ScaleCov = [44 27 19];
+VarianceFactor = 1.8;
+VarianceFactor = 1 ; % !!! No need to be multiplied by Variance Factor !!!
+
+
 fig2 = figure(2);
 subplot(2,1,1)
 hold on
 grid on
 title('Formal Error of velocities for artificial stations')
-plot(dt, SigmaVenu(:,1)*1000*sqrt(1.8)*20,'.b')
-plot(dt, SigmaVenu(:,2)*1000*sqrt(1.8)*20,'.g')
-plot(dt, SigmaVenu(:,3)*1000*sqrt(1.8)*20,'.r')
+plot(dt, SigmaVenu(:,1)*1000*ScaleCov(1),'.b')
+plot(dt, SigmaVenu(:,2)*1000*ScaleCov(2),'.g')
+plot(dt, SigmaVenu(:,3)*1000*ScaleCov(3),'.r')
 l1 = legend('\sigma_V_e','\sigma_V_n','\sigma_V_u')
 % set(l1, 'MarkerSize',11)
 ylim([0 1.6])
@@ -116,9 +124,9 @@ subplot(2,1,2)
 hold on
 grid on
 title('Averaged formal error of station velocities for original stations')
-plot(dtobs_sum, SigmaVenu_merged(:,1)*1000*sqrt(1.8)*20,'.b')
-plot(dtobs_sum, SigmaVenu_merged(:,2)*1000*sqrt(1.8)*20,'.g')
-plot(dtobs_sum, SigmaVenu_merged(:,3)*1000*sqrt(1.8)*20,'.r')
+plot(dtobs_sum, SigmaVenu_merged(:,1)*1000*ScaleCov(1),'.b')
+plot(dtobs_sum, SigmaVenu_merged(:,2)*1000*ScaleCov(2),'.g')
+plot(dtobs_sum, SigmaVenu_merged(:,3)*1000*ScaleCov(3),'.r')
 % legend('\sigma_V_e','\sigma_V_n','\sigma_V_u')
 ylim([0 1.6])
 xlim([0 14])
@@ -129,9 +137,14 @@ set(gca,'XTickLabel',{num2str([0:13]')})
 xlabel('observation time, [year]')
 ylabel(' precision, [mm/yr]')
 
+% mean 
+mean(SigmaVenu_merged(:,1)*1000*ScaleCov(1))
+mean(SigmaVenu_merged(:,2)*1000*ScaleCov(2))
+mean(SigmaVenu_merged(:,3)*1000*ScaleCov(3))
+
 %%
-print(fig2, '-depsc','-r300','VelPrecisionDistribution.eps')
-print(fig2, '-dpdf','-r300','VelPrecisionDistribution.pdf')
+print(fig2, '-depsc','-r300','VelPrecisionDistribution_improved.eps')
+print(fig2, '-dpdf','-r300','VelPrecisionDistribution_improved.pdf')
 
 
 %% plot histogramm
