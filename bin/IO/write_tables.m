@@ -74,7 +74,7 @@ SigmaRenu_a  = SigmaRenu * 1.8^(1/2) * 20 * 1000; % mm
 [a, b, names_orig] = merge_stations_param(dt,names_all, 'first');
 domes = SINEX.SITE.ID.DOMES;
 
-%%
+%% write extended vel field table
 n = length(lat_all);
 clc
 Sigma_Venu = SigmaVenu_merged * 1.8^(1/2) * 20 * 1000;
@@ -90,7 +90,60 @@ for i = 1:length(long_all)
     end
 end
 
+%% write table with solutions epochs only
+clc
+n = length(lat_all);
+formatStr = '%3d %4s  %3d  20%12s  -  20%12s  %6.1f - %6.1f %5.1f  %5s  %5s %5s %5s   %5s \n';
+disp('Nmr Site SolN  __DATA_START__  -  ___DATA_END___  Start  - End Tobs      ___Equipment_Change ___    Other')
+disp('               yyyy:ddd:sssss  -  yyyy:ddd:sssss  yyyy.y - yyyy.y  yy.y  Ant.  Radom  Ecc.  Rec.           ')
+SolNumber = 0;
+AntCounter = 0;
+RadCounter = 0;
+EccCounter = 0;
+RecCounter = 0;
+UnkCounter = 0;
+for i = 1:length(long_all)
 
+    if i > 2
+        if strcmp(names_orig(i), names_orig(i-1))
+            SolNumber = SolNumber + 1;
+            if ~strcmp(SINEX.SITE.ANTENNA.Antenna(i,1:16), SINEX.SITE.ANTENNA.Antenna(i-1,1:16))
+                AntFlag = 'Ant  '; 
+                AntCounter = AntCounter + 1;
+            end
+            if ~strcmp(SINEX.SITE.ANTENNA.Antenna(i,17:20), SINEX.SITE.ANTENNA.Antenna(i-1,17:20))
+                RadFlag = 'Rad  '; 
+                RadCounter = RadCounter + 1;
+            end
+            if ~strcmp(num2str(SINEX.SITE.ECCENTRICITY.Ecc_UNE(i,:)), num2str(SINEX.SITE.ECCENTRICITY.Ecc_UNE(i-1,:)))
+                EccFlag = 'Ecc  '; 
+                EccCounter = EccCounter + 1;
+            end
+            if ~strcmp(SINEX.SITE.RECEIVER.Receiver(i,:), SINEX.SITE.RECEIVER.Receiver(i-1,:))
+                RecFlag = 'Rec  '; 
+                RecCounter = RecCounter + 1;
+            end
+            if strcmp([AntFlag, RadFlag, EccFlag, RecFlag], '                    ') 
+                UnknFlag = 'Other';
+                UnkCounter = UnkCounter + 1;
+            else
+                UnknFlag ='     ';
+            end
+        else
+            SolNumber = 1;
+            AntFlag = '     ';
+            RadFlag = '     ';
+            EccFlag = '     ';
+            RecFlag = '     ';          
+            UnknFlag ='     ';
+        end
+    end
+    fprintf(formatStr,i, names_orig{i},  SolNumber, SINEX.SOLUTION.EPOCHS.DATA_START(i,:), SINEX.SOLUTION.EPOCHS.DATA_END(i,:), 2000+t_start(i), 2000+t_end(i), dt(i), AntFlag, RadFlag, EccFlag, RecFlag, UnknFlag );
+  
+end
+
+disp(['                                                                          ',...
+    num2str(AntCounter,'%5d'),'    ', num2str(RadCounter,'%5d'),'    ',num2str(EccCounter,'%5d'),'    ',num2str(RecCounter,'%5d'),'       ',num2str(UnkCounter,'%5d')])
 
 
 
