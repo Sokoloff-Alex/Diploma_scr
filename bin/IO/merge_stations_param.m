@@ -53,9 +53,9 @@ for i = 1:length(uniq_names)
         case 'last'
             Value_ave(i,:) = Value_unified(iSet(end),:);
         case 'max'
-            Value_ave(i,:) = max(Value_unified(iSet,:),1);
+            Value_ave(i,:) = max(Value_unified(iSet,:));
         case 'min'
-            Value_ave(i,:) = min(Value_unified(iSet,:),1);              
+            Value_ave(i,:) = min(Value_unified(iSet,:));              
         case 'mean'                    
             Value_ave(i,:) = mean(Value_unified(iSet,:),1);
         case 'sum'

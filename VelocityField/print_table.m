@@ -79,7 +79,20 @@ dt = t_end - t_start;
 Sigma_Venu = SigmaVenu_merged * sqrt(1.8) * 20 * 1000; % im mm/yr
 
 
-%% save full table of velocity field in compact format
+%% save full table of TOTAL velocity field in compact format
+
+clc
+dt2 = (2000+t_obs_end) - (2000+t_obs_start);
+td_err = dt2 - dtobs_sum;
+
+data = [wrapTo180(long), lat, h, Ve*1000, Sigma_Venu(:,1), Vn*1000, Sigma_Venu(:,2), Ve_res*1000, Sigma_Venu(:,1), Vn_res*1000, Sigma_Venu(:,2), Vu*1000, Sigma_Venu(:,3), 2000+t_obs_start, 2000+t_obs_end,  dtobs_sum];
+formatStr = '%4s  %8.2f    %8.2f     %6.1f        %5.2f ± %4.2f     %5.2f ± %4.2f     %5.2f ± %4.2f     %5.2f ± %4.2f     %5.2f ± %4.2f    %5.1f - %5.1f  %4.1f \n';
+disp('Site     Long_app,   Lat_app,  Height_app     Ve      SVe      Vn      SVn      Ve_res  SVe      Vn_res  SVn      Vu     Svu      Start    End    Tobs  ')
+for i = 1:length(long)
+    fprintf(formatStr, name{i}, data(i,:)); 
+end
+
+%% save full table of RESIDUAL velocity field in compact format
 
 clc
 dt2 = (2000+t_obs_end) - (2000+t_obs_start);
