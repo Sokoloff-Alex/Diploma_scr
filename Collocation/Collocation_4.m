@@ -51,7 +51,9 @@ DOMES = ALP_NET_CRD(range_flag,3);
 [Ve,Vn, Vu, lat, long,  h]  = XYZ2ENU(CRD,VEL);
 [Ve_all,Vn_all, Vu_all, lat_all, long_all,  h_all]  = XYZ2ENU(CRD_all,VEL_all);
 [V_res_xyz] = remove_plate_motion(CRD, VEL, Omega_Eur);
+[V_res_xyz_all] = remove_plate_motion(CRD_all, VEL_all, Omega_Eur);
 [Ve_res, Vn_res, Vu_res] = XYZ2ENU(CRD,V_res_xyz); % NEU components, [m/yr m/yr m/yr]
+[Ve_res_all, Vn_res_all, Vu_res_all] = XYZ2ENU(CRD_all,V_res_xyz_all); % NEU components, [m/yr m/yr m/yr]
 
 %% Covariance
 
@@ -114,10 +116,18 @@ Angle_v = AngleV_merged(:,1);
 
 
 %% save  full horizontal velocity field
+clc
+scaleFactor = [44 28 19];
+VelocityField = [long_all, lat_all, Ve_res_all, Vn_res_all, SigmaVenu(:,1)*44, SigmaVenu(:,2)*28,CorrVen];
+writeVelocityFieldwithCovGMT(VelocityField, names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_SNX_all.txt')
+
+
+%% save  full horizontal velocity field
 % clc
-% fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vel_hor_total_SNX_nonames.txt','w');
+% scaleFactor = [44 28 19];
+% fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vel_hor_total_SNX.txt','w');
 % Sigma_Venu = SigmaVenu_merged * 1.8^(1/2) * 20 * 1000;
-% data = [wrapTo180(long_all), lat_all, Ve_all, Vn_all, SigmaVenu(:,1)*1.8*20, SigmaVenu(:,2)*1.8*20, AngleV];
+% data = [wrapTo180(long_all), lat_all, Ve_all, Vn_all, SigmaVenu(:,1)*44, SigmaVenu(:,2)*28, AngleV];
 % formatStr = '%10.7f  %10.7f   %8.5f  %8.5f   %10.6f  %10.6f  %5.1f \n';
 % header = 'Long [deg],  Lat[deg],    Ve[m/yr],  Vn[m/yr],  SVn[m/yr], SVe[m/yr], angle[deg],    Name\n';
 % fprintf(fileID, header);
