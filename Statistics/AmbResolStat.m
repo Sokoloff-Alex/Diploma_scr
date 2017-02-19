@@ -2,6 +2,7 @@
 %
 % 
 % load tables
+clc
 
 AR_WL = read_xyz_table('../dat/OUT/AbmRes/AR_WL');
 AR_NL = read_xyz_table('../dat/OUT/AbmRes/AR_NL');
