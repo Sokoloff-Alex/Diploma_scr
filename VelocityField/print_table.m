@@ -76,7 +76,10 @@ dt = t_end - t_start;
 [t_obs_end  ] = merge_stations_param(t_end,   names_all, 'max');
 [CorrVen_ave, names_1, names_2] = merge_stations_param(CorrVen, names_all, 'mean');
 
-Sigma_Venu = SigmaVenu_merged * sqrt(1.8) * 20 * 1000; % im mm/yr
+ScaleFactor = [44 28 19];
+sc = ScaleFactor;
+
+Sigma_Venu = [SigmaVenu_merged(:,1).* ScaleFactor(1) SigmaVenu_merged(:,2).* ScaleFactor(2) SigmaVenu_merged(:,3).* ScaleFactor(3)] * 1000; % im mm/yr
 
 
 %% save full table of TOTAL velocity field in compact format
@@ -117,9 +120,10 @@ end
 %%
 clc
 n  = length(lat_all);
-SigmaVenu_all = SigmaVenu * sqrt(1.8) * 20 * 1000; 
+SigmaVenu_all = [SigmaVenu(:,1).* ScaleFactor(1) SigmaVenu(:,2).* ScaleFactor(2) SigmaVenu(:,3).* ScaleFactor(3)] * 1000; % im mm/yr
+
 data = [wrapTo180(long_all), lat_all, h_all, Ve_res_a*1000, SigmaVenu_all(:,1), Vn_res_a*1000, SigmaVenu_all(:,2), Vu_res_a*1000, SigmaVenu_all(:,3), 2000+t_start, 2000+t_end,  dt];
-formatStr = '%4s  %4s %9s %7.2f %8.2f  %6.1f  %5.2f ± %4.2f  %5.2f ± %4.2f  %5.2f ± %4.2f    %5.1f - %5.1f  %4.1f \n';
+formatStr = '%4s  %4s %9s %14.7f    %14.7f     %12.5f  %5.2f ± %4.2f  %5.2f ± %4.2f  %5.2f ± %4.2f    %5.1f - %5.1f  %4.1f \n';
 disp('SITE: Site__________       Longitude        Latitude           Height           Ve_res  SVe      Vn_res  SVn      Vu     Svu      Start    End    Tobs  ')
 for i = 1:length(long_all)
     fprintf(formatStr, names_2{i},  names_all{i},DOMES_all(i,:) , data(i,:)); 
