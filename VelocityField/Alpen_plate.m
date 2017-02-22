@@ -184,6 +184,8 @@ xlabel('# of obs')
 %% Refinment of Euler pole estimation
 
 [Omega_Est, dOmega_k2, DOP2, Omega_Est_stack2, dOmega_k_stack2] = plate_motion(Omega_Est,'ECEF',  CRD(points_ref_3,:), VEL(points_ref_3,:), 1000);
+
+std(Omega_Est_stack2)
 %% get residual velocities alternative
 
 [V_res_xyz] = remove_plate_motion(CRD, VEL, Omega_Est);
@@ -279,5 +281,21 @@ for i=1:length(points_ref_3)
    fprintf('%f %f %s \n', long(points_ref_3(i)), lat(points_ref_3(i)), names{points_ref_3(i)}) 
 end
 
+%%
 
+Vh = Ve(points_ref_3,:) + Vn(points_ref_3,:)
+
+Re = 6371000;
+w = Vh/Re
+std(w)
+
+
+r = CRD(points_ref_3,:)
+v = VEL(points_ref_3,:)
+
+W = cross(r, v)/norm(r)
+
+[Ve_p,Vn_p, Vu_p, lat_p,lon_p, h_p] = XYZ2ENU(W*Re, W)
+
+std([lat_p,lon_p, w])
 

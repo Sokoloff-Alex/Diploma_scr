@@ -83,7 +83,12 @@ while (abs(dOmega_k(1)) > 10^-4) || (abs(dOmega_k(2)) > 10^-4) || (abs(dOmega_k(
 
     %% LSE
 %     disp('Correcrions:');
-    dOmega_k = (A'*A)^-1*A'*l;
+%     dOmega_k = (A'*A)^-1*A'*l;
+    
+    % try with weigth matrix
+    err = km2deg(0.25/(1000*1000)); % 0.25 mm/yr -> 2.25*10-9 deg/yr
+    P = err^2 * eye(length(l));
+    dOmega_k = (A'*P*A)^-1*A'*P*l;
 
     d_lat_k   = dOmega_k(1);
     d_long_k  = dOmega_k(2);
@@ -95,7 +100,9 @@ while (abs(dOmega_k(1)) > 10^-4) || (abs(dOmega_k(2)) > 10^-4) || (abs(dOmega_k(
     % disp(' ')
 
     DOP = (A'*A)^-1;
-
+    COV = (A'*P*A)^-1;
+    precision = sqrt(diag(COV))';
+%     disp(['precision:', num2str(precision(1)),'   ', num2str(precision(2)),'   ', num2str(precision(3)) ])
 %     %% Observation Error: 
 %     for i = 1:length(lat)
 % 
@@ -116,9 +123,13 @@ while (abs(dOmega_k(1)) > 10^-4) || (abs(dOmega_k(2)) > 10^-4) || (abs(dOmega_k(
 %     disp(['Lat = ',  num2str(Omega_Est(1),'% 12.6f'), ' [deg]; ', ...
 %           'Long = ', num2str(Omega_Est(2),'% 12.6f'), ' [deg]; ', ...
 %           'w = ',    num2str(Omega_Est(3)*10^6,'%12.6f'), ' [ged/10^6 yr]' ]);
-%     Omega_Est_stack(iter,:) = Omega_Est';
-%     dOmega_k_stack(iter,:)  = dOmega_k';
+    Omega_Est_stack(iter,:) = Omega_Est';
+    dOmega_k_stack(iter,:)  = dOmega_k';
 end
+iter
+Omega_Est_stack = Omega_Est_stack(1:iter-1,:);
+dOmega_k_stack  = dOmega_k_stack(1:iter-1,:);
+
 disp(['---Euler pole --- : iterations :', num2str(iter)])
 disp(['Lat = ', num2str(Omega_Est(1),'% 12.6f'), ' [deg] :: dLat = ', num2str(dOmega_k(1)), ' [deg]'])
 disp(['Lon = ', num2str(Omega_Est(2),'% 12.6f'), ' [deg] :: dLon = ', num2str(dOmega_k(2)), ' [deg]'])
