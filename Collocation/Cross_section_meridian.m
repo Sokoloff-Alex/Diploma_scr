@@ -1,4 +1,21 @@
 %% Cross-section
+
+Outliers   = {'HELM', 'WIEN', 'OGAG', 'OBE2', ...
+              'ROHR','BIWI','BI2I', 'MANS'};
+            
+%%
+Outliers = {'ELMO','WIEN','FERR', ...
+            'BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
+            'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
+            'HRIE','KTZ2', 'WLBH','ENTZ'};
+
+%%
+iiOut    = selectRange(names, Outliers);
+iiSel = setdiff([1:198], iiOut);
+CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
+V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
+
+
 Meridian = 6.5;
 width = 0.5;
 L = Meridian-width;
@@ -14,8 +31,14 @@ iiBox = intersect(intersect(iiL, iiR), intersect(iiT,iiB) );
 iiBox = setdiff(iiBox,iiOut);
 iiBox = setdiff(iiBox, selectRange(names, {'NOVE', 'PORE','ALPE' } ));
 clear  LongG LatG V_prof V_profV
-[LongG, LatG, V_profV,rmsFit_Vcs, V_SigPred_Vcs] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [Meridian Meridian], [B T], 0.125, 100, 5,  'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
-[LongG, LatG, V_prof, rmsFit_Hcs, V_SigPred_Hcs] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [Meridian Meridian], [B T], 0.125, 100, 5,  'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+CovVenu3 = CovVenu2;
+CovVenu3(ii,  ii)   = CovVenu2(ii,  ii)  *44^2;
+CovVenu3(ii+1,ii+1) = CovVenu2(ii+1,ii+1)*28^2;
+CovVenu3(ii+2,ii+2) = CovVenu2(ii+2,ii+2)*19^2;
+
+[LongG, LatG, V_profV,rmsFit_Vcs, V_SigPred_Vcs] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu3,1, [Meridian Meridian], [B T], 0.125, 100, 5,  'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+
+[LongG, LatG, V_prof, rmsFit_Hcs, V_SigPred_Hcs] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu3,1, [Meridian Meridian], [B T], 0.125, 100, 5,  'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 CovVenuBox = extractCovariance(CovVenu, iiBox, [1 2 3], 'split');
 CavVenu = sqrt(diag(CovVenuBox));
@@ -52,7 +75,7 @@ clc
 % Defaults for this blog post
 width = 7;     % Width in inches
 height = 7;    % Height in inches
-alw = 0.75;    % AxesLineWidth
+alw = 1;    % AxesLineWidth
 fsz = 11;      % Fontsize
 lw =  1;      % LineWidth
 msz = 6;       % MarkerSize
@@ -76,7 +99,6 @@ bottom = (defsize(2)- height)/2;
 defsize = [left, bottom, width, height];
 set(0, 'defaultFigurePaperPosition', defsize);
 
-%%
 close all
 fig = figure(5);
 hs(1) = subplot(11,1,[1:4]);
@@ -85,8 +107,8 @@ grid on
 % x = [LatG;flipud(LatG)];
 % y = [V_prof(:,2)*1000+V_SigPred_Hcs(:,2); flipud(V_prof(:,2)*1000-V_SigPred_Hcs(:,2))];
 % pl9 = patch(x, y, 1, 'FaceColor', [240 0 0 ]/255 ,'EdgeColor','none' , 'FaceAlpha',0.2)
-pl4 = plot(LatG,V_profV(:,3)*1000+V_SigPred_Vcs(:,3),'--r','LineWidth',.25);
-pl5 = plot(LatG,V_profV(:,3)*1000-V_SigPred_Vcs(:,3),'--r','LineWidth',.25);
+pl4 = plot(LatG,V_profV(:,3)*1000+V_SigPred_Vcs(:,3),'--r','LineWidth',1);
+pl5 = plot(LatG,V_profV(:,3)*1000-V_SigPred_Vcs(:,3),'--r','LineWidth',1);
 pl6 = plot(LatG,V_profV(:,3)*1000, 'LineWidth',2, 'Color',[170 0 0 ]/255);
 pl7 = plot(lat(iiBox),Vu_res(iiBox)*1000,'ob', 'MarkerFaceColor','b', 'MarkerSize',3);
 % text(lat(iiBox)+0.05,Vu_res(iiBox)*1000,names(iiBox))
@@ -102,15 +124,15 @@ hold on
 % x = [LatG;flipud(LatG)];
 % y = [V_prof(:,2)*1000+V_SigPred_Hcs(:,2); flipud(V_prof(:,2)*1000-V_SigPred_Hcs(:,2))];
 % pl9 = patch(x, y, 1, 'FaceColor', [240 0 0 ]/255 ,'EdgeColor','none' , 'FaceAlpha',0.2)
-pl4 = plot(LatG,V_prof(:,2)*1000+V_SigPred_Hcs(:,2),'--r','LineWidth',.25);
-pl5 = plot(LatG,V_prof(:,2)*1000-V_SigPred_Hcs(:,2),'--r','LineWidth',.25);
+pl4 = plot(LatG,V_prof(:,2)*1000+V_SigPred_Hcs(:,2),'--r','LineWidth',1);
+pl5 = plot(LatG,V_prof(:,2)*1000-V_SigPred_Hcs(:,2),'--r','LineWidth',1);
 pl6 = plot(LatG,V_prof(:,2)*1000, 'LineWidth',2, 'Color',[170 0 0 ]/255);
 pl7 = plot(lat(iiBox),Vn_res(iiBox)*1000,'ob', 'MarkerFaceColor','b', 'MarkerSize',3);
 % text(lat(iiBox)+0.05,Vn_res(iiBox)*1000,names(iiBox))
 pl8 = errorbar(lat(iiBox),Vn_res(iiBox)*1000,Vnerr,'.b','LineWidth',.5);
 legend([pl6 pl4 pl7],'V_N LSC','LSC error','V_N obs')
 xlim([B T])
-ylim([-1 1])
+ylim([-1 3])
 set(gca, 'XTickLabel', [])
 %title('North component')
 ylabel('V_N [mm/yr]')
@@ -119,9 +141,9 @@ hold off
 
 hs(3) = subplot(11,1,[9:11]);
 hold on
-pl2 = plot(vLat, elevProfMax/1000,'LineWidth',.5,'Color',[.5 .5 .5]);
-pl3 = plot(vLat, elevProfMin/1000,'LineWidth',.5,'Color',[.5 .5 .5]);
-pl1 = plot(vLat, elevProfMA/1000, 'LineWidth',2, 'Color',[34 139 34]/255);
+pl2 = plot(vLat, elevProfMax/1000,'LineWidth',1,'Color',[.5 .5 .5]);
+pl3 = plot(vLat, elevProfMin/1000,'LineWidth',1,'Color',[.5 .5 .5]);
+pl1 = plot(vLat, elevProfMA/1000, 'LineWidth',3, 'Color',[34 139 34]/255);
 legend([pl1 pl2 pl3 pl6 pl4 pl7],'Mean topography','topoMax','tomoMin')
 xlim([B T])
 ylim([-2.6, max(elevProfMax/1000)])

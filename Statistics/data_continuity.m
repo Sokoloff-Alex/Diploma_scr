@@ -43,9 +43,10 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CRD, AngleV_merged] = merge_stations(CRD_all,AngleV,names_all);
 
 [CRD, SigmaRenu_merged, name ] = merge_stations_precision(CRD_all,SigmaRenu,names_all);
+% [CRD, SigmaRenu_merged, name ] = merge_stations_param(SigmaRenu,names_all,'min');
+
 [CRD, AngleR_merged] = merge_stations(CRD_all,AngleR,names_all);
 Angle_v = AngleV_merged(:,1);
-
 
 
 %% compute common observation period
@@ -104,7 +105,7 @@ fig2 = figure(2);
 subplot(2,1,1)
 hold on
 grid on
-title('Formal Error of velocities for artificial stations')
+title('Formal Error of station velocities for fragmented time-series')
 plot(dt, SigmaVenu(:,1)*1000*ScaleCov(1),'.b')
 plot(dt, SigmaVenu(:,2)*1000*ScaleCov(2),'.g')
 plot(dt, SigmaVenu(:,3)*1000*ScaleCov(3),'.r')

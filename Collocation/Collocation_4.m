@@ -26,7 +26,7 @@ load('ETOPO_Alps.mat')
 %
 ALP_NET_CRD = readCRD('STA/FMC_IGB_W7.CRD');
 ALP_NET_VEL = readVEL('STA/FMC_IGB_W7.VEL');
-16/1
+
 
 %
 flags = ALP_NET_CRD(:,7);
@@ -87,16 +87,16 @@ Angle_v = AngleV_merged(:,1);
 
 %% compute common observation period
 % 
-% t_start = SINEX.SOLUTION.EPOCHS.DATA_START;
-% t_end   = SINEX.SOLUTION.EPOCHS.DATA_END;
-% 
-% t_start = [str2num(t_start(:,1:2)) + str2num(t_start(:,4:6))/365.25]
-% t_end   = [str2num(t_end(  :,1:2)) + str2num(t_end(  :,4:6))/365.25]
-% 
-% dt = t_end - t_start;
-% 
-% %%
-% [dtobs_sum] = merge_stations_sum(dt,names_all);
+t_start = SINEX.SOLUTION.EPOCHS.DATA_START;
+t_end   = SINEX.SOLUTION.EPOCHS.DATA_END;
+
+t_start = [str2num(t_start(:,1:2)) + str2num(t_start(:,4:6))/365.25]
+t_end   = [str2num(t_end(  :,1:2)) + str2num(t_end(  :,4:6))/365.25]
+
+dt = t_end - t_start;
+
+%%
+[dtobs_sum] = merge_stations_sum(dt,names_all);
 
 %%
 % close all
@@ -189,9 +189,9 @@ Outliers = {'ELMO','WIEN','FERR', ...
 iiOut    = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
 CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
-Cov_scale = 5;
-VerrMin = (0.3/1000/Cov_scale)^2/1.8; % in [m/yr]^2, scaled to SNX
-CovVenu2(CovVenu2 < VerrMin) = VerrMin;
+% Cov_scale = 5;
+% VerrMin = (0.3/1000/Cov_scale)^2/1.8; % in [m/yr]^2, scaled to SNX
+% CovVenu2(CovVenu2 < VerrMin) = VerrMin;
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 
 %% run for trend on regular grid
