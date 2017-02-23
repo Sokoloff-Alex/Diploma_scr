@@ -47,9 +47,9 @@ Vu = Venu(:,3);
 %% Filter Noise 
 % Cs(0) = Cl(0) - Cr(0)
 if max(ismember(flags, {'filter', '-f'}))
-    CrEE = trace(CovVel(0*p+1:1*p, 0*p+1:1*p)) * 1000^2 * 1.8 * 100 / p;
-    CrNN = trace(CovVel(1*p+1:2*p, 1*p+1:2*p)) * 1000^2 * 1.8 * 100 / p;
-    CrUU = trace(CovVel(2*p+1:3*p, 2*p+1:3*p)) * 1000^2 * 1.8 * 100 / p;
+    CrEE = trace(CovVel(0*p+1:1*p, 0*p+1:1*p)) * 1000^2 * 100 / p;
+    CrNN = trace(CovVel(1*p+1:2*p, 1*p+1:2*p)) * 1000^2 * 100 / p;
+    CrUU = trace(CovVel(2*p+1:3*p, 2*p+1:3*p)) * 1000^2 * 100 / p;
     
     Cr_TH = 0.05;
     if CrEE < Cr_TH && CrEE > 0.05*y_EE(1) ; CrEE = Cr_TH; end
@@ -336,7 +336,7 @@ C_new = [C_new_EE, C_new_EN, C_new_EU
 %  Bernese scale                       10-100
 Cnoise = CovVel;
 % Cnoise([1:p],[1:p]) = Cnoise([1:p],[1:p])*1000^2;
-Cnoise = Cnoise*1000^2 * 1.8 * Cov_scale;
+Cnoise = Cnoise*1000^2 * Cov_scale;
 
 %% Solve LSC
 % Observations  

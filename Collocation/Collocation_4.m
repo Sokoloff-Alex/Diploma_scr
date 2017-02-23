@@ -68,22 +68,22 @@ Angle_v = AngleV_merged(:,1);
 
 
 %% save Error Bars for GMT
-fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars_all2.txt', 'w');
-fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
-fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
-formatStr = '%12.7f  %12.7f   %15e \n';
-d = diag(CovVenu);
-SigmaVu = SigmaVenu_merged(:,3) * 17; % scaled to abequate value [m/yr]
-SigmaVu_deg_yr = SigmaVu*1000 * 0.36; 
-
-%data = [long, lat + Vu_res * 1000 * 0.24, SigmaVu_deg_yr]; old
-
-data = [long, lat + Vu_res * 1000 * 0.29, SigmaVu_deg_yr];
-
-for i = 1:length(Vu_res)
-   fprintf(fileID, formatStr, data(i,:)); 
-end
-fclose(fileID);
+% fileID = fopen('~/Alpen_Check/MAP/VelocityField/Vu_bars_all2.txt', 'w');
+% fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
+% fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
+% formatStr = '%12.7f  %12.7f   %15e \n';
+% d = diag(CovVenu);
+% SigmaVu = SigmaVenu_merged(:,3) * 17; % scaled to abequate value [m/yr]
+% SigmaVu_deg_yr = SigmaVu*1000 * 0.36; 
+% 
+% %data = [long, lat + Vu_res * 1000 * 0.24, SigmaVu_deg_yr]; old
+% 
+% data = [long, lat + Vu_res * 1000 * 0.29, SigmaVu_deg_yr];
+% 
+% for i = 1:length(Vu_res)
+%    fprintf(fileID, formatStr, data(i,:)); 
+% end
+% fclose(fileID);
 
 %% compute common observation period
 % 
@@ -119,7 +119,7 @@ fclose(fileID);
 clc
 scaleFactor = [44 28 19];
 VelocityField = [long_all, lat_all, Ve_res_all, Vn_res_all, SigmaVenu(:,1)*44, SigmaVenu(:,2)*28,CorrVen];
-writeVelocityFieldwithCovGMT(VelocityField, names_all, '~/Alpen_Check/MAP/VelocityField/VelocityField_hor_Cov_SNX_all_2.txt')
+writeVelocityFieldwithCovGMT(VelocityField, names_all, '../dat/VelocityField_hor_Cov_SNX_all_2.txt')
 
 
 %% save  full horizontal velocity field
@@ -151,8 +151,30 @@ CovVenu2 = extractCovariance(CovVenu, iiSel, [1 2 3], 'no split');
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 %% for Horizontal
 clc
+CovScale = 20;
+ii = (1:183)*3-2;
+CovVenu3 = CovVenu2;
+CovVenu3(ii,  ii)   = CovVenu2(ii,  ii)  *44^2;
+CovVenu3(ii+1,ii+1) = CovVenu2(ii+1,ii+1)*28^2;
+CovVenu3(ii+2,ii+2) = CovVenu2(ii+2,ii+2)*19^2;
+clc
+
 %                                                                                                             LongLim LatLing step dMax nMin flags ...                                         
-[LongGrid, LatGrid, V_def, rmsFit, V_Ts_Sig] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, [-4 18], [41 53], 1, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'no filter');
+[LongGrid, LatGrid, V_def, rmsFit, V_Ts_Sig] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2,1, [-4 18], [41 53], 0.5, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'no filter');
+
+V_Ts_Sig = abs(V_Ts_Sig);
+
+%%
+
+fileID = fopen('../dat/DeformationField_4.txt','w');
+data = [LongGrid, LatGrid, V_def(:,1:2), V_Ts_Sig(:,1:2)/1000, zeros(length(LongGrid),1)];
+formatStr = '%10.7f  %10.7f   %8.5f  %8.5f   %10.6f  %10.6f  %5.1f \n';
+header = 'Long [deg],  Lat[deg],    Ve[m/yr],  Vn[m/yr],  SVe[m/yr], SVn[m/yr], angle[deg],    Name\n';
+fprintf(fileID, header);
+for i = 1:length(LongGrid)
+    fprintf(fileID, formatStr, data(i,:)); 
+end
+fclose(fileID);
 
 %% for Vertical       
 
@@ -175,7 +197,7 @@ V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 %% run for trend on regular grid
 [LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42 53], 0.5, 200, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
-% run Kriging for treng on regular grid and at GNSS stations
+%% run Kriging for treng on regular grid and at GNSS stations
 % close all
 c = [-3:0.5:3];
 % [LongK_Tr_Stack, LatK_Tr_Stack, VuK_Tr_Stack, fig1, fig2] = runKriging(LongGrid, LatGrid, V_def_tr1, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
