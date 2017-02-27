@@ -95,9 +95,12 @@ ylim([41 53])
 colorbar
 hold off
 
-
-
-
+%% print table
+clc
+formatStr = '%-8.3f  %8.3f %10.3f %10.3f %7.1f %10.3f %7.1f\n'
+for i = 1:size(Strain,1)
+    fprintf(formatStr, [Strain(i,1:2), Strain(i,3:4)*10^9, Strain(i,5), Strain(i,6)*10^9, Strain(i,7)] );    
+end
 
 
 
