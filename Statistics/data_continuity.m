@@ -39,11 +39,12 @@ SNX_cov = SINEX.SOLUTION.COVA_ESTIMATE;
 [CovVenu] = megreCov(CovVenuSNX, names_all);
 
 [CRD, SigmaVenu_merged_old, name ] = merge_stations(CRD_all,SigmaVenu,names_all);
-[CRD, SigmaVenu_merged, name ] = merge_stations_precision(CRD_all,SigmaVenu,names_all);
+[CRD, SigmaVenu_merged, name ]     = merge_stations_precision(CRD_all,SigmaVenu,names_all);
+[SigmaVenu_merged, name ]     = merge_stations_param(SigmaVenu,names_all,'mean');
 [CRD, AngleV_merged] = merge_stations(CRD_all,AngleV,names_all);
 
 [CRD, SigmaRenu_merged, name ] = merge_stations_precision(CRD_all,SigmaRenu,names_all);
-% [CRD, SigmaRenu_merged, name ] = merge_stations_param(SigmaRenu,names_all,'min');
+[ SigmaRenu_merged, name ] = merge_stations_param(SigmaRenu,names_all,'min');
 
 [CRD, AngleR_merged] = merge_stations(CRD_all,AngleR,names_all);
 Angle_v = AngleV_merged(:,1);
@@ -68,11 +69,12 @@ dt = t_end - t_start;
 
 % Defaults for this blog post
 width =  5.5;  % Width in inches
-height = 4;    % Height in inches
+height = 2;    % Height in inches
 alw = 0.75;    % AxesLineWidth
 fsz = 7;       % Fontsize
 lw =  1;       % LineWidth
 msz = 10;      % MarkerSize
+[SigmaVenu_merged, name ]     = merge_stations_param(SigmaVenu,names_all,'min');
 
 % The properties we've been using in the figures
 set(0,'defaultLineLineWidth',lw);   % set the default line width to lw
@@ -102,10 +104,10 @@ VarianceFactor = 1 ; % !!! No need to be multiplied by Variance Factor !!!
 
 
 fig2 = figure(2);
-subplot(2,1,1)
+% subplot(2,1,1)
 hold on
 grid on
-title('Formal Error of station velocities for fragmented time-series')
+title('Formal error of station velocities for fragmented time-series')
 plot(dt, SigmaVenu(:,1)*1000*ScaleCov(1),'.b')
 plot(dt, SigmaVenu(:,2)*1000*ScaleCov(2),'.g')
 plot(dt, SigmaVenu(:,3)*1000*ScaleCov(3),'.r')
@@ -118,25 +120,25 @@ set(gca,'YTickLabel',{num2str([0:0.2:2]')})
 set(gca,'Xtick',0:13)
 set(gca,'XTickLabel',{num2str([0:13]')})
 
-% xlabel('observation time, [year]')
-ylabel(' precision, [mm/yr]')
-
-subplot(2,1,2)
-hold on
-grid on
-title('Averaged formal error of station velocities for original stations')
-plot(dtobs_sum, SigmaVenu_merged(:,1)*1000*ScaleCov(1),'.b')
-plot(dtobs_sum, SigmaVenu_merged(:,2)*1000*ScaleCov(2),'.g')
-plot(dtobs_sum, SigmaVenu_merged(:,3)*1000*ScaleCov(3),'.r')
-% legend('\sigma_V_e','\sigma_V_n','\sigma_V_u')
-ylim([0 1.6])
-xlim([0 14])
-set(gca,'Ytick',0:0.2:2)
-set(gca,'YTickLabel',{num2str([0:0.2:2]')})
-set(gca,'Xtick',0:13)
-set(gca,'XTickLabel',{num2str([0:13]')})
 xlabel('observation time, [year]')
 ylabel(' precision, [mm/yr]')
+
+% subplot(2,1,2)
+% hold on
+% grid on
+% title('Averaged formal error of station velocities for original stations')
+% plot(dtobs_sum, SigmaVenu_merged(:,1)*1000*ScaleCov(1),'.b')
+% plot(dtobs_sum, SigmaVenu_merged(:,2)*1000*ScaleCov(2),'.g')
+% plot(dtobs_sum, SigmaVenu_merged(:,3)*1000*ScaleCov(3),'.r')
+% % legend('\sigma_V_e','\sigma_V_n','\sigma_V_u')
+% ylim([0 1.6])
+% xlim([0 14])
+% set(gca,'Ytick',0:0.2:2)
+% set(gca,'YTickLabel',{num2str([0:0.2:2]')})
+% set(gca,'Xtick',0:13)
+% set(gca,'XTickLabel',{num2str([0:13]')})
+% xlabel('observation time, [year]')
+% ylabel(' precision, [mm/yr]')
 
 % mean 
 mean(SigmaVenu_merged(:,1)*1000*ScaleCov(1))
@@ -144,8 +146,8 @@ mean(SigmaVenu_merged(:,2)*1000*ScaleCov(2))
 mean(SigmaVenu_merged(:,3)*1000*ScaleCov(3))
 
 %%
-print(fig2, '-depsc','-r300','VelPrecisionDistribution_improved.eps')
-print(fig2, '-dpdf','-r300','VelPrecisionDistribution_improved.pdf')
+print(fig2, '-depsc','-r300','VelPrecisionDistribution_improved_2.eps')
+print(fig2, '-dpdf','-r300','VelPrecisionDistribution_improved_2.pdf')
 
 
 %% plot histogramm
