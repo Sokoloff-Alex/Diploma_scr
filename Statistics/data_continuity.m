@@ -187,9 +187,9 @@ hold on
 b1 = bar(centers1+0.2, nelements1, 0.4, 'b');
 b2 = bar(centers2-0.2, nelements2, 0.4, 'g');
 text(centers1, nelements1+2, num2str(nelements1'),'Color','b')
-text(centers2-0.55, nelements2+2,  num2str(nelements2'),'Color',[0 .6 0])
-legend([b1 b2], {['# of original stations, (total: ',num2str(length(dtobs_sum)),')'], ...
-    ['# of artificial stations, (total: ',num2str(length(dt)),')']},'location','NorthEast')
+text(centers2-0.55, nelements2+2,  num2str(nelements2'),'Color',[0 .25 0])
+legend([b1 b2], {['# of original TS, (total: ',num2str(length(dtobs_sum)),')'], ...
+    ['# of frangmented TS, (total: ',num2str(length(dt)),')']},'location','NorthEast')
 xlabel('Duration of observations, years')
 ylabel('# of stations')
 xlim([-1 13])
@@ -198,8 +198,8 @@ set(gca,'Xtick',0:12)
 set(gca,'XTickLabel',{'>0', num2str([1:12]')})
 
 %%
-print(fig1,'-depsc','-r300', 'HistContinuity.eps')
-% print(fig1,'-dpdf', '-r300', 'HistContinuity.pdf')
+% print(fig1,'-depsc','-r300', 'HistContinuity_2.eps')
+print(fig1,'-dpdf', '-r300', 'HistContinuity_2.pdf')
 % print(fig1,'-dpng', '-r300', 'HistContinuity.png')
 
 
