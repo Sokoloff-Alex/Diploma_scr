@@ -7,6 +7,7 @@ function [SINEX] = readSNX(filename, varargin)
 
 if ~isempty(varargin)
     flag = varargin{:}; 
+    flag
 end
 
 tic
@@ -60,7 +61,7 @@ DataType = {'FILE/REFERENCE';
 disp(['grep +[A-Z] ', fullpath, ' ']);
 comm = ['grep +[A-Z] ', fullpath, ' | awk ', '''' ,'{if( substr($1,1,1) == "+") print}', '''' ,' |  cut --characters 2-']
 [status, msgout]= system(comm, '-echo');
-DataTypeAvailable = strsplit(msgout);
+DataTypeAvailable = strsplit(msgout,'\n')';
 range = 1:length(DataType);
 iiBlockAvailable = range(ismember(DataType, DataTypeAvailable));
 iiBlocksToBeParse = iiBlockAvailable;
@@ -76,8 +77,14 @@ if ismember(flag, {'All', 'all', 'cov','with covariance', 'COVA'})
    end
 end
 
-%% Parsing
+%% check flag and exclude COVA
 
+if ismember(flag, {'noCov', 'nocov'})
+  iiBlocksToBeParse = setdiff(iiBlocksToBeParse, [12, 13]); 
+end
+
+%% Parsing
+iiBlocksToBeParse
 for iData = [iiBlocksToBeParse]
     [status, StartEndLines]= system(['grep --line-number "',DataType{iData},'" ', fullpath,' | cut -f1 -d:']);
     if (status ~= 0) % 0 = successful
