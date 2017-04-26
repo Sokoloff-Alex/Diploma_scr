@@ -445,7 +445,7 @@ for iData = [iiBlocksToBeParse]
         fileID = fopen(tmpFile);
         disp(fgetl(fileID));
         disp(fgetl(fileID));
-        CovMat = nan(1764);
+        CovMat = nan(NumberOfEntries*6);
         for iRow = 1:Len-3
             line = fgetl(fileID);
             Elements = str2num(line);

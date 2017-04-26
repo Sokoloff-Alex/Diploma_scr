@@ -22,9 +22,18 @@ fprintf(fileID, '#  Long [deg],   Lat [deg],     Vel E [m/yr],  Vel N [m/yr], Si
 
 formatStr = '%12.7f  %12.7f  %12.5f  %12.5f   %15e  %15e  %16.5f %9s \n';
 
-for i = 1:size(VelocityField,1)   
-    data = [VelocityField(i,1:7)]; 
-    fprintf(fileID, formatStr, data, SiteNames{i}); 
+if iscell(SiteNames)
+    for i = 1:size(VelocityField,1)   
+        data = [VelocityField(i,1:7)]; 
+        fprintf(fileID, formatStr, data, SiteNames{i}); 
+    end
+end
+
+if ischar(SiteNames)
+    for i = 1:size(VelocityField,1)   
+        data = [VelocityField(i,1:7)]; 
+        fprintf(fileID, formatStr, data, SiteNames(i,:)); 
+    end
 end
 fclose(fileID);
 
