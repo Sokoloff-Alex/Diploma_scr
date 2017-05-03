@@ -59,7 +59,26 @@ mean(scalePLT_SNX_sig )
 %% save  full horizontal velocity field
 clc
 % scaleFactor = 50*[1 1 1];
-scaleFactor = scalePLT_SNX_sig;
+scaleFactor = scalePLT_SNX_sig/1.5;
 VelocityField = [long_all, lat_all, Ve_res_all, Vn_res_all, SigmaVenu(:,1)*scaleFactor(1), SigmaVenu(:,2)*scaleFactor(2),CorrVen];
 writeVelocityFieldwithCovGMT(VelocityField, names_all, '/home/gast/SAPOS/MAP/Velocity_field_horizontal.txt')
+
+%% save Error Bars for GMT
+fileID = fopen('~/SAPOS/MAP/VelocityField/Vu_bars_all2.txt', 'w');
+fprintf(fileID, '# Velocity Field Error Bars Lat=Lat+Vu*scale, SigmaVu (mm/yr) -> SigmaVu[deg/yr] (for ploting with "gmt psxy -Ex" ) \n');
+fprintf(fileID, '#  Long [deg],   Lat [deg],      Sigma U [deg/yr],      \n');
+formatStr = '%12.7f  %12.7f   %15e \n';
+% d = diag(CovVenu);
+SigmaVu = SigmaVenu(:,3) * scaleFactor(3); % scaled to abequate value [m/yr]
+SigmaVu_deg_yr = SigmaVu*1000 * 0.7; 
+
+%data = [long, lat + Vu_res * 1000 * 0.24, SigmaVu_deg_yr]; old
+
+data = [long_all, lat_all + Vu_res_all * 1000 * 0.46, SigmaVu_deg_yr];
+
+for i = 1:length(Vu_res_all)
+   fprintf(fileID, formatStr, data(i,:)); 
+end
+fclose(fileID);
+disp('Done')
 
