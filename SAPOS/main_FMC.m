@@ -40,16 +40,16 @@ Omega_Eur = [55.7892, -97.8099,   2.629e-07 ]';
 [Ve_res_all_fnc, Vn_res_all_fnc, Vu_res_all_fnc] = XYZ2ENU(CRD_all_fnc,V_res_xyz_all_fnc); % NEU components, [m/yr m/yr m/yr]
 
 
-%% exclude '1277'
-Ve_all_fnc = Ve_all_fnc([1:62,64:end]);
-Vn_all_fnc = Vn_all_fnc([1:62,64:end]);
-Vu_all_fnc = Vu_all_fnc([1:62,64:end]);
-Ve_res_all_fnc = Ve_res_all_fnc([1:62,64:end]);
-Vn_res_all_fnc = Vn_res_all_fnc([1:62,64:end]);
-Vu_res_all_fnc = Vu_res_all_fnc([1:62,64:end]);
-lat_all_fnc = lat_all_fnc([1:62,64:end]);
-long_all_fnc = long_all_fnc([1:62,64:end]);
-names_all_fnc = names_all_fnc([1:62,64:end],:);
+%% %% exclude '1277'
+% Ve_all_fnc = Ve_all_fnc([1:62,64:end]);
+% Vn_all_fnc = Vn_all_fnc([1:62,64:end]);
+% Vu_all_fnc = Vu_all_fnc([1:62,64:end]);
+% Ve_res_all_fnc = Ve_res_all_fnc([1:62,64:end]);
+% Vn_res_all_fnc = Vn_res_all_fnc([1:62,64:end]);
+% Vu_res_all_fnc = Vu_res_all_fnc([1:62,64:end]);
+% lat_all_fnc = lat_all_fnc([1:62,64:end]);
+% long_all_fnc = long_all_fnc([1:62,64:end]);
+% names_all_fnc = names_all_fnc([1:62,64:end],:);
 
 %%
 try
@@ -58,7 +58,7 @@ end
 fig1 = figure(1);
 hold on
 sc=1000
-% text(wrapTo180(long_all_fnc), lat_all_fnc, names_all_fnc)
+text(wrapTo180(long_all_fnc), lat_all_fnc, names_all_fnc)
 bias_Vup = mean(Vu_res_all_fnc)- 0.0006;
 dvup = Vu_res_all_fnc - bias_Vup - Vu_res_all;
 % quiver(wrapTo180(long_all_fnc), lat_all_fnc, zeros(size(Vu_res_all_fnc)), (Vu_res_all_fnc - bias_Vup)*sc, 0, 'b')
