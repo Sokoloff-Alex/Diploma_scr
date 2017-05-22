@@ -33,7 +33,7 @@ for iSite = 1:length(SplittedSites_list)
 end
 
 %%  megre stations with same 4-char name
-uniq_names = unique(names_unified, 'rows');
+uniq_names = unique(names_unified);
 CRD_ave = zeros(length(uniq_names),3);
 VEL_ave = zeros(length(uniq_names),3);
 

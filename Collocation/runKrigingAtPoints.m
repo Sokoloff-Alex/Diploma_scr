@@ -73,7 +73,6 @@ axis xy
 V_p = zeros(length(lat),1);
 
 for i = 1:length(lat)
-    i
     V_p(i,:) = kriging(vstruct,x,y,z,long(i),lat(i),50);
 end
 
