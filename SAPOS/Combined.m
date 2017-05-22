@@ -83,51 +83,77 @@ iiSel=[1:length(long_all)];
 V_enu_res = [Ve_res_all(iiSel), Vn_res_all(iiSel), Vu_res_all(iiSel)];
 
 CovVenu2 = extractCovariance(CovVenuSNX, iiSel, [1 2 3], 'no split');
-Cov_scale = 20;
 
-%%
-clc
+
 % Megre artificial stations
 [CRD,VEL,names] = merge_stations(CRD_all,VEL_all,names_all);
 
 
 %% for Horizontal 
-
+clc
 Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', ...
-                'ROHR','BIWI','BI2I'};
+              'ROHR','BIWI','BI2I'};
 iiOut = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
+V_enu_res = [Ve_res_all(iiSel), Vn_res_all(iiSel), Vu_res_all(iiSel)];
+CovVenu2 = extractCovariance(CovVenuSNX, iiSel, [1 2 3], 'no split');
+Cov_scale = 20;
+clear LongGrid LatGrid V_def_tr1 rmsFit V_Sig_tr
+[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long_all(iiSel), lat_all(iiSel), V_enu_res, CovVenu2, Cov_scale, [1 16], [42 51], 0.25, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
-[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long_all(iiSel), lat_all(iiSel), V_enu_res, CovVenuSNX, Cov_scale, [15 16], [42 50], 0.5, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
-
-
-
-%%  Vertical
+%%
 try
     close(fig1)
 end
 fig1 = figure(1);
+% subplot(1,2,2)
 hold on
-sc=300
-text(wrapTo180(long_all),   lat_all, names_all);
-quiver(wrapTo180(long_all), lat_all, zeros(size(Vu_res_all)),      Vu_res_all*sc,    0, 'b');
-quiver(LongGrid,            LatGrid, zeros(size(V_def_tr1(:,1))),  V_def_tr1(:,3)*sc,0, 'r', 'lineWidth',0.5)
-% xlim([6 15])
-% ylim([45 52])
+Earth_coast(2)
+% text(wrapTo180(long_all),   lat_all, names_all);
+quiver(wrapTo180(long_all), lat_all, Ve_res_all*sc,      Vn_res_all*sc,    0, 'b');
+quiver(LongGrid,            LatGrid, V_def_tr1(:,1)*sc,V_def_tr1(:,2)*sc,0, 'r', 'lineWidth',0.5)
+xlim([0 17])
+ylim([41 52])
+title('Horizontal')
 
 
-%%  Horizontal
+%%  Vertical
+clc
+Outliers = {'ELMO','WIEN','FERR', ...
+            'BIWI','BI2I','MANS','FFMJ','MOGN','WLBH', ...
+            'TRF2','KRBG','OBE2','WT21','HKBL','PATK','PAT2', ...
+            'HRIE','KTZ2', 'WLBH','ENTZ'};
+        
+iiOut    = selectRange(names, Outliers);
+iiSel = setdiff([1:198], iiOut);
+CovVenu2 = extractCovariance(CovVenuSNX, iiSel, [1 2 3], 'no split');
+% Cov_scale = 5;
+% VerrMin = (0.3/1000/Cov_scale)^2/1.8; % in [m/yr]^2, scaled to SNX
+% CovVenu2(CovVenu2 < VerrMin) = VerrMin;
+V_enu_res = [Ve_res_all(iiSel), Vn_res_all(iiSel), Vu_res_all(iiSel)];
+
+%% run for trend on regular grid
+[LongGridv, LatGridv, V_def_v] = run_Collocation(long_all(iiSel), lat_all(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42 53], 0.5, 200, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+
+%%
 try
     close(fig2)
 end
 fig2 = figure(2);
+% subplot(1,2,1)
 hold on
-sc=500
-text(wrapTo180(long_all),   lat_all, names_all);
-quiver(wrapTo180(long_all), lat_all, Ve_res_all*sc,      Vn_res_all*sc,    0, 'b');
-quiver(LongGrid,            LatGrid, V_def_tr1(:,1)*sc,V_def_tr1(:,2)*sc,0, 'r', 'lineWidth',0.5)
-% xlim([6 15])
-% ylim([45 52])
+sc=300
+Earth_coast(2)
+% text(wrapTo180(long_all),   lat_all, names_all);
+quiver(wrapTo180(long_all), lat_all,  zeros(size(Vu_res_all)),    Vu_res_all*sc,   0, 'b');
+quiver(LongGridv,           LatGridv, zeros(size(V_def_v(:,1))),  V_def_v(:,3)*sc, 0, 'r', 'lineWidth',0.5)
+xlim([0 17])
+ylim([41 52])
+title('Vertical')
+
+
+
+
 
 
 
