@@ -1,0 +1,45 @@
+APOS - Referenzstationen
+CODE 	Bezeichnung 	Betrieb seit 	TP-Nummer 	Breite 		Länge 		Höhe
+AMST 	Amstetten 		2005 	639-053 L1 	48° 07' 20" 	14° 52' 16" 	347
+BLEI 	Bleiburg 		1999 	445-204 L1 	46° 35' 23" 	14° 47' 38" 	538
+DIEN 	Dienten 		2006 	125-124 L1 	47° 23' 21" 	13° 02' 03" 	1335
+DLBG 	Deutschlandsberg 	2003 	404-189 L1 	46° 48' 49" 	15° 12' 47" 	431
+DOER 	Dörflach 		2006 	243-102 L1 	47° 32' 58" 	15° 16' 24" 	849
+FLDB 	Feldbach 		2005 	471-192 L1 	46° 57' 11" 	15° 52' 57" 	348
+FLDK 	Feldkirch 		2003 	022-140 L1 	47° 13' 53" 	09° 34' 50" 	570
+FRST 	Freistadt 		2005 	237-016 L1 	48° 30' 31" 	14° 30' 12" 	622
+GMND 	Gmunden 		2003 	031-066 L1 	47° 55' 14" 	13° 48' 02" 	511
+GMUE 	Gmünd 			2008 	320-005 L1 	48° 46' 19" 	14° 59' 12" 	553
+GRAZ 	Graz 			1992 	306-164 B1 	47° 04' 02" 	15° 29' 37" 	538
+HKBL 	Hauser Kaibling 	2000 	072-127 L1 	47° 22' 38" 	13° 46' 17" 	1920
+HORN 	Horn 			2007 	678-021 L1 	48° 39' 48'' 	15° 38' 48" 	387
+INBK 	Innsbruck 		2011 	348-118 L1 	47° 15' 51" 	11° 20' 43" 	664
+KLAG 	Klagenfurt 		1999 	538-202 L1 	46° 36' 25" 	14° 19' 10" 	500
+KOET 	Koetschach 		2001 	207-197 L1 	46° 40' 27" 	13° 00' 34" 	756
+KOPS 	Kops 			2004 	089-170 A1 	46° 58' 26" 	10° 06' 56" 	1907
+KRBG 	Landeck/Krahberg 	2001 	006-145 L1 	47° 08' 46" 	10° 37' 37" 	2258
+KTZB 	Kitzbühel 		2004 	297-122 L1 	47° 25' 06" 	12° 21' 34" 	1848
+LANK 	Landskron 		2000 	040-201 L1 	46° 37' 51" 	13° 53' 34" 	583
+LECH 	Lech 			2003 	184-143 L1 	47° 13' 27" 	10° 08' 21" 	1823
+LEON 	Bad St. Leonhard 	1999 	328-187 L1 	46° 58' 15" 	14° 47' 09" 	769
+MSTB 	Mistelbach 		2007 	485-025 L1 	48° 34' 12'' 	16° 36' 35'' 	248
+LIES 	Lieserhofen 		2001 	369-182 L1 	46° 49' 48" 	13° 28' 36" 	689
+MUEN 	Münster 		2004 	148-120 L1 	47° 25' 16" 	11° 49' 56" 	599
+OBWT 	Oberwart 		2007 	574-137 L1 	47° 17' 21" 	16° 12' 47" 	382
+PATK 	Patscherkofel 		1995 	071-148 L1 	47° 12' 29" 	11° 27' 37" 	2298
+PFAN 	Pfänder 		1997 	039-082 L1 	47° 30' 55" 	09° 47' 05" 	1090
+POEL 	Pöls 			2006 	160-160 L1 	47° 13' 15" 	14° 34' 42" 	856
+RIED 	Ried 			2003 	438-047 L1 	48° 12' 12" 	13° 29' 11" 	505
+ROHR 	Rohrbach 		2003 	504-014 L1 	48° 34' 11" 	13° 59' 43" 	658
+SBGZ 	Salzburg/Gaisberg 	1998 	008-064 L1 	47° 48' 12" 	13° 06' 38" 	1323
+SECK 	Schareck 		2013 	N.N. 		47° 02' 23" 	13° 01' 14" 	3152
+SILL 	Sillian 		2013 	N.N. 		46° 44' 50" 	12° 25' 13" 	1139
+STPO 	St.Pölten 		1999 	608-056 L1 	48° 12' 11" 	15° 37' 59" 	342
+TAMS 	Tamsweg 		2010 	263-157 L1 	47° 07' 31" 	13° 48' 48" 	1088
+TREI 	Treibach 		2001 	467-186 L1 	46° 51' 39" 	14° 27' 50" 	671
+TRFB 	Trafelberg 		2004 	301-075 L1 	47° 55' 41" 	15° 51' 32" 	1093
+VLCH 	Villach 		1998 	384-201 L1 	46° 36' 25" 	13° 51' 02" 	572
+VLKM 	Völkermarkt 		2001 	430-204 L1 	46° 39' 41" 	14° 37' 34" 	527
+WELS 	Wels 			2001 	056-049 L1 	48° 09' 30" 	14° 01' 15" 	385
+WIEN 	Wien 			1999 	1350-059 L2 	48° 13' 08" 	16° 22' 23" 	244
+WIND 	Windischgarsten 	2004 	284-098 L1 	47° 43' 22" 	14° 18' 08" 	640

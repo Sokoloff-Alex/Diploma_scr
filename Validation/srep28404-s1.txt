@@ -1,0 +1,1728 @@
+Supplementary Information for the paper
+“Present-day uplift of the western Alps”
+
+by J.-M. Nocquet, C. Sue, A. Walpersdorf, T. Tran, N. Lenôtre, P. Vernant,
+M. Cushing, F. Jouanne, F. Masson, S. Baize, J. Chéry, P. A. van der Beek
+
+GPS analysis
+Data set & processing strategy
+The Continuous GPS data used in this study are from the RENAG network (http://webrenag.unice.fr),
+from the RGP network (http://rgp.ign.fr), from the ORPHEON network (http://reseau-orpheon.fr), from
+the Piemonte region (http://gnss.regione.piemonte.it), from the RING network from the Istituto Nazionale
+di Geofisica e Vulcanologia (INGV, http://ring.gm.ingv.it) and from EUREF (http://www.epncb.oma.be).
+The period 2002.0-2013.5 was analyzed using the GAMIT/GLOBK 10.5 software package [1]. The analysis
+is divided into 3 steps: (1) raw phase and pseudo-range observations are reduced to produce daily loosely
+constrained solutions (2) loosely constrained daily solutions are expressed in a consistent reference frame
+using a Helmert transformation to obtain daily positions time series (3) time series are analyzed in order to
+detect outliers and offsets. The corrected and cleaned time series are used to assess the noise properties and
+finally derive the velocities estimates with their associated uncertainties.
+For the first step, we use the final combined orbits from the International GNSS Service for Geodynamics
+[2] derived from the first reprocessing campaign (http://acc.igs.org/reprocess.html). Because the orbits were
+reprocessed using a consistent strategy for the whole period, they were taken as fixed in the processing.
+We use the ocean loading correction model FES2004 computed from the tidal hydrodynamic equations
+and data assimilation [3]. We use the the Vienna Mapping Function (VMF1, [4]) for both hydrostatic and
+nonhydrostatic models of the tropospheric delay and the global pressure and temperature model. We estimate
+a zenithal trophospheric delay parameter every 2 hours and two horizontal atmospheric gradient per day as
+stochastic parameters. We also correct for atmospheric tides and atmospheric loading. The atmospheric
+loading corrections used together with the VMF1 mapping functions have proven to provide the best results
+in terms of repeatabilities and noise characteristics [5]. Finally, IGS absolute calibration of Phase Center
+Variations (PCV) of the antennas have also been used, as recommended by the IGS.
+Our second step differs from most used strategies. Instead of expressing our solution in the current ITRF
+[6] and then try to remove the regional common mode motion, we start by identifying a subset of sites
+with good repeatabilities and little loss of data over the studied time window. We find that CGPS sites
+SOPH, MTPL, SJDV, ZIMM and GENO meet such criteria. We then used this subset of sites to define a
+local reference frame using the following strategy: (1) in a first run, we use their coordinates defined in the
+ITRF2008 at epoch 2007.0 [6] with 0 velocity as the a priori reference frame and estimate a 7-parameters
+transformation to derive a first solution (2) then, we estimate the new position at the reference epoch and
+velocity for the chosen subset of sites, defining the reference frame for the next iteration (3) this process
+
+1
+
+is iterated until estimated positions and velocities agree with the reference frame at the level of 0.1 m
+for positions and 0.01 mm/yr for velocities. Compared with the classical methodology that uses the raw
+ITRF as the reference frame, our approach improves the repeatability by a factor of 2, removes the regional
+common mode signal and improves the noise characteristics. Furthermore, this approach is more rigorous
+than the classical ITRF/common mode estimation in the sense that the true shape of the network is preserved
+throughout the procedure because we use only 7-parameters transformations. As a consequence, the obtained
+results only reflect the change of the network shape through time.
+In a third step, we used the approach proposed by [7] and implemented in the CATS software [8] to assess
+the noise characteristics and estimate offsets, velocity, and amplitude of seasonal variations, together with
+the associated uncertainties.
+
+Results & precision
+GPS results are provided in Supplementary Information Table 1. Extended Data Figure 1 shows the time
+series for a selection of sites. Long-term repeatabilities on the vertical component are found in the range
+of 2.0 to 4.5 mm. As for most GPS time series, we find that a combination of white and flicker noise best
+explains the noise characteristics on the GPS time series [9]. Extended Data Figure 2 shows the histogram
+of the spectral index κ characterizing the noise when estimated through the Maximum Likehood Estimator
+embedded in CATS. It shows that −1.6 < κ < −0.4, with a median value of -0.7 for the verticall component.
+As a result of this analysis, formal errors on velocity components are of the order of a few tenths of mm/yr
+(0.1-0.6 mm/yr), with the best behaving sites having a formal error of 0.1 mm/yr. Although these formal
+uncertainties might still be over-optimistic, further external criteria described below indicate that main trends
+of the vertical velocity field can be trusted at the 0.3 mm/yr level.
+
+Kinematic conditions at the boundaries of the western Alps
+We use the best determined sites in our solution to estimate the relative motion between sites located west of
+the Alpine foreland in France and sites located in the westernmost part of the Po plain in Italy. We calculate
+the Euler pole for the sites located east of the western Alps with respect to the sites located west of the
+Alps(Table 3). We do not detect any internal deformation in the western Po plain, as indicated by a wrms
+of 0.07 mm/yr. The wrms for the Alpine foreland in France is 0.05 mm/yr. The relative pole between the
+two domains predicts 0.1-0.2 mm/yr of strike-slip motion between the western part of the Adriatic plate and
+the stable foreland of the western Alps in France (Figure 1a of the main text). Accounting for the Euler
+pole uncertainty, we therefore find that 0.3 mm/yr is a strict upper bound of possible motion the western
+Po plain. Because at this level of precision we might reach the limitation of idealized rigid micro-blocks, we
+also used the more direct observation of relative velocities between sites west of the Alpine foreland and the
+western Po plain (Supplementary Table 2). Individual baselines show that the relative motion average over
+the sites is < 0.1mm/yr. No velocity > 0.25 mm/yr is found between pairs of sites, confirming 0.3 mm/yr
+as an upper bound for kinematic boundary conditions of the western Alps.
+
+Internal horizontal deformation within the western Alps
+We calculate an Euler Pole for the sites located within the Alps and its surroundings and within the Alps
+only. The first calculation leads to a wrms=0.23 mm/yr and the second to wrms=0. 26 mm/yr, indicating
+a very small amount of possible horizontal deformation within the western Alps. The largest residuals are
+found in the northwestern Alps close to the area of maximum uplift. As indicated by Table 4, residuals
+are found to be statistically highly significant for sites CHTL, JANU, MODA, PUYA, GRAV, LFAZ, VILR,
+MRGE. Using the sites located in the area of significant uplift, we find that the deformation is primarly
+extensionnal at a ~20 nstrain/yr are in a N120° direction (Table 5)
+
+Stable Alpine foreland vertical reference frame
+As for the horizontal velocities, we want the vertical reference frame to be relevant for the tectonic processes
+studied here. We therefore discard the use of the ITRF which realizes a center of the mass for the whole
+Earth frame. Since our study focuses on the Alps dynamics, we choose to define a reference frame outside of
+2
+
+the Alps and test its stability. Around the Alps, the sites having the best determined vertical velocities are
+(MTPL, GENO, SJDV, GRAS). They show a level of internal agreement of 0.13 mm/yr. With respect to this
+reference frame, all sites surounding the western Alps with a vertical velocity uncertainty σup < 0.3 mm/yr
+agree within 0.21 mm/yr (wrms). The vertical rate averaged over (MTPL, GENO, SJDV, GRAS) therefore
+provide a stable vertical reference frame, with no internal vertical deformation at the precision of the data
+and making sense from a tectonic point of view. The chosen reference frame certainly does no cause any bias
+larger than 0.2 mm/yr in the vertical rates seen in the western Alps.
+
+Levelling data & adjustment
+Data set
+Levelling data are from the National Geographic Institute of France (IGN, http://www.ign.fr), partly analyzed in [10, 11, 12]. For each profile i and levelling benchmark j, data were provided as height differences
+∆zji between the two epochs of measurements with respect to a reference benchmark of each profile i following
+the methodology described in [13]. The time span between two levelling surveys ranges from 58.25 to 112.83
+∆z i
+
+years. Assuming constant velocity, the levelling input data set prior adjustment is ∆vji = ∆tij , where ∆ti is
+the time span between two successive surveys of profile i. We used 24 levelling profiles covering the western
+Alps and its foreland in France (Extended Data Figure 3 & Extended Data Figure 4), including a total of
+1655 benchmarks, with an average distance between benckmarks of ~2km. Details of the levelling protocol
+for both periods of surveys are described in [14] and [11].
+
+Combined levelling-GPS adjustment model
+We use a combined least-squares adjustment to derive a vertical velocity field including levelling profiles and
+GPS vertical velocities. The adjustment model relates the vertical velocity vji of each levelling benchmark j
+from profile i to the observed velocity difference ∆vji and nearby GPS vertical velocity vGPSi :
+j
+
+vji − v0i = ∆vji (σji )
+
+(1)
+
+ik
+vji = vlk (σjl
+)
+
+(2)
+
+i−GP Sji
+
+vji = vGPSi (σj
+j
+
+)
+
+(3)
+
+Equation 1 is simply the levelling observation equation. The weight associated to this equation is 1/(σji )2 ,
+where σji is chosen according to the specification provided the IGN. Misclosure of levelling loops indicate
+√
+a relative standard deviation of 2.6 mm/ km for the ancient surveys
+(1886-1907). √For the more recent
+√
+surveys (1965-1979), misclosures indicate a formal error of 1.8 mm/ km and
+√ 2.6 mm/ km for the first and
+second-order loop respectively. We conservately chose a value of 2.6 mm/ km for all surveys and define σji
+by
+√
+2 ∗ 2.62
+i
+σj =
+di (j, 0)
+(4)
+∆ti
+where di (j, 0) is the curved distance between benchmark
+j and the reference benchmark of profile i. This
+√
+formula gives an average model error of 0.037 mm/yr/ km.
+Equation 2 is a condition equation constraining the vertical velocities to be equal (within a given uncertainty) at sites common to two levelling profiles i and k. Because we want to avoid any error on a common
+site to propagate into the adjustment, and because the vertical velocity field is assummed to be smooth at the
+scale of a few km, we used equation 2 not only at strictly common sites, but at all sites within a certain radius
+(typically 5 or 10 km), with the weight decreasing with distance d betwwen the two levelling benchmarks:
+ik
+σjl
+=
+
+σ02
+−d
+e jl /dc
+3
+
+(5)
+
+where σ0 is a reference error value, djl is the distance between benchmark j from profile k and benchmark
+l from profile i and dc a critical distance to impose the constraint. In order to choose σ0 and dc , we checked
+the WRMS at each area where profiles cross.
+Equation 3 is a condition equation constraining the velocity to be equal (again, within a given uncertainty)
+between a levelling site with velocity vji and the uplift rate of a nearby GPS site vGP Sji . Here the weight of
+the constraint is given by:
+j−GP Sji
+
+2
+2
+σGP
++ σGP
+S
+Si
+
+j
+(6)
+e−d/dc
+where d is now the distance between the levelling benchmark and the nearby GPS site, σGP S the uncertainty of the GPS vertical velocity, and σGP Sji a reference level of constraint for levelling-GPS velocities.
+The chosen adjustment model offers the versatility to test different constraints for levelling-levelling data
+and GPS-levelling data, and search for outliers. It is further useful to express the levelling results in the
+GPS reference frame previously defined. Levelling results are often shown with respect to a fixed reference
+point and the obtained results are therefore highly dependent on the behaviour of this site. Here, equation
+3 allows to express levelling results in the same reference (that is average in the least-squares sense) as the
+GPS results. This is optimal because, on the contrary to levelling results that can suffer from long length
+scale biases [15], GPS accuracy is largely independent from the scale of the network. Furthermore, we show
+in the previous paragraph that we could define a tectonically relevant and stable vertical reference frame that
+we use to express all results.
+
+σ
+
+=
+
+Levelling adjustment results
+We use the previous combination model, with the very weak constraint σGP S =1 000 mm/yr for GPS-levelling
+equality condition. This level of constraint is sufficient to ensure that levelling adjusted velocities are expressed
+in the same reference frame as the GPS results, without inducing any distortion of the intrinsic information
+provided by the levelling measurements.
+We find that σ0 = 0.2 mm/yr and dc = 4 km provides adjustments with good statistical indicators
+(histogram of normalized residuals close to the standard normal distribution). Extended Data Figure 5
+shows the distribution of residuals. It shows that the average internal consistency among the profiles is ~0.2
+mm/yr, indicating that this value can be retained as an average indicator of the precision of the levelling
+results at the 1σ confidence level or ~0.4 mm/yr at the 95% confidence level.
+
+Combined GPS-levelling adjustment results - Accuracy estimates
+The combined GPS-levelling adjustement has been obtained by progressively increasing the equality constraint of equation 3 by decreasing σGP Sji . Ideally, if the GPS sites were colocated with levelling benchmarks
+and GPS and levelling would perfectly agree, we could decrease σGP Sji to 0. We fixed dc to the average distance of GPS to the closest levelling benchmark (20 km) and find that σGP Sji = 0.2 mm/yr provides residuals
+for equation 3 that are in agreement with the GPS uncertainties. Nonetheless, the combined adjustment also
+indicates areas of significant differences that are further enlighted in Figure 1 of the main text. In the Alpine
+foreland between longitude 5°E (the Rhone valley) and 6°E, levelling data indicate 0.5-1.0 mm/yr uplift rates
+that are not seen in the GPS data. To a lesser extent, a similar difference is found in the southern Alps.
+Finally, a larger subsiding area is found in the Rhone delta. The origin of these differences have yet to be
+understood. While GPS are located on rocks, levelling data are located along roads, often on sediments.
+Sediment compaction through time could explain the larger subsidence rates seen in the levelling results,
+but does not explain the 0.5 mm/yr larger levelling uplift rates recorded in the southern Alps and western
+pre-Alps. There is no systematic correlation with height that could be explained by a systematic bias in GPS
+or levelling. Given these results, we chose to interpret only (1) patterns that are consistent between the two
+techniques; (2) we chose 0.5 mm/yr as a threshold for deciding whether a motion is significant or not.
+
+4
+
+Map of uplift & models
+The map of uplift were simply derived by interpolating the data points using the “surface” algorithm embedded
+in the GMT software [16](http://gmt.soest.hawaii.edu/). We used an L-curve [17] criterion to choose the
+tension factor providing the smoothest model explaining the data. The wrms for the chosen model is 0.17
+mm/yr for the GPS velocities. For the levelling data, the average overall wrms 0.07 mm/yr. wrms reach
+0.15-0.23 mm/yr for profiles 193,174,171,200, were the largest levelling-GPS rate differences are observed.
+For ensuring that GIA and erosion physical models and geodetic results are in the same vertical reference
+frame, the models were corrected by the average uplift rates predicted at the GPS sites used to define the
+vertical reference frame used throughout the study.
+
+References
+[1] Herring, T. A., King, R. W., Floyd, M. A. & McClusky, S. C. GAMIT/GLOBK Reference manual, 10.6.
+Tech. Rep., Massachusetts Institute of Technology (2015).
+[2] Dow, J. M., Neilan, R. E. & Rizos, C. The International GNSS Service in a changing landscape of Global
+Navigation Satellite Systems. Journal of Geodesy 83, 191–198 (2009).
+[3] Lyard, F., Lefevre, F., Letellier, T. & Francis, O. Modelling the global ocean tides: Modern insights
+from FES2004. Ocean Dynamics 56, 394–415 (2006).
+[4] Boehm, J., Werl, B. & Schuh, H. Troposphere mapping functions for GPS and very long baseline
+interferometry from European Centre for Medium-Range Weather Forecasts operational analysis data.
+Journal of Geophysical Research 111, 1–9 (2006). URL http://www.agu.org/pubs/crossref/2006/
+2005JB003629.shtml.
+[5] Tregoning, P. & Watson, C. Atmospheric effects and spurious signals in GPS analyses. Journal of Geophysical Research 114, 1–15 (2009). URL http://www.agu.org/pubs/crossref/2009/2009JB006344.
+shtml.
+[6] Altamimi, Z., Collilieux, X. & Métivier, L. ITRF2008: an improved solution of the international terrestrial reference frame. Journal of Geodesy 85, 457–473 (2011). URL http://www.springerlink.com/
+index/10.1007/s00190-011-0444-4.
+[7] Williams, S. D. P. The effect of coloured noise on the uncertainties of rates estimated from geodetic
+time series. Journal of Geodesy 76, 483–494 (2003). URL http://www.springerlink.com/openurl.
+asp?genre=article\&id=doi:10.1007/s00190-002-0283-4.
+[8] Williams, S. D. P. CATS: GPS coordinate time series analysis software. GPS Solutions 12, 147–153
+(2008).
+[9] Williams, S. D. P. Error analysis of continuous GPS position time series. Journal of Geophysical Research
+109, 1–19 (2004). URL http://www.agu.org/pubs/crossref/2004/2003JB002741.shtml.
+[10] Lenôtre, N. Mouvements Verticaux Actuels dans les Alpes - Comparaison de Nivellements. Tech. Rep.,
+BRGM-CEA-IPSN, R 31886 GEO SGN 90 (1990).
+[11] Jouanne, F., Ménard, G. & Darmendrail, X. Present-day vertical displacements in the north-western
+Alps and southern Jura Mountains: Data from leveling comparisons. Tectonics 14, 606 (1995).
+[12] Jouanne, F., Genaudeau, N., Ménard, G. & Darmendrail, X. Estimating present-day displacement
+fields and tectonic deformation in active mountain belts: an example from the Chartreuse Massif and the southern Jura Mountains, western Alps. Tectonophysics 296, 403–419 (1998). URL
+http://linkinghub.elsevier.com/retrieve/pii/S0040195198001565.
+[13] Lenôtre, N., Thierry, P., Blanchin, R. & Brochard, G. Current vertical movement demonstrated by
+comparative levelling in brittany (northwestern france). Tectonophysics 301, 333–344 (1999).
+5
+
+[14] Duquesne, H. & Jeannot, M. Le réseau français de nivellement de précision, préparation à la rédaction
+du schéma directeur de la géodésie. Tech. Rep., IGN (1989).
+[15] Kasser, M. Un nivellement de très haute précision: la traversée marseille-dunkerque 1983. Comptes
+rendus de l’Académie des sciences. Série 2, Mécanique, Physique, Chimie, Sciences de l’univers, Sciences
+de la Terre 309, 695–700 (1989).
+[16] Wessel, P., Smith, W. H., Scharroo, R., Luis, J. & Wobbe, F. Generic mapping tools: improved version
+released. Eos, Transactions American Geophysical Union 94, 409–410 (2013).
+[17] Hansen, P. C. Analysis of discrete ill-posed problems by means of the l-curve. SIAM review 34, 561–580
+(1992).
+
+Supplementary Tables
+
+6
+
+Site
+ALES
+ALPE
+ANNO
+ASTI
+AURI
+AUTN
+AXPV
+BACT
+BAUB
+BIEL
+BLIX
+CAST
+CBRY
+CHAM
+CHMX
+CHTL
+CNNS
+COMO
+CUNE
+ESAB
+EZEV
+FCLZ
+GENO
+GINA
+GLRA
+GRAS
+GRAV
+GROG
+GUIL
+IENG
+JANU
+LASP
+LEBE
+LFAZ
+LUVI
+MARG
+MARS
+MICH
+MODA
+MONC
+MOND
+MRGE
+MTPL
+NICA
+NICE
+NIME
+NOVA
+PALI
+PAVI
+POBU
+PQRL
+PRNY
+PUYA
+PUYV
+RABU
+ROSD
+RSTL
+SAUV
+SAVI
+SEUR
+SIMA
+SJDV
+SOPH
+STEY
+STGR
+STMR
+STV2
+TENC
+TORI
+TROP
+VAUD
+VILR
+VINO
+VISN
+ZIM2
+ZIMM
+
+λ
+44.92
+45.09
+45.24
+44.91
+43.71
+46.95
+43.49
+44.39
+43.88
+45.56
+43.87
+45.39
+45.58
+45.11
+45.93
+45.30
+43.55
+45.80
+44.39
+45.31
+43.77
+45.64
+44.42
+43.68
+44.84
+43.75
+45.13
+43.43
+44.66
+45.02
+44.91
+44.07
+45.92
+45.12
+43.69
+46.08
+43.28
+43.92
+45.21
+45.07
+44.39
+45.77
+43.64
+43.70
+43.73
+43.83
+45.45
+43.38
+45.20
+46.38
+42.98
+46.90
+44.86
+45.04
+44.27
+45.69
+43.94
+44.26
+44.65
+46.99
+46.22
+45.88
+43.61
+45.24
+44.19
+43.45
+44.57
+45.12
+45.06
+43.22
+46.98
+45.07
+43.73
+44.32
+46.88
+46.88
+
+φ
+8.62
+6.08
+4.67
+8.20
+4.95
+4.29
+5.33
+6.65
+3.97
+8.05
+6.37
+7.71
+5.91
+5.88
+6.87
+6.36
+7.02
+9.10
+7.55
+4.80
+7.50
+5.99
+8.92
+5.79
+4.52
+6.92
+7.02
+9.89
+6.66
+7.64
+6.71
+9.84
+5.62
+5.40
+4.10
+6.51
+5.35
+5.72
+6.71
+7.93
+7.83
+7.06
+3.86
+7.23
+7.30
+4.36
+8.61
+4.81
+9.14
+4.16
+6.21
+6.34
+6.48
+3.88
+6.98
+6.63
+5.48
+4.47
+7.66
+5.15
+5.42
+4.68
+7.05
+5.76
+4.57
+4.42
+6.11
+4.29
+7.66
+6.60
+5.63
+5.55
+5.82
+4.95
+7.47
+7.47
+
+ve
+-1.09
+-0.36
+0.41
+0.07
+0.06
+0.09
+-0.29
+0.06
+0.02
+0.02
+-0.22
+-0.17
+0.00
+-0.30
+-2.02
+-0.58
+0.14
+-0.48
+0.23
+0.11
+-0.27
+-0.12
+-0.12
+-0.18
+0.45
+0.04
+0.52
+-0.34
+-0.14
+0.32
+0.28
+-0.10
+0.04
+0.02
+-0.01
+-0.32
+-0.23
+-0.19
+-0.10
+0.18
+0.17
+-0.53
+-0.02
+0.11
+0.00
+-0.25
+-0.56
+-0.21
+-0.54
+0.02
+0.53
+-0.85
+0.33
+0.07
+0.28
+-0.45
+-0.13
+-0.02
+0.22
+0.07
+-0.16
+0.04
+-0.10
+0.13
+0.35
+-0.23
+-0.33
+0.24
+-0.01
+-0.16
+0.37
+-0.43
+0.19
+-0.30
+0.08
+-0.32
+
+vn
+0.97
+0.07
+0.29
+0.38
+-0.75
+-0.13
+0.35
+-0.05
+-0.12
+-0.41
+0.14
+-0.06
+-0.08
+-0.27
+-0.65
+0.08
+0.19
+0.17
+0.45
+-0.13
+-0.03
+0.07
+-0.05
+0.07
+-0.24
+0.14
+-0.65
+0.47
+-0.10
+-0.45
+-0.79
+0.49
+0.02
+-0.03
+-0.15
+0.21
+0.03
+0.02
+-0.28
+-0.06
+-0.08
+-0.46
+0.03
+0.06
+-0.10
+0.07
+-0.12
+0.33
+0.47
+-0.05
+-0.41
+-0.10
+-0.06
+0.18
+-0.19
+-0.44
+0.20
+0.12
+-0.15
+-0.03
+0.18
+0.07
+-0.01
+0.01
+0.07
+-0.07
+-0.23
+0.08
+-0.06
+0.18
+0.05
+0.21
+0.34
+0.18
+0.17
+0.34
+
+vu
+-1.02
+1.43
+0.64
+-0.64
+0.24
+-0.45
+0.41
+0.02
+-0.08
+-1.05
+0.36
+0.91
+0.35
+1.31
+0.94
+2.03
+-0.24
+0.28
+-1.00
+-0.18
+0.20
+0.20
+-0.13
+0.01
+0.72
+0.09
+0.84
+-0.07
+0.64
+0.23
+1.52
+0.25
+0.72
+0.07
+0.38
+0.60
+0.20
+0.47
+2.24
+-0.55
+0.34
+1.47
+0.14
+0.16
+0.05
+0.17
+-0.83
+-0.77
+-1.65
+-0.27
+0.52
+0.03
+0.77
+0.40
+0.12
+2.65
+-0.19
+0.14
+-0.08
+0.20
+-0.08
+-0.15
+0.27
+0.11
+0.13
+-1.20
+1.95
+0.15
+0.69
+-0.40
+-0.37
+0.04
+-0.29
+0.05
+1.19
+1.01
+
+σv e
+0.23
+0.06
+0.12
+0.16
+0.11
+0.09
+0.08
+0.11
+0.05
+0.19
+0.06
+0.12
+0.11
+0.04
+0.26
+0.02
+0.07
+0.10
+0.32
+0.24
+0.08
+0.07
+0.08
+0.16
+0.09
+0.10
+0.12
+0.04
+0.10
+0.05
+0.06
+0.04
+0.07
+0.04
+0.10
+0.06
+0.09
+0.06
+0.03
+0.19
+0.07
+0.06
+0.05
+0.14
+0.03
+0.03
+0.21
+0.04
+0.25
+0.07
+0.16
+0.66
+0.07
+0.05
+0.30
+0.13
+0.06
+0.03
+0.10
+0.05
+0.36
+0.02
+0.04
+0.10
+0.08
+0.07
+0.15
+0.06
+0.11
+0.03
+0.08
+0.07
+0.06
+0.09
+0.03
+0.10
+
+σv n
+0.13
+0.06
+0.08
+0.10
+0.22
+0.15
+0.12
+0.12
+0.07
+0.17
+0.05
+0.06
+0.07
+0.05
+0.19
+0.02
+0.09
+0.08
+0.26
+0.16
+0.12
+0.09
+0.03
+0.10
+0.08
+0.05
+0.12
+0.05
+0.14
+0.07
+0.06
+0.07
+0.04
+0.03
+0.05
+0.06
+0.06
+0.07
+0.03
+0.09
+0.06
+0.08
+0.02
+0.14
+0.07
+0.03
+0.08
+0.10
+0.12
+0.06
+0.17
+0.10
+0.06
+0.10
+0.16
+0.12
+0.14
+0.04
+0.05
+0.10
+0.32
+0.02
+0.03
+0.07
+0.06
+0.07
+0.21
+0.04
+0.07
+0.03
+0.09
+0.04
+0.07
+0.06
+0.12
+0.06
+
+σvu
+0.37
+0.23
+0.12
+0.34
+0.14
+0.32
+0.25
+0.35
+0.49
+0.35
+0.33
+0.30
+0.44
+0.12
+0.25
+0.12
+0.78
+0.13
+0.79
+0.32
+1.12
+0.57
+0.06
+0.28
+0.40
+0.10
+0.53
+0.57
+0.28
+0.29
+0.45
+0.55
+0.21
+0.21
+0.20
+0.45
+0.23
+0.15
+0.09
+0.49
+0.34
+0.24
+0.06
+0.30
+0.23
+0.29
+0.39
+0.34
+0.36
+0.47
+0.57
+0.41
+0.17
+0.33
+0.41
+0.24
+0.22
+0.16
+0.28
+0.30
+0.20
+0.10
+0.12
+0.21
+0.16
+0.27
+0.43
+0.29
+0.30
+0.11
+0.17
+0.38
+0.34
+0.42
+0.34
+0.06
+
+period
+2006.0-2011.0
+2007.0-2013.6
+2007.5-2013.6
+2006.0-2011.0
+2007.6-2013.6
+2008.0-2013.6
+2004.7-2013.6
+2007.6-2013.6
+2007.9-2013.3
+2006.2-2010.0
+2009.3-2013.6
+2006.0-2011.0
+2007.0-2013.6
+2004.0-2013.6
+2007.7-2013.6
+2004.0-2013.6
+2008.5-2013.6
+2007.0-2013.6
+2006.0-2011.0
+2008.0-2013.6
+2009.2-2013.6
+2004.0-2007.8
+2004.0-2013.6
+2004.0-2009.0
+2008.1-2013.6
+2005.1-2013.6
+2007.8-2011.0
+2007.0-2012.8
+2007.9-2013.6
+2007.0-2013.6
+2007.0-2012.9
+2007.0-2013.6
+2007.5-2013.6
+2006.0-2013.4
+2007.5-2013.6
+2007.4-2013.6
+2004.0-2011.3
+2004.0-2009.6
+2004.0-2013.6
+2007.0-2012.8
+2006.0-2011.0
+2007.0-2013.6
+2004.0-2013.6
+2004.0-2013.6
+2004.0-2013.6
+2007.1-2013.6
+2004.0-2011.0
+2007.9-2013.6
+2004.0-2011.0
+2008.0-2013.6
+2006.0-2010.8
+2007.8-2013.6
+2006.0-2013.6
+2004.7-2013.6
+2004.0-2013.6
+2006.0-2012.4
+2006.0-2013.6
+2004.5-2013.6
+2006.0-2010.3
+2007.1-2013.6
+2007.6-2013.6
+2004.0-2013.6
+2004.0-2013.6
+2004.0-2013.6
+2007.5-2013.6
+2008.3-2013.6
+2009.0-2013.6
+2004.5-2013.6
+2004.0-2013.2
+2006.0-2013.6
+2008.1-2013.6
+2007.0-2013.6
+2007.5-2013.6
+2007.6-2013.6
+2007.9-2013.6
+2004.0-2013.6
+
+days
+943
+1621
+1462
+1365
+1341
+1910
+2701
+1990
+1572
+1110
+1347
+1286
+2172
+2559
+1289
+2208
+1569
+1786
+1306
+1757
+1428
+1033
+2461
+1627
+1676
+2743
+731
+1742
+860
+2121
+749
+2112
+1720
+1910
+1394
+2080
+2295
+1651
+2786
+1957
+1024
+1948
+2932
+2041
+2996
+1912
+1475
+1316
+1777
+1683
+1238
+1980
+2287
+2568
+1820
+1754
+2123
+1581
+1059
+2034
+1332
+3023
+3087
+2180
+1499
+1551
+1233
+1999
+2539
+1917
+1782
+2073
+1367
+1795
+1551
+3112
+
+years
+5.0
+6.6
+6.1
+5.0
+6.1
+5.6
+8.9
+6.0
+5.4
+3.8
+4.3
+5.0
+6.6
+9.6
+6.0
+9.6
+5.1
+6.6
+5.0
+5.6
+4.5
+3.8
+9.6
+5.0
+5.5
+8.5
+3.2
+5.8
+5.8
+6.6
+5.9
+6.6
+6.1
+7.4
+6.1
+6.3
+7.3
+5.6
+9.6
+5.8
+5.0
+6.6
+9.6
+9.6
+9.6
+6.5
+7.0
+5.7
+7.0
+5.6
+4.8
+5.8
+7.6
+8.9
+9.6
+6.4
+7.6
+9.2
+4.3
+6.5
+6.0
+9.6
+9.6
+9.6
+6.1
+5.3
+4.6
+9.1
+9.2
+7.6
+5.5
+6.6
+6.1
+6.0
+5.7
+9.6
+
+κe
+-0.79
+-0.37
+-1.14
+-1.07
+-1.15
+-0.60
+-0.91
+-0.90
+-0.47
+-1.10
+-0.31
+-0.94
+-0.94
+-0.67
+-0.96
+-0.31
+-1.04
+-0.94
+-1.25
+-1.19
+-0.64
+-0.50
+-1.19
+-1.55
+-0.34
+-1.16
+-0.35
+-0.47
+-1.05
+-0.62
+-0.51
+-0.81
+-0.95
+-0.48
+-1.17
+-0.62
+-0.92
+-0.96
+-0.61
+-1.35
+-0.78
+-0.78
+-1.05
+-1.49
+-0.82
+-0.63
+-1.23
+-0.63
+-0.96
+-0.79
+-0.88
+-1.39
+-0.69
+-0.61
+-0.96
+-0.83
+-0.72
+-0.68
+-0.74
+-0.54
+-1.68
+-0.53
+-0.93
+-0.90
+-0.69
+-1.03
+-1.11
+-0.68
+-0.96
+-0.50
+-0.71
+-0.57
+-0.72
+-0.87
+-0.38
+-1.28
+
+κn
+-0.46
+-0.54
+-0.87
+-0.92
+-1.48
+-0.72
+-1.09
+-0.74
+-0.56
+-1.16
+-0.31
+-0.66
+-0.73
+-0.69
+-0.76
+-0.39
+-1.11
+-0.90
+-1.20
+-1.12
+-1.03
+-0.58
+-0.80
+-0.93
+-0.21
+-0.87
+-0.33
+-0.67
+-1.25
+-0.61
+-0.50
+-0.91
+-0.65
+-0.33
+-0.68
+-0.53
+-0.55
+-0.93
+-0.36
+-1.05
+-0.52
+-0.90
+-0.77
+-1.35
+-1.28
+-0.41
+-0.76
+-1.03
+-0.96
+-0.68
+-0.95
+-0.72
+-0.88
+-1.16
+-0.93
+-0.98
+-1.20
+-0.51
+-0.47
+-1.23
+-1.36
+-0.53
+-0.76
+-0.99
+-0.45
+-0.84
+-0.97
+-0.30
+-0.84
+-0.81
+-0.83
+-0.27
+-0.84
+-0.35
+-1.03
+-1.07
+
+κu
+-0.40
+-0.56
+-0.32
+-0.89
+-0.38
+-0.58
+-0.91
+-0.51
+-0.90
+-0.49
+-0.50
+-0.70
+-1.01
+-0.56
+-0.48
+-0.80
+-1.29
+-0.66
+-1.13
+-0.89
+-1.18
+-0.72
+-0.64
+-0.87
+-0.75
+-0.67
+-0.43
+-1.11
+-0.84
+-0.98
+-0.75
+-1.15
+-0.51
+-0.73
+-0.91
+-0.87
+-0.53
+-1.07
+-0.44
+-0.97
+-0.78
+-0.56
+-0.75
+-1.22
+-1.18
+-1.02
+-1.02
+-1.04
+-0.83
+-1.00
+-0.71
+-0.70
+-0.54
+-1.09
+-0.84
+-0.58
+-1.06
+-0.84
+-0.72
+-0.92
+-0.44
+-0.75
+-0.98
+-0.79
+-0.41
+-1.01
+-0.64
+-0.95
+-1.01
+-0.67
+-0.50
+-0.61
+-1.05
+-0.77
+-0.79
+-0.52
+
+Table 1: GPS velocities and related information. λ, φ: longitude and latitude of GPS sites in decimal degrees.
+ve , vn , vu , σve , σvn , σvu : estimated values for the east, north and up components respectively, together with
+7
+the associated uncertainties.period: period of observation;
+days: number of days analyzed;years: time span
+of observation.κe κn κu : estimated pectral index for GPS time series.
+
+Baseline
+POBU-CAST
+SJDV-TORI
+TENC-SAVI
+SAUV-MOND
+MTPL-GENO
+average
+
+ve (mm/yr)
+-0.173
+-0.042
+-0.012
+0.189
+-0.116
+-0.050
+
+vn (mm/yr)
+0.044
+-0.090
+-0.184
+-0.147
+-0.007
+-0.081
+
+σve (mm/yr)
+0.122
+0.109
+0.096
+0.065
+0.077
+0.11
+
+σvn (mm/yr)
+0.062
+0.072
+0.050
+0.059
+0.026
+0.084
+
+v (mm/yr)
+0.179
+0.099
+0.184
+0.239
+0.116
+0.095
+
+azimuth (degrees)
+-75.7
+-155.0
+-176.3
+127.9
+-93.5
+-148.3
+
+Table 2: Relative velocities for selected baselines. Numbers indicates the velocity of the second site with
+respect to the first one. v is the norm of the velocity.
+ROTATION RATE VECTOR
+Wx (rad/yr): 4.5899E-10 +- 2.6941E-10
+Wy (rad/yr): 7.9123E-11 +- 3.9879E-11
+Wz (rad/yr): 4.6722E-10 +- 2.6709E-10
+ASSOCIATED VARIANCE-COVARIANCE MATRIX (rad/yr)**2
+Wx
+Wy
+Wz
+-----------------------------------Wx | 7.2582E-20 1.0711E-20 7.192E-20
+Wy | 1.5904E-21 1.0615E-20
+Wz | 7.1337E-20
+-----------------------------------EULER POLE
+longitude (dec. degree) : 9.78
+latitude (dec. degree) : 45.09
+angular velocity (deg/Myr ): 0.038
+ASSOCIATED ERROR ELLIPSE
+semi major axis : 0.79
+semi minor axis : 0.44
+azimuth of semi major axis : -175.2
+std(angular velocity) : 0.022
+STATISTICS
+---------Number of sites = 5
+Chi**2 = 15.8
+Deg. of. freedom = 7
+A post. var. factor = 1.5
+RESIDUALS
+---------site
+R_ve
+R_vn S_ve S_vn RN_ve RN_vn
+------------------------------------------------------------------------------------CAST -0.17
+0.05 0.12 0.06 -1.37
+0.83
+GENO -0.18 -0.01 0.08 0.03 -2.37 -0.29
+MOND
+0.11
+0.02 0.07 0.06
+1.65
+0.41
+SAVI
+0.18 -0.05 0.10 0.05
+1.82 -0.91
+TORI -0.03
+0.05 0.11 0.07 -0.27
+0.68
+------------------------------------------------------------------------------------rms = 0.11 mm/yr wrms = 0.07 mm/yr
+-------------------------------------------------------------------------------------
+
+Table 3: Euler pole estimation for the best determined sites located in the western Po plain
+
+8
+
+ROTATION RATE VECTOR
+Wx (rad/yr): -7.9581E-11 +- 1.6002E-10
+Wy (rad/yr): 4.102E-12
++- 1.7584E-11
+Wz (rad/yr): -1.4509E-10 +- 1.6111E-10
+ASSOCIATED VARIANCE-COVARIANCE MATRIX (rad/yr)**2
+Wx
+Wy
+Wz
+-----------------------------------Wx | 2.5606E-20 2.7997E-21 2.5777E-20
+Wy | 3.0921E-22 2.8188E-21
+Wz | 2.5956E-20
+-----------------------------------EULER POLE
+longitude (dec. degree) : 177.05
+latitude (dec. degree) : -61.22
+angular velocity (deg/Myr ): 0.009
+ASSOCIATED ERROR ELLIPSE
+semi major axis : 22.00
+semi minor axis : 0.61
+azimuth of semi major axis : -90.5
+std(angular velocity) : 0.012
+STATISTICS
+---------Number of sites = 16
+Chi**2 = 1045.9
+Deg. of. freedom = 29
+A post. var. factor = 6.0
+RESIDUALS
+---------site R_ve R_vn S_ve S_vn RN_ve RN_vn
+------------------------------------------------------------------------------------ALPE -0.06 0.15 0.06 0.06 -0.99
+2.58
+BACT 0.37 0.03 0.11 0.12
+3.28
+0.28
+CAST 0.12 0.04 0.12 0.06
+1.01
+0.61
+CHAM 0.00 -0.19 0.04 0.05
+0.08 -4.02
+CHTL -0.28 0.16 0.02 0.02 -15.49
+8.20
+GRAV 0.82 -0.56 0.12 0.12
+6.92 -4.84
+GUIL 0.17 -0.01 0.10 0.14
+1.81 -0.10
+JANU 0.58 -0.70 0.06 0.06
+9.82 -12.31
+LFAZ 0.32 0.04 0.04 0.03
+8.20
+1.65
+MODA 0.20 -0.20 0.03 0.03
+7.97 -7.29
+MRGE -0.24 -0.37 0.06 0.08 -4.28 -4.62
+PUYA 0.63 0.02 0.07 0.06
+8.81
+0.36
+RABU 0.60 -0.11 0.30 0.16
+1.96 -0.66
+ROSD -0.16 -0.36 0.13 0.12 -1.22 -2.91
+STEY 0.42 0.09 0.10 0.07
+4.05
+1.34
+VILR -0.13 0.28 0.07 0.04 -1.71
+6.39
+------------------------------------------------------------------------------------rms = 0.34 mm/yr wrms = 0.26 mm/yr
+Table 4: Euler pole estimation for the western Alps
+
+9
+
+SITES USED IN CALCULATION
+------------------------CHTL GRAV JANU MODA MRGE PUYA ROSD
+VELOCITY GRADIENT
+----------------dVx/dx dVx/dy dVy/dx dVy/dy
+--------- -------- --------- -------12.869 -12.618 -14.171 3.709
+Unity : ppb / yr
+STRAIN RATE TENSOR
+-----------------Exx Exy Eyy
+-------- -------- --------12.869 -13.394 3.709
+Unity : ppb / yr
+STRAIN RATE TENSOR COVARIANCE MATRIX(not normalized)
+Exx Exy Eyy
+Exx 0.64570E-09 -0.40376E-10 -0.37159E-25
+Exy 0.33576E-09 0.72557E-11
+Eyy 0.53983E-09
+PRINCIPAL AXIS
+Eps1 = 22.4447761015569 +- 0.831302996602003
+Eps2 = -5.86671690707883 +- 0.770801861684347
+Azimuth = 35.5619714641032 +- 1.08214127352853 Unity : ppb / yr and deg.dec
+Eps1: most extensional eigenvalue of strain tensor
+Eps2: most compressional eigenvalue of strain tensor Extension is taken positive azimuth is the one of e
+strain tensor position (long. lat.) : 6.7091 45.2675
+ROTATION
+-------rotation : 0.04449 +- 0.06640 deg / Myr
+STATISTICS
+---------A POSTERIORI VARIANCE FACTOR IN VELOCITY GRADIENT LEAST-SQUARES ESTIMATION Vt.P.V : 72.50197
+DEG. LIBERTE : 8 KI2 / DOF : 9.06275
+RACINE(KI2/DOF) 3.01044
+CHI2 TESTS OF SIGNIFICANCY
+-------------------------tested
+chi2
+threshold values
+parameters
+values
+95%
+99%
+----------------------------------------------velocity gradient 772.43
+9.49
+13.28
+strain rate tensor 761.53
+7.82
+11.35
+rotation
+0.45
+3.84
+6.64
+Table 5: Strain rate tensor for the northwestern Alps
+
+10
+
+Supplementary Figures
+
+11
+
+Supplementary	Figure	1:	Selection	of	some	GPS	times	series	(Up	component).	Figure	
+created	using	Matplotlib	v.	1.4	(http://matplotlib.org)	
+
+	
+Supplementary	Figure	2:	Top:	histograms	of	the	spectral	index	characterizing	the	
+noise	in	the	GPS	time	series,	for	the	Up,	East	and	North	Components.	Bottom:	histograms	
+of	velocity	uncertainties.	Figure	created	using	Matplotlib	v.	1.4	(http://matplotlib.org)	
+	
+
+	
+Supplementary	Figure	3:	Map	of	the	levelling	profiles	used	in	the	study.	Figure	created	
+using	QGIS	v.	2.4	(http://www.qgis.org)	
+
+	
+
+Supplementary	 Figure	 4:	 Individual	 levelling	 profiles	 used	 as	 input	 data	 prior	 to	
+adjustment.	Red	dots	are	the	raw	data.	White	dots	indicate	the	sites	used	to	sub-sample	
+the	levelling	data	for	plots	in	the	main	text.	The	blue	curve	is	a	smooth	spline	fit	of	the	
+raw	 data	 showing	 the	 long	 wavelength	 signal	 for	 each	 profile.	 Figure	 created	 using	
+Matplotlib	v.	1.4	(http://matplotlib.org)	
+	
+
+	
+Supplementary	Figure	5:	Histogram	of	residuals	in	the	levelling	adjustment.	Figure	
+created	using	Matplotlib	v.	1.4	(http://matplotlib.org)	
+
+

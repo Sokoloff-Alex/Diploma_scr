@@ -15,7 +15,7 @@ load('dat/ETOPO_Alps.mat');
 
 %%
 % DeformationField  = Alps_deformation;
-V_def = DeformationField(:,[3,4]);
+V_def    = DeformationField(:,[3,4]);
 LongGrid = DeformationField(:,1);
 LatGrid  = DeformationField(:,2);
 Strain = getStrainMap(DeformationField);

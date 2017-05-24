@@ -100,7 +100,7 @@ V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 CovVenu2 = extractCovariance(CovVenuSNX, iiSel, [1 2 3], 'no split');
 Cov_scale = 20;
 clear LongGrid LatGrid V_def_tr1 rmsFit V_Sig_tr
-[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [1 18], [42 53], 0.25, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [1 18], [42 53], 0.5, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 %%
 try
@@ -135,7 +135,7 @@ CovVenu2 = extractCovariance(CovVenuSNX, iiSel, [1 2 3], 'no split');
 V_enu_res = [Ve_res_all(iiSel), Vn_res_all(iiSel), Vu_res_all(iiSel)];
 
 % run for trend on regular grid
-[LongGridv, LatGridv, V_def_v] = run_Collocation(long_all(iiSel), lat_all(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42 53], 0.25, 250, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
+[LongGridv, LatGridv, V_def_v] = run_Collocation(long_all(iiSel), lat_all(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [42 53], 0.25, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 %%
 try
@@ -159,15 +159,21 @@ writeDeformationFieldGMT([LongGridv, LatGridv, zeros(size(V_def_v(:,1))),V_def_v
 
 %% Run Kriging
 c = [-3:0.5:3];
-[LongK_Stack, LatK_Stack, VuK_Stack, fig1, fig2, V_p] = runKrigingAtPoints(LongGridv, LatGridv, V_def_v, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
+[LongK_Stack, LatK_Stack, VuK_Stack, fig1, figx2, V_p] = runKrigingAtPoints(LongGridv, LatGridv, V_def_v, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
 
 %%
 write_xyzTable([LongK_Stack, LatK_Stack, VuK_Stack],    '~/Alpen_Check/MAP/CombNet/Vel_up_Kriging.txt', '%8.3f %8.3f %8e\n');
 
 
+%% Strain 
+DeformationField = [LongGrid,  LatGrid,  V_def_tr1(:,1:2)];
+Strain = getStrainMap(DeformationField);
 
-
-
+%%
+clc
+writeStrain2GMT(     Strain, '~/Alpen_Check/MAP/CombNet/Strain/StrainField.txt')
+writeStrainSum2GMT(  Strain, '~/Alpen_Check/MAP/CombNet/Strain/StrainSum.txt')
+writeStrainShear2GMT(Strain, '~/Alpen_Check/MAP/CombNet/Strain/StrainShear.txt')
 
 
 
