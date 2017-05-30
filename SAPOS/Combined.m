@@ -7,29 +7,31 @@
 clc
 close all
 clear all
-%%
+%% read Solution files
 SNX_file='/home/gast/GPSDATA/CAMPAIGN52/ALP_NET/SOL/FMC_C_W1.SNX'
 CRD_file='/home/gast/GPSDATA/CAMPAIGN52/ALP_NET/STA/FMC_C_W1.CRD'
 VEL_file='/home/gast/GPSDATA/CAMPAIGN52/ALP_NET/STA/FMC_C_W1.VEL'
 PLT_file='/home/gast/GPSDATA/CAMPAIGN52/ALP_NET/OUT/FMC_C_W1.PLT'
 
 ALPSAP_SNX = readSNX(SNX_file, 'all')
-ALPSAP_CRD = readCRD(CRD_file);
-ALPSAP_VEL = readVEL(VEL_file);
+% ALPSAP_CRD = readCRD(CRD_file);
+% ALPSAP_VEL = readVEL(VEL_file);
 
 %%
-flags = ALPSAP_CRD(:,7);
-range_flags = 1:length(flags);
-range_flags = range_flags(ismember(flags, {'A','W'}) == 1);
+% flags = ALPSAP_CRD(:,7);
+% range_flags = 1:length(flags);
+% range_flags = range_flags(ismember(flags, {'A','W'}) == 1);  % not needed anymore
 
 CRD_all =  ALPSAP_SNX.SOLUTION.ESTIMATE.Data.CRD;
 VEL_all =  ALPSAP_SNX.SOLUTION.ESTIMATE.Data.VEL;
 names_all = ALPSAP_SNX.SITE.ID.CODE;
 names_all = cellstr(names_all);
 
+% transform
 [Ve_all,Vn_all, Vu_all, lat_all, long_all,  h_all]  = XYZ2ENU(CRD_all,VEL_all);
 
 SNX_cov = ALPSAP_SNX.SOLUTION.COVA_ESTIMATE;
+% transform covariances from xyz to enu
 [CovVenuSNX, SigmaVenu, CorrVen, AngleV] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'VEL');
 [CovRenuSNX, SigmaRenu, CorrRen, AngleR] = SNX_cov_transformXYZ2ENU(SNX_cov,lat_all, long_all, 'CRD');
 
@@ -53,7 +55,7 @@ Omega_Eur = [55.7892, -97.8099,   2.629e-07 ]';
 
 %% scale factor for presicion
 
-SiteDome = [ALPSAP_SNX.SITE.ID.CODE, repmat(char(' '),length(range_flags),1), ALPSAP_SNX.SITE.ID.DOMES];
+SiteDome = [ALPSAP_SNX.SITE.ID.CODE, repmat(char(' '),size(CRD_all,1),1), ALPSAP_SNX.SITE.ID.DOMES];
 SiteDome_list = cellstr(SiteDome);
 [rmsENU(:,2), rmsENU(:,1), rmsENU(:,3)] = get_PLT_residuals(PLT_file, SiteDome_list);
 %%
@@ -67,8 +69,8 @@ clc
 % scaleFactor = 50*[1 1 1];
 scaleFactor = scalePLT_SNX_sig/1;
 VelocityField_hor = [long_all, lat_all, Ve_res_all, Vn_res_all, SigmaVenu(:,1)*scaleFactor(1), SigmaVenu(:,2)*scaleFactor(2),CorrVen];
-writeVelocityFieldwithCovGMT(VelocityField_hor, names_all, '~/Alpen_Check/MAP/CombNet/Velocity_field_horizontal.txt')
-writeVelocityFieldVertical(long_all, lat_all, Vu_res_all, names_all, '~/Alpen_Check/MAP/CombNet/Velocity_field_vertical.txt')
+writeVelocityFieldwithCovGMT(VelocityField_hor, names_all, '~/Alpen_Check/MAP/Velocity_field_horizontal.txt')
+writeVelocityFieldVertical(long_all, lat_all, Vu_res_all, names_all, '~/Alpen_Check/MAP/Velocity_field_vertical.txt')
 
 %% save Error Bars for GMT
 fileID = fopen('~/Alpen_Check/MAP/CombNet/Vu_error_bars_all.txt', 'w');
@@ -89,18 +91,22 @@ end
 fclose(fileID);
 disp('Done')
 
-%% SAPOS Combined
+%% run LSC for Combined network (ALP_NET + SAPOS)
 %% for Horizontal 
 clc
 Outliers   = {'HELM', 'WIEN', 'FERR', 'FERH', 'OGAG', 'SOND', 'OBE2', ...
               'ROHR','BIWI','BI2I'};
 iiOut = selectRange(names, Outliers);
 iiSel = setdiff([1:198], iiOut);
+
 V_enu_res = [Ve_res(iiSel), Vn_res(iiSel), Vu_res(iiSel)];
 CovVenu2 = extractCovariance(CovVenuSNX, iiSel, [1 2 3], 'no split');
 Cov_scale = 1;
+
 clear LongGrid LatGrid V_def_tr1 rmsFit V_Sig_tr
-[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [41 52], 0.25, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'no filter');
+
+%                                                                                                                           LongLim LatLing step dMax nMin flags ... 
+[LongGrid, LatGrid, V_def_tr1, rmsFit, V_Sig_tr] = run_Collocation(long(iiSel), lat(iiSel), V_enu_res, CovVenu2, Cov_scale, [0 18], [41 52], 0.5, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'no filter');
 
 %%
 try
@@ -135,6 +141,8 @@ CovVenu2 = extractCovariance(CovVenuSNX, iiSel, [1 2 3], 'no split');
 V_enu_res = [Ve_res_all(iiSel), Vn_res_all(iiSel), Vu_res_all(iiSel)];
 
 % run for trend on regular grid
+
+%                                                                                                                  LongLim LatLing step dMax nMin flags ... 
 [LongGridv, LatGridv, V_def_v] = run_Collocation(long_all(iiSel), lat_all(iiSel), V_enu_res, CovVenu2, Cov_scale, [-1 18], [41 55], 0.5, 150, 10, 'exp1', '-v', 'bias', 'tail 0', 'no corr', 'filter');
 
 %%
@@ -157,22 +165,21 @@ title('Vertical')
 writeDeformationFieldGMT([LongGrid,  LatGrid,  V_def_tr1(:,1),           V_def_tr1(:,2)], '~/Alpen_Check/MAP/CombNet/Def_field_Vh.txt','noCov')
 writeDeformationFieldGMT([LongGridv, LatGridv, zeros(size(V_def_v(:,1))),V_def_v(:,3)],   '~/Alpen_Check/MAP/CombNet/Def_field_Vu.txt','noCov')
 
-%% Run Kriging
+%% Run Kriging (to smooth LSC results for vertical component)
 c = [-3:0.5:3];
 [LongK_Stack, LatK_Stack, VuK_Stack, fig1, figx2, V_p] = runKrigingAtPoints(LongGridv, LatGridv, V_def_v, long ,lat, Vu_res, iiSel,c,5,[],0.1, names);
 
-%%
+%% write results of kriging
 write_xyzTable([LongK_Stack, LatK_Stack, VuK_Stack],    '~/Alpen_Check/MAP/CombNet/Vel_up_Kriging.txt', '%8.3f %8.3f %8e\n');
 
-
-%% Strain 
+%% compute Strain 
 DeformationField = [LongGrid,  LatGrid,  V_def_tr1(:,1:2)];
 Strain = getStrainMap(DeformationField);
 
 plotStrainNormal(Strain, 10^7*1);
 
-%%
-clc
+%% write files with strain results
+
 writeStrain2GMT(     Strain, '~/Alpen_Check/MAP/CombNet/Strain/StrainField.txt')
 writeStrainSum2GMT(  Strain, '~/Alpen_Check/MAP/CombNet/Strain/StrainSum.txt')
 writeStrainShear2GMT(Strain, '~/Alpen_Check/MAP/CombNet/Strain/StrainShear.txt')
